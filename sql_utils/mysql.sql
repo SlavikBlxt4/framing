@@ -25,18 +25,17 @@ CREATE TABLE FEE(
 );
 
     CREATE TABLE PHOTOGRAPHER(
-        id INT AUTO_INCREMENT PRIMARY KEY,
+        id INT AUTO_INCREMENT PRIMARY KEY,  
         name VARCHAR(100) NOT NULL,
         last_name VARCHAR(100) NOT NULL,
-        style INT NOT NULL,
         email VARCHAR(255) UNIQUE NOT NULL,
         password VARCHAR(255) NOT NULL,
         phone_number VARCHAR(15),
         registry_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         active TINYINT(1) DEFAULT 1,
         fee_id INT NOT NULL,
-        CONSTRAINT fk_photographers_style FOREIGN KEY (style) REFERENCES STYLE(id),
-        CONSTRAINT fk_photographers_fee FOREIGN KEY (fee_id) REFERENCES FEE(id)
+       -- CONSTRAINT fk_photographers_style FOREIGN KEY (style) REFERENCES STYLE(id),
+        -- CONSTRAINT fk_photographers_fee FOREIGN KEY (fee_id) REFERENCES FEE(id)
     );
 
     CREATE TABLE BOOKING(
@@ -57,3 +56,22 @@ CREATE TABLE FEE(
         date_rating DATE NOT NULL,
         CONSTRAINT fk_rating_photographer FOREIGN KEY (id_booking) REFERENCES BOOKING(id)
     );
+
+    CREATE TABLE PHOTOGRAPHER_STYLE(
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        id_photographer INT NOT NULL,
+        id_style INT NOT NULL,
+        CONSTRAINT fk_photographer_style_photographer FOREIGN KEY (id_photographer) REFERENCES PHOTOGRAPHER(id),
+        CONSTRAINT fk_photographer_style_style FOREIGN KEY (id_style) REFERENCES STYLE(id)
+    );
+
+    CREATE TABLE PHOTOGRAPHER_FEE(
+    photographer_id INT NOT NULL,
+    fee_id INT NOT NULL,
+    PRIMARY KEY (photographer_id, fee_id),
+    CONSTRAINT fk_photographer FOREIGN KEY (photographer_id) REFERENCES PHOTOGRAPHER(id),
+    CONSTRAINT fk_fee FOREIGN KEY (fee_id) REFERENCES FEE(id)
+    );
+
+
+-- ALTER TABLE PHOTOGRAPHER DROP CONSTRAINT fk_photographers_style;
