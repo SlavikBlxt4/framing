@@ -23,6 +23,17 @@ exports.loginClient = (data) => {
   });
 };
 
+exports.deleteClient = (id) => {
+  return new Promise((resolve, reject) => {
+    Client.delete({ where: { id } }, (error, results) => {
+      if (error) {
+        return reject(error);
+      }
+      resolve(results);
+    });
+  });
+};
+
 exports.getAllClients = () => {
   return new Promise((resolve, reject) => {
     Client.findAll((error, results) => {

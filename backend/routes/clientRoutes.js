@@ -9,6 +9,9 @@ router.post('/register', clientController.createClient);
 // Ruta para iniciar sesión de un cliente
 router.post('/login', clientController.loginClient);
 
+// Ruta para borrar clientes (active = 0)
+router.patch('/delete/:id', clientController.deleteClient);
+
 // Ruta para listar clientes
 router.get('/', clientController.listClients);
 

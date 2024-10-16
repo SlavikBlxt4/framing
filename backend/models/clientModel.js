@@ -12,6 +12,11 @@ const Client = {
     db.query(query, [data.email, data.password], callback);
   },
 
+  delete: (id, callback) => {
+    const query = 'UPDATE CLIENT SET active = 0 WHERE id = ?'; //problema con la variable
+    db.query(query, [id], callback);
+  },
+
   findAll: (callback) => {
     const query = 'SELECT * FROM CLIENT';
     db.query(query, callback);

@@ -19,6 +19,15 @@ exports.loginClient = async (req, res) => {
   }
 };
 
+exports.deleteClient = async (req, res) => {
+  try {
+    const deletedClient = await clientService.deleteClient(req.params.id);
+    res.status(200).json(deletedClient);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
 exports.listClients = async (req, res) => {
   try {
     const clients = await clientService.getAllClients();
