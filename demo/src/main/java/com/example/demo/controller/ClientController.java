@@ -19,8 +19,6 @@ public class ClientController {
     @GetMapping("/findAll")
 
     public List<CLIENT> findAll() {
-
         return clientService.findAll();
-
     }
 }
