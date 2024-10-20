@@ -1,15 +1,14 @@
 package com.example.demo.model;
 
 
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.validation.constraints.Pattern;
+
 import java.time.LocalDateTime;
 
 
@@ -28,8 +27,11 @@ public class CLIENT {
     private String last_name;
     private String email;
     private String password;
-    private int phone_number;
-    private LocalDateTime registry_date; //tipo de dato equivalente al timestamp de mysql??
+    @Pattern(regexp = "^\\+?[0-9]{7,15}$", message = "Invalid phone number")
+    private String phone_number;
+
+    @Column(updatable = false)  // No se actualiza una vez establecido
+    private LocalDateTime registry_date;
     private boolean active;
 
 }

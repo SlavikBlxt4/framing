@@ -4,9 +4,7 @@ package com.example.demo.controller;
 import com.example.demo.model.CLIENT;
 import com.example.demo.service.clientService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -20,5 +18,10 @@ public class ClientController {
 
     public List<CLIENT> findAll() {
         return clientService.findAll();
+    }
+
+    @PostMapping("/insert")
+    public CLIENT insert(@RequestBody CLIENT client) {
+        return clientService.insertClient(client);
     }
 }

@@ -11,5 +11,8 @@ import java.util.List;
 @Repository
 public interface ClientRepository extends JpaRepository<CLIENT, Integer> {
     @Override
-    List<CLIENT> findAll(Sort sort);
+    List<CLIENT> findAll();
+
+    @Override
+    <S extends CLIENT> S save(S entity);
 }
