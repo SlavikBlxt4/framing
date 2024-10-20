@@ -15,7 +15,7 @@ Asegúrate de tener instalados los siguientes programas:
 1. Clona el repositorio:
    ```bash
    git clone https://github.com/SlavikBlxt4/framing.git
-   cd framing
+   cd framing/demo
 ## Montar el Contenedor Docker
 
     Ejecuta el siguiente comando para levantar el contenedor:
