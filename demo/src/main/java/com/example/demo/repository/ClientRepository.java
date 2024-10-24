@@ -15,4 +15,6 @@ public interface ClientRepository extends JpaRepository<Client, Integer> {
 
     @Override
     <S extends Client> S save(S entity);
+
+    Optional<Client> findByEmail(String email);
 }

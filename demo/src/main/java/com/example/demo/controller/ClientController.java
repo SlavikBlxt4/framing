@@ -24,4 +24,17 @@ public class ClientController {
     public Client insert(@RequestBody Client client) {
         return clientService.insertClient(client);
     }
+
+    @PostMapping("/login")
+    public boolean login(@RequestBody Client client) {
+        String email = client.getEmail();
+        String password = client.getPassword();
+        boolean login = clientService.login(email, password);
+        if (login) {
+            return true;
+        }
+        return false;
+
+    }
+
 }
