@@ -1,6 +1,6 @@
 package com.example.demo.controller;
 
-import com.example.demo.model.PHOTOGRAPHER;
+import com.example.demo.model.Photographer;
 import com.example.demo.service.photographerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,7 +16,7 @@ public class PhotographerController {
     private photographerService photographerService;
 
     @GetMapping("/findAll")
-    public List<PHOTOGRAPHER> findAll() {
+    public List<Photographer> findAll() {
         return photographerService.findAll();
     }
 }

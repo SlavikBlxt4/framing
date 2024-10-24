@@ -1,7 +1,7 @@
 package com.example.demo.controller;
 
 
-import com.example.demo.model.CLIENT;
+import com.example.demo.model.Client;
 import com.example.demo.service.clientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -16,12 +16,12 @@ public class ClientController {
 
     @GetMapping("/findAll")
 
-    public List<CLIENT> findAll() {
+    public List<Client> findAll() {
         return clientService.findAll();
     }
 
     @PostMapping("/insert")
-    public CLIENT insert(@RequestBody CLIENT client) {
+    public Client insert(@RequestBody Client client) {
         return clientService.insertClient(client);
     }
 }

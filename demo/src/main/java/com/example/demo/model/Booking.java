@@ -1,15 +1,11 @@
 package com.example.demo.model;
 
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
+import com.example.demo.utils.BookingState;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-
 import java.time.LocalDateTime;
 
 @Getter
@@ -17,12 +13,17 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-public class BOOKING {
+public class Booking {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+
+    @Column(nullable = false)
     private int id_client;
+    @Column(nullable = false)
     private int id_photographer;
+
+    private BookingState state;
     private LocalDateTime date;
-    private boolean active;
+
 }

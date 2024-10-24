@@ -59,7 +59,7 @@ create table booking
     id_photographer integer not null
         constraint fk_bookings_photographer
             references photographer,
-    state           integer not null,
+    state           varchar(100) not null,
     date            date    not null
 );
 

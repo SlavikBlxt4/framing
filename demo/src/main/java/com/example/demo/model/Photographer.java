@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 
-public class PHOTOGRAPHER {
+public class Photographer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
