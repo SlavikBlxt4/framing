@@ -1,0 +1,97 @@
+package com.example.demo.model;
+
+import com.example.demo.utils.UserRole;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.Pattern;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import java.time.LocalDateTime;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Entity
+@Table(name = "users")
+public class User implements UserDetails {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
+
+    private String name;
+    private String email;
+    private String password_hash;
+
+    @Pattern(regexp = "^\\+?[0-9]{7,15}$", message = "Invalid phone number")
+    private String phone_number;
+
+    @PrePersist
+    protected void onCreate() {
+        registry_date = LocalDateTime.now();
+    }
+
+    @Column(updatable = false)
+    private LocalDateTime registry_date;
+
+    @Column(nullable = false)
+    private boolean active = true;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private UserRole role;
+
+
+
+    @OneToMany(mappedBy = "photographer", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<ServiceClass> services;
+
+    @OneToMany(mappedBy = "client", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Booking> bookings;
+
+    // Métodos de la interfaz UserDetails
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        // Devuelve el rol del usuario como una colección de GrantedAuthority
+        return Collections.singleton(new SimpleGrantedAuthority(role.name()));
+    }
+
+    @Override
+    public String getPassword() {
+        return password_hash;
+    }
+
+    @Override
+    public String getUsername() {
+        return email;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return active;
+    }
+}

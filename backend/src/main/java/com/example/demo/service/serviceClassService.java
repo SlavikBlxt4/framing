@@ -1,0 +1,109 @@
+package com.example.demo.service;
+
+import com.example.demo.DTO.ServiceRequestDTO;
+import com.example.demo.DTO.ServiceResponseDTO;
+import com.example.demo.DTO.TopRatedServicesDTO;
+import com.example.demo.DTO.TopServiceDto;
+import com.example.demo.model.Style;
+import com.example.demo.model.User;
+import com.example.demo.model.ServiceClass;
+import com.example.demo.repository.ServiceClassRepository;
+import com.example.demo.repository.StyleRepository;
+import com.example.demo.repository.UserRepository;
+import com.example.demo.utils.Availability;
+import com.example.demo.utils.UserRole;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service
+public class serviceClassService {
+
+    @Autowired
+    private ServiceClassRepository serviceRepository;
+
+    @Autowired
+    private StyleRepository styleRepository;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    // Método para crear un servicio
+    public ServiceClass createService(ServiceRequestDTO serviceRequestDTO, Integer photographerId) {
+        // Buscar el fotógrafo en la base de datos
+        User photographer = userRepository.findById(photographerId)
+                .orElseThrow(() -> new RuntimeException("Photographer not found"));
+
+        // Verificar que el usuario tenga el rol de "PHOTOGRAPHER"
+        if (!UserRole.PHOTOGRAPHER.equals(photographer.getRole())) {
+            throw new RuntimeException("User is not a photographer");
+        }
+
+        // Crear el nuevo servicio usando el DTO
+        ServiceClass service = new ServiceClass();
+        service.setName(serviceRequestDTO.getName());
+        service.setDescription(serviceRequestDTO.getDescription());
+        service.setPrice(serviceRequestDTO.getPrice());
+        service.setImageUrl(serviceRequestDTO.getImageUrl());  // Guarda la URL de la imagen
+        service.setPhotographer(photographer);
+        service.setAvailability(serviceRequestDTO.getAvailability());
+
+        // Buscar el estilo en la base de datos usando el styleId del DTO
+        Style style = styleRepository.findById(serviceRequestDTO.getStyleId())
+                .orElseThrow(() -> new RuntimeException("Style not found"));
+        service.setStyle(style); // Asignar el objeto Style encontrado
+
+        // Guardar el servicio y construir el DTO de respuesta
+        return serviceRepository.save(service);
+    }
+
+    public List<TopRatedServicesDTO> getTop10HighestRatedServices() {
+        return serviceRepository.findTop10HighestRatedServices();
+    }
+
+
+    public boolean deleteService(Integer serviceId, Integer photographerId) {
+        ServiceClass service = serviceRepository.findById(serviceId).orElse(null);
+        if (service != null && service.getPhotographer().getId().equals(photographerId)) {
+            serviceRepository.delete(service);
+            return true;
+        }
+        return false;
+    }
+
+    public ServiceClass findServiceById(Integer id) {
+        return serviceRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Service not found"));
+    }
+
+    public List<ServiceResponseDTO> getServicesByStyleName(String styleName) {
+        List<ServiceClass> services = serviceRepository .findByStyleName(styleName);
+
+        return services.stream()
+                .map(this::convertToDTO)
+                .toList();
+    }
+
+    private ServiceResponseDTO convertToDTO(ServiceClass service) {
+        return new ServiceResponseDTO(
+                service.getId(),
+                service.getName(),
+                service.getDescription(),
+                service.getPrice(),
+                service.getImageUrl(),
+                service.getStyle().getName()  // Assuming Style is an entity with a name field
+        );
+    }
+
+
+}
+    /*public List<TopServiceDto> getTop10MostSoldServices() {
+        return serviceRepository.findTop10MostSoldServices();
+    }*/
+
+
+
+
+
+

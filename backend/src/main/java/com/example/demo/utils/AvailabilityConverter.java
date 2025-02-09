@@ -1,0 +1,35 @@
+package com.example.demo.utils;
+
+
+import jakarta.persistence.AttributeConverter;
+import jakarta.persistence.Converter;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+@Converter(autoApply = false)
+public class AvailabilityConverter implements AttributeConverter<Availability, String> {
+
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
+    public AvailabilityConverter() {
+    }
+
+    @Override
+    public String convertToDatabaseColumn(Availability attribute) {
+        try {
+                return objectMapper.writeValueAsString(attribute);
+        } catch (Exception e) {
+            // Manejar excepciones
+            throw new IllegalArgumentException("Error al convertir Availability a JSON", e);
+        }
+    }
+
+    @Override
+    public Availability convertToEntityAttribute(String dbData) {
+        try {
+            return objectMapper.readValue(dbData, Availability.class);
+        } catch (Exception e) {
+            // Manejar excepciones
+            throw new IllegalArgumentException("Error al convertir JSON a Availability", e);
+        }
+    }
+}

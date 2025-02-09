@@ -1,0 +1,59 @@
+package com.example.demo.utils;
+
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import org.springframework.stereotype.Component;
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
+@Component
+public class JwtUtil {
+
+    private final String SECRET_KEY = "db965c9d3147941e4bf08cf61aec02e760bd9250deac0d0b36708c4b5e2c2ae2845e2add42e49ff84ea13dbe1cb3f1f821c113e922ceb9255f17831eba3972ffefea60417435db38c43e681a2450aa2feeed6588cf928b120b547b176a4a42df227f272f1aa36318c8ea0a27e827b04e3a6027c4a09da83f79f2044adc8716a2484774e7edca71facb5b414b77d8b97db2dfdfb4f7af91fcc9c02fe30ffc6460d937a6d4230ffa0e1ae15c8b7ae18140bcb8608b94c922c520d00bde97b41bc84eeef7080fbd0a6dfb70a3fa5eee98a2f57e9dbd0146dd314ce2014f51df56bbce16b5e6b55d87a0d56635a2c819910ffebd3a988f012dd0a8327d5f15ae3b3a39a09cda503b2119c7d418ade010b85e8522a86887692a4c614db860d0275cf2a766ea3e2dabec9375318fc80f3e8bf34f9a88a877e62f65d09668adf4d007a591e07bdb7a3373ab4220da263e5276e3baa70b332c1e4c5bd411841db8239d531fe4364cd2ed763b1ac328a3b43d1ba2fbda3a938847ad5f1c1aa7600b88401df8bc12c277c056bfaa0e292b3fb2c737048f82b85987749b9fd489bc4a85fc7533ba6e4408bb5881646a5daccf624a38699decc78d10e774cc7235c0e39f47fa6c69caef3adcdf480558880533c8231685900cad93dca65ed3eb40f8b9d7c84efed4bba284cb46c4015ac4756e950e07692e7491f433d57f1712a6015b7ef7cf"; // use a secure key in production
+    private final long EXPIRATION_TIME = 1000 * 60 * 60 * 10; // 10 hours
+
+    public String generateToken(String email, UserRole role, Integer userId) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("role", role.name());
+        claims.put("userId", userId);  // Agregar userId como claim adicional
+        return createToken(claims, email);
+    }
+
+    private String createToken(Map<String, Object> claims, String subject) {
+        return Jwts.builder()
+                .setClaims(claims)
+                .setSubject(subject)
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
+                .signWith(SignatureAlgorithm.HS512, SECRET_KEY)
+                .compact();
+    }
+
+    public Claims extractClaims(String token) {
+        return Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token).getBody();
+    }
+
+    public String extractEmail(String token) {
+        return extractClaims(token).getSubject();
+    }
+
+    public UserRole extractRole(String token) {
+        String role = (String) extractClaims(token).get("role");
+        return UserRole.valueOf(role);
+    }
+
+    public Integer extractUserId(String token) {
+        return extractClaims(token).get("userId", Integer.class); // Extraer userId
+    }
+
+    public boolean isTokenExpired(String token) {
+        return extractClaims(token).getExpiration().before(new Date());
+    }
+
+    public boolean validateToken(String token, String userEmail) {
+        return extractEmail(token).equals(userEmail) && !isTokenExpired(token);
+    }
+}

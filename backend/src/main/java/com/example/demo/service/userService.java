@@ -1,0 +1,95 @@
+package com.example.demo.service;
+
+import com.example.demo.model.ServiceClass;
+import com.example.demo.model.User;
+import com.example.demo.repository.ServiceClassRepository;
+import com.example.demo.repository.UserRepository;
+import com.example.demo.utils.JwtUtil;
+import com.example.demo.DTO.TopPhotographerProjection;
+import com.example.demo.utils.UserRole;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import com.example.demo.service.SendGridService;
+
+import java.util.List;
+import java.util.Optional;
+
+@Service
+public class userService {
+
+    @Autowired
+    private ServiceClassRepository serviceRepository;
+
+    private final UserRepository userRepository;
+    private final JwtUtil jwtUtil;
+    private final PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private SendGridService sendGridService;
+
+    public userService(UserRepository userRepository, JwtUtil jwtUtil, PasswordEncoder passwordEncoder) {
+        this.userRepository = userRepository;
+        this.jwtUtil = jwtUtil;
+        this.passwordEncoder = passwordEncoder;
+    }
+
+
+    public List<ServiceClass> getServicesByPhotographerId(int photographer_id) {
+        return serviceRepository.findByPhotographerId(photographer_id);
+    }
+
+    public User signup(String name, String email, String password, String phoneNumber, UserRole role) {
+        // Check if email is already registered
+        if (userRepository.existsByEmail(email)) {
+            throw new IllegalArgumentException("Email already registered");
+        }
+
+        // Create new user and set properties
+        User newUser = new User();
+        newUser.setName(name);
+        newUser.setEmail(email);
+        newUser.setPassword_hash(passwordEncoder.encode(password)); // Encode password for security
+        newUser.setPhone_number(phoneNumber);
+        newUser.setRole(role); // Set role to either CLIENT or PHOTOGRAPHER
+        newUser.setActive(true); // Set active status
+
+        String subject = "Welcome to Our Service!";
+        String content = "Hi " + newUser.getName() + ",\n\nThank you for signing up with us! We're excited to have you on board.\n\nBest regards,\nYour Company Name";
+        sendGridService.sendEmail(newUser.getEmail(), subject, content);
+        // Save the new user
+        return userRepository.save(newUser);
+    }
+
+    /*public boolean login(String email, String password) {
+        Optional<User> client = userRepository.findByEmail(email);
+        if(client.isPresent()){
+            if(passwordEncoder.matches(password, client.get().getPassword_hash())){
+                return true;
+            }
+        }
+        return false;
+    }*/
+
+    public String login(String email, String password) {
+        // Retrieve the user by email
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid email or password"));
+
+        // Check if the password matches
+        if (!passwordEncoder.matches(password, user.getPassword_hash())) {
+            throw new IllegalArgumentException("Invalid email or password");
+        }
+
+        // Generate JWT based on user role
+        return jwtUtil.generateToken(user.getEmail(), user.getRole(), user.getId());
+    }
+
+    public Optional<User> findById(Integer id) {
+        return userRepository.findById(id);
+    }
+    public List<TopPhotographerProjection> getTop10PhotographersByBookings() {
+        return userRepository.findTop10PhotographersByBookings();
+    }
+
+}
