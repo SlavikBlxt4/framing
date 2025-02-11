@@ -1,62 +1,31 @@
-import React, { useCallback } from 'react';
-import { View, Text, TextInput, Image, ScrollView, FlatList, TouchableOpacity, Platform } from 'react-native';
+import React from 'react';
+import { View, Text, TextInput, Image, ScrollView, FlatList, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { SplashScreen, Stack } from 'expo-router';
-import { useFonts } from 'expo-font';
-import BottomNavigation from '@/components/BottomNavigation';
-import CustomInput from '../../components/CustomInput';
 
+interface Photographer {
+  id: string;
+  name: string;
+  rating: number;
+  image: any;
+}
 
+const photographers: Photographer[] = [
+  { id: '1', name: 'Estudio Fotográfico', rating: 4.2, image: require('../assets/photo1.jpg') },
+  { id: '2', name: 'Estudio Fotográfico', rating: 4.2, image: require('../assets/photo2.jpg') }
+];
 
-const HomeScreen = () => {
-
-  SplashScreen.preventAutoHideAsync(); // Evita que la app se muestre antes de que las fuentes carguen
-
-const [fontsLoaded] = useFonts({
-  'Poppins-Regular': require('../../assets/fonts/Poppins/Poppins-Regular.ttf'),
-  'Poppins-Bold': require('../../assets/fonts/Poppins/Poppins-Bold.ttf'),
-});
-
-const onLayoutRootView = useCallback(async () => {
-  if (fontsLoaded) {
-    await SplashScreen.hideAsync(); // Oculta la pantalla de carga cuando las fuentes estén listas
-  }
-}, [fontsLoaded]);
-
-  if (!fontsLoaded) {
-    return null; // No renderizar nada hasta que las fuentes estén listas
-  }
-  const photographers = [
-    { id: '1', name: 'Estudio Fotográfico', rating: 4.2, image: require('../../assets/images/photo1.jpg') },
-    { id: '2', name: 'Estudio Fotográfico', rating: 4.2, image: require('../../assets/images/photo1.jpg') }
-  ];
-
+const HomeScreen: React.FC = () => {
   return (
-    <>
-      <Stack.Screen options={{ headerShown: false }} />
     <View style={{ flex: 1, backgroundColor: '#fff' }}>
       {/* Encabezado */}
-      <SafeAreaView style={{ backgroundColor: '#f8f8f8' }}>
-        <View style={{ padding: 16 }}>
-          {/* Fecha con Poppins Regular en negro */}
-          <Text style={{ fontFamily: 'Poppins-Regular', fontSize: 16, color: '#000' }}>
-            6 de febrero de 2025
-          </Text>
-
-          {/* Texto "Bienvenido, Usuario" con Poppins y negrita en Usuario */}
-          <Text style={{ fontSize: 22, fontFamily: 'Poppins-Regular', color: '#000' }}>
-            Bienvenido, <Text style={{ fontFamily: 'Poppins-Bold' }}>Usuario</Text>
-          </Text>
-
-          {/* Barra de búsqueda */}
-          <CustomInput
-            placeholder="Buscar"
-            icon="search"
-            isSearch={true}
-          />
+      <View style={{ padding: 16, backgroundColor: '#f8f8f8' }}>
+        <Text style={{ fontSize: 16, color: '#777' }}>6 de febrero de 2025</Text>
+        <Text style={{ fontSize: 22, fontWeight: 'bold' }}>Bienvenido, Usuario</Text>
+        <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10, backgroundColor: '#eee', borderRadius: 8, paddingHorizontal: 10, paddingVertical: 5 }}>
+          <Ionicons name="search" size={20} color="#777" />
+          <TextInput placeholder="Buscar" style={{ flex: 1, marginLeft: 10 }} />
         </View>
-      </SafeAreaView>
+      </View>
 
       <ScrollView>
         {/* Sesiones contratadas */}
@@ -108,9 +77,12 @@ const onLayoutRootView = useCallback(async () => {
       </ScrollView>
 
       {/* Barra de navegación */}
-      <BottomNavigation />
+      <View style={{ flexDirection: 'row', justifyContent: 'space-around', padding: 10, backgroundColor: '#f8f8f8' }}>
+        <Ionicons name="home" size={24} color="#008080" />
+        <Ionicons name="book" size={24} color="#777" />
+        <Ionicons name="person" size={24} color="#777" />
+      </View>
     </View>
-    </>
   );
 };
 
