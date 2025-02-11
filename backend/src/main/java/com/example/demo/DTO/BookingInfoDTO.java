@@ -28,6 +28,8 @@ public class BookingInfoDTO {
         this.clientEmail = clientEmail;
     }
 
+
+
     public Integer getBookingId() {
         return bookingId;
     }

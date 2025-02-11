@@ -107,11 +107,19 @@ public class BookingController {
         return ResponseEntity.ok(servicesToRate);
     }
 
-    @GetMapping("/pending-bookings")
-    public ResponseEntity<List<BookingInfoDTO>> getPendingBookings(Authentication authentication) {
+    @GetMapping("/pending-bookings-photographer")
+    public ResponseEntity<List<BookingInfoDTO>> getPendingBookingsPhotographer(Authentication authentication) {
         CustomAuthenticationToken authToken = (CustomAuthenticationToken) authentication;
         Integer photographerId = authToken.getUserId();
         List<BookingInfoDTO> pendingBookings = bookingService.findByServicePhotographerIdAndState(photographerId);
+        return ResponseEntity.ok(pendingBookings);
+    }
+
+    @GetMapping("/pending-bookings-client")
+    public ResponseEntity<List<BookingInfoDTO>> getPendingBookingsClient(Authentication authentication) {
+        CustomAuthenticationToken authToken = (CustomAuthenticationToken) authentication;
+        Integer clientId = authToken.getUserId();
+        List<BookingInfoDTO> pendingBookings = bookingService.findByServiceClientIdAndState(clientId);
         return ResponseEntity.ok(pendingBookings);
     }
 }

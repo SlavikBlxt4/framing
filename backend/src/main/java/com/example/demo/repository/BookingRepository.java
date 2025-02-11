@@ -35,6 +35,15 @@ public interface BookingRepository extends JpaRepository<Booking, Integer> {
     List<BookingInfoDTO> findPendingBookingsByPhotographerId(@Param("photographerId") Integer photographerId);
 
 
+    @Query("SELECT new com.example.demo.DTO.BookingInfoDTO(b.id, b.client.id, b.bookingDate, b.state, b.service.id, s.name, s.price, c.name, c.email) " +
+            "FROM Booking b " +
+            "JOIN b.service s " +
+            "JOIN b.client c " +
+            "WHERE b.client.id = :clientId " +
+            "AND b.state = 'pending'")
+    List<BookingInfoDTO> findPendingBookingsByClientId(@Param("clientId") Integer clientId);
+
+
 
 
 }

@@ -127,4 +127,8 @@ public class bookingService {
     public List<BookingInfoDTO> findByServicePhotographerIdAndState(Integer photographerId) {
         return bookingRepository.findPendingBookingsByPhotographerId(photographerId);
     }
+
+    public List<BookingInfoDTO> findByServiceClientIdAndState(Integer clientId) {
+        return bookingRepository.findPendingBookingsByClientId(clientId);
+    }
 }

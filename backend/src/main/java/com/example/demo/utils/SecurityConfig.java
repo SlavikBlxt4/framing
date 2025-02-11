@@ -43,8 +43,8 @@ public class SecurityConfig {
 
                         /*.requestMatchers("/api/users/login", "/api/users/signup", "/api/users/booking/create").permitAll() // Public endpoints*/
                         .requestMatchers("/api/users/login", "/api/users/signup", "/api/users/top-photographers", "/api/photographer/serviceClass/top-rated", "/api/photographer/serviceClass/{styleName}").permitAll() // Public endpoints
-                        .requestMatchers("/api/client/**", "api/ratings/**", "api/bookings/history", "api/bookings/create", "api/bookings/services-to-rate").hasAuthority("CLIENT") // Role-based access
-                        .requestMatchers("/api/photographer/serviceClass/create", "/api/photographer/serviceClass/delete/{serviceId}", "/api/users/services", "/api/aws/s3/**", "api/bookings/{id}/cancel", "api/bookings/{id}/confirm", "api/bookings/pending-bookings").hasAuthority("PHOTOGRAPHER") // Role-based access
+                        .requestMatchers("/api/client/**", "api/ratings/**", "api/bookings/history", "api/bookings/create", "api/bookings/services-to-rate", "api/bookings/pending-bookings-client").hasAuthority("CLIENT") // Role-based access
+                        .requestMatchers("/api/photographer/serviceClass/create", "/api/photographer/serviceClass/delete/{serviceId}", "/api/users/services", "/api/aws/s3/**", "api/bookings/{id}/cancel", "api/bookings/{id}/confirm", "api/bookings/pending-bookings-photographer").hasAuthority("PHOTOGRAPHER") // Role-based access
                         .anyRequest().authenticated() // All other requests need to be authenticated
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
