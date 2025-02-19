@@ -114,7 +114,7 @@ public class bookingService {
         BookingHistoryDTO dto = new BookingHistoryDTO();
         dto.setBookingId(booking.getId());
         dto.setServiceName(booking.getService().getName());
-        dto.setBookingDate(booking.getBooking_date());
+        dto.setBookingDate(booking.getBookingDate());
         dto.setDate(booking.getDate());
         dto.setStatus(booking.getState().name());
         return dto;

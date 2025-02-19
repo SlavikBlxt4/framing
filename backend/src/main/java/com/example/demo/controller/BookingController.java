@@ -112,7 +112,7 @@ public class BookingController {
         CustomAuthenticationToken authToken = (CustomAuthenticationToken) authentication;
         Integer photographerId = authToken.getUserId();
         List<BookingInfoDTO> pendingBookings = bookingService.findByServicePhotographerIdAndState(photographerId);
-        return ResponseEntity.ok(pendingBookings);
+        return ResponseEntity.ok(pendingBookings);  
     }
 
     @GetMapping("/pending-bookings-client")

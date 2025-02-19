@@ -1,19 +1,18 @@
 version: '3.8'
+
 services:
   postgres:
-    image: postgis/postgis:17-3.4  # Usa una versión compatible de PostgreSQL + PostGIS
-    container_name: postgres-framing
-    restart: always
+    image: postgres:latest
+    container_name: postgres-db
     environment:
-      POSTGRES_USER: slavik
-      POSTGRES_PASSWORD: mipassword
-      POSTGRES_DB: framing
+      - POSTGRES_USER=slavik
+      - POSTGRES_PASSWORD=mipassword
+      - POSTGRES_DB=framing
     ports:
-      - "5433:5432"
+      - "5433:5432"  # Asegura que el puerto expuesto es accesible
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./init:/docker-entrypoint-initdb.d
-
     networks:
       - postgres_network
 
