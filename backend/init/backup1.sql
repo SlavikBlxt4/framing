@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 17.0 (Debian 17.0-1.pgdg120+1)
--- Dumped by pg_dump version 17.0 (Debian 17.0-1.pgdg120+1)
+-- Dumped from database version 17.0 (Debian 17.0-1.pgdg110+1)
+-- Dumped by pg_dump version 17.0 (Debian 17.0-1.pgdg110+1)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -16,6 +16,20 @@ SET check_function_bodies = false;
 SET xmloption = content;
 SET client_min_messages = warning;
 SET row_security = off;
+
+--
+-- Name: postgis; Type: EXTENSION; Schema: -; Owner: -
+--
+
+CREATE EXTENSION IF NOT EXISTS postgis WITH SCHEMA public;
+
+
+--
+-- Name: EXTENSION postgis; Type: COMMENT; Schema: -; Owner: 
+--
+
+COMMENT ON EXTENSION postgis IS 'PostGIS geometry and geography spatial types and functions';
+
 
 --
 -- Name: user_role; Type: TYPE; Schema: public; Owner: slavik
@@ -104,8 +118,31 @@ CREATE TABLE public.users (
     phone_number character varying(255),
     registry_date timestamp(6) without time zone,
     active boolean DEFAULT true,
-    role character varying(255) NOT NULL
+    role character varying(255) NOT NULL,
+    location public.geography(Point,4326)
 );
+
+CREATE TABLE public.locations (
+    id SERIAL PRIMARY KEY,
+    photographer_id INTEGER NOT NULL,
+    name VARCHAR(255) NOT NULL,  -- Nombre de la ubicación (ciudad, barrio, etc.)
+    coordinates GEOGRAPHY(Point, 4326) NOT NULL,
+    CONSTRAINT fk_photographer FOREIGN KEY (photographer_id) REFERENCES public.users(id) ON DELETE CASCADE
+);
+
+ALTER TABLE public.locations OWNER TO slavik;
+
+
+CREATE FUNCTION enforce_photographer_role() RETURNS TRIGGER AS $$
+BEGIN
+    -- Verificar si el usuario tiene el rol 'photographer'
+    IF (SELECT role FROM users WHERE id = NEW.photographer_id) <> 'photographer' THEN
+        RAISE EXCEPTION 'Solo los fotógrafos pueden agregar ubicaciones';
+    END IF;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
 
 
 ALTER TABLE public.users OWNER TO slavik;
@@ -364,6 +401,14 @@ COPY public.service (id, photographer_id, name, description, price, style_id, av
 
 
 --
+-- Data for Name: spatial_ref_sys; Type: TABLE DATA; Schema: public; Owner: slavik
+--
+
+COPY public.spatial_ref_sys (srid, auth_name, auth_srid, srtext, proj4text) FROM stdin;
+\.
+
+
+--
 -- Data for Name: style; Type: TABLE DATA; Schema: public; Owner: slavik
 --
 
@@ -385,21 +430,21 @@ COPY public.style (id, name, description) FROM stdin;
 -- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: slavik
 --
 
-COPY public.users (id, name, email, password_hash, phone_number, registry_date, active, role) FROM stdin;
-1	Test	test@test.com	$2a$10$D1dkWK6pFK3WMSy0fu9ErucKQfHANRsvMKnV/YZpsbz5d7zZk6TkS	999999999	2024-11-01 20:17:04.562162	t	CLIENT
-2	test2	test2@test.com	$2a$10$KE01aHWR2MuFOjrir6KE9u/QsTuNfe9.VgLMNu799VKxKdMLE/QYS	666666666	2024-11-02 18:57:16.912571	t	PHOTOGRAPHER
-3	ejemplo	ejemplo@ejemplo.com	$2a$10$S.KXWQbV1FDhpKiYCH3n6uDWl1DEu.BWUcpb.i1al2Tk2hshYyVdu	999999999	2024-11-04 08:37:58.63661	t	PHOTOGRAPHER
-4	fotografo 1	1@fotografo.com	$2a$10$XOYCXfFcgCcsmxVm9nCfCOxEB0JPOIXVAc/ARIhR7kdi82L7JvFmO	999999999	2024-11-04 12:41:07.121033	t	PHOTOGRAPHER
-5	fotografo 2	2@fotografo.com	$2a$10$DE.CCKiTH3c57mOa8xhfB.vDhj0A1u17aeOCjFFeYAmwrqgVmxCVC	666666666	2024-11-04 12:41:42.308834	t	PHOTOGRAPHER
-6	fotografo 3	3@fotografo.com	$2a$10$1zH.k8qR9glYv7ZVFz6/q.8E4K6SMXTi4esQUP6Wi6hLpB68G18My	888888888	2024-11-04 12:42:17.245764	t	PHOTOGRAPHER
-7	fotografo 5	5@fotografo.com	$2a$10$EBcwvlLjjdED9pfLpbUzcuh/6xo.5z/TCTf3emq//dUIyjYv4Q7gm	999999999	2024-11-04 12:42:38.674279	t	PHOTOGRAPHER
-8	cliente 1	1@cliente.com	$2a$10$C9BGWQP87Vg/gweKiIn2r.OUq1uEfh.nw6jzttNdEHUeeLr8z.ISK	111111111	2024-11-04 12:43:32.733257	t	CLIENT
-9	cliente 2	2@cliente.com	$2a$10$rqMwkmj8ZDGGH/qcltgmRuAZX3A4hF0cTl95ePqtkC0LVNVc1Fvvi	222222222	2024-11-04 12:43:47.898367	t	CLIENT
-10	cliente 3	3@cliente.com	$2a$10$jV9Q5g7.SAVvwI82wUsFDulZcLbyMdIgNmtrrQF.I29T5H/BI6f0i	888888888	2024-11-04 12:44:07.02887	t	CLIENT
-11	Slavik	slavikiftodii5@gmail.com	$2a$10$brgP5GeTvPTJ5DgipwL6RuiCwiy0QI.bBbh5MmZ01fcU3rU.WcXkK	642239216	2024-11-09 12:29:47.518399	t	CLIENT
-15	test10	test10@test.com	$2a$10$qPJbXaaOwhYHQm8ocvdsEeuSYwk6/mSMg4BJMgigwuuzWwV9NdynC	111111111	2024-11-09 13:17:58.173932	t	CLIENT
-16	Test14	test14@test.com	$2a$10$E1/jlDL8asT3WSqtAMV3NOB.gySy6c8MQux6zSBF6qsBg.OCp0MfK	999999999	2024-11-09 13:35:48.76944	t	CLIENT
-17	test15	test15@test.com	$2a$10$vkHNcln9J3yMKfj.181xQOCHkTs1aCe1bRbb18uK4AN0R2Dpl2ISe	555555555	2024-11-09 13:36:24.278162	t	PHOTOGRAPHER
+COPY public.users (id, name, email, password_hash, phone_number, registry_date, active, role, location) FROM stdin;
+1	Test	test@test.com	$2a$10$D1dkWK6pFK3WMSy0fu9ErucKQfHANRsvMKnV/YZpsbz5d7zZk6TkS	999999999	2024-11-01 20:17:04.562162	t	CLIENT	\N
+3	ejemplo	ejemplo@ejemplo.com	$2a$10$S.KXWQbV1FDhpKiYCH3n6uDWl1DEu.BWUcpb.i1al2Tk2hshYyVdu	999999999	2024-11-04 08:37:58.63661	t	PHOTOGRAPHER	\N
+4	fotografo 1	1@fotografo.com	$2a$10$XOYCXfFcgCcsmxVm9nCfCOxEB0JPOIXVAc/ARIhR7kdi82L7JvFmO	999999999	2024-11-04 12:41:07.121033	t	PHOTOGRAPHER	\N
+5	fotografo 2	2@fotografo.com	$2a$10$DE.CCKiTH3c57mOa8xhfB.vDhj0A1u17aeOCjFFeYAmwrqgVmxCVC	666666666	2024-11-04 12:41:42.308834	t	PHOTOGRAPHER	\N
+6	fotografo 3	3@fotografo.com	$2a$10$1zH.k8qR9glYv7ZVFz6/q.8E4K6SMXTi4esQUP6Wi6hLpB68G18My	888888888	2024-11-04 12:42:17.245764	t	PHOTOGRAPHER	\N
+7	fotografo 5	5@fotografo.com	$2a$10$EBcwvlLjjdED9pfLpbUzcuh/6xo.5z/TCTf3emq//dUIyjYv4Q7gm	999999999	2024-11-04 12:42:38.674279	t	PHOTOGRAPHER	\N
+8	cliente 1	1@cliente.com	$2a$10$C9BGWQP87Vg/gweKiIn2r.OUq1uEfh.nw6jzttNdEHUeeLr8z.ISK	111111111	2024-11-04 12:43:32.733257	t	CLIENT	\N
+9	cliente 2	2@cliente.com	$2a$10$rqMwkmj8ZDGGH/qcltgmRuAZX3A4hF0cTl95ePqtkC0LVNVc1Fvvi	222222222	2024-11-04 12:43:47.898367	t	CLIENT	\N
+10	cliente 3	3@cliente.com	$2a$10$jV9Q5g7.SAVvwI82wUsFDulZcLbyMdIgNmtrrQF.I29T5H/BI6f0i	888888888	2024-11-04 12:44:07.02887	t	CLIENT	\N
+11	Slavik	slavikiftodii5@gmail.com	$2a$10$brgP5GeTvPTJ5DgipwL6RuiCwiy0QI.bBbh5MmZ01fcU3rU.WcXkK	642239216	2024-11-09 12:29:47.518399	t	CLIENT	\N
+15	test10	test10@test.com	$2a$10$qPJbXaaOwhYHQm8ocvdsEeuSYwk6/mSMg4BJMgigwuuzWwV9NdynC	111111111	2024-11-09 13:17:58.173932	t	CLIENT	\N
+16	Test14	test14@test.com	$2a$10$E1/jlDL8asT3WSqtAMV3NOB.gySy6c8MQux6zSBF6qsBg.OCp0MfK	999999999	2024-11-09 13:35:48.76944	t	CLIENT	\N
+17	test15	test15@test.com	$2a$10$vkHNcln9J3yMKfj.181xQOCHkTs1aCe1bRbb18uK4AN0R2Dpl2ISe	555555555	2024-11-09 13:36:24.278162	t	PHOTOGRAPHER	\N
+2	test2	test2@test.com	$2a$10$KE01aHWR2MuFOjrir6KE9u/QsTuNfe9.VgLMNu799VKxKdMLE/QYS	666666666	2024-11-02 18:57:16.912571	t	PHOTOGRAPHER	0101000020E6100000FE65F7E461A10DC0857CD0B359354440
 \.
 
 
@@ -484,6 +529,13 @@ ALTER TABLE ONLY public.service
 
 ALTER TABLE ONLY public.style
     ADD CONSTRAINT style_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: users_location_gist; Type: INDEX; Schema: public; Owner: slavik
+--
+
+CREATE INDEX users_location_gist ON public.users USING gist (location);
 
 
 --
