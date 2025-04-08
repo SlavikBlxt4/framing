@@ -1,4 +1,5 @@
 import { StyleSheet, Image, Text, View } from 'react-native';
+import Fonts from '@/constants/Fonts';
 
 export default function TabTwoScreen() {
   return (

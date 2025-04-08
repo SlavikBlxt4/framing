@@ -1,13 +1,14 @@
 import { StyleSheet, View, Text } from 'react-native';
 import { Colors } from '@/constants/Colors';
+import Fonts from '@/constants/Fonts'; // <-- Importante
 
 export default function HomeScreen() {
-  const colors = Colors.light; // ya que forzamos modo claro
+  const colors = Colors.light;
 
   return (
     <View style={styles.container}>
       <View style={[styles.box, { backgroundColor: colors.tint }]}>
-        <Text style={styles.label}>Primary</Text>
+        <Text style={[styles.label, { color: colors.background }]}>Primary</Text>
       </View>
       <View style={[styles.box, { backgroundColor: colors.background, borderColor: colors.text, borderWidth: 1 }]}>
         <Text style={[styles.label, { color: colors.text }]}>Background</Text>
@@ -16,7 +17,7 @@ export default function HomeScreen() {
         <Text style={[styles.label, { color: colors.background }]}>Text</Text>
       </View>
       <View style={[styles.box, { backgroundColor: colors.accent }]}>
-        <Text style={styles.label}>Accent</Text>
+        <Text style={[styles.label, { color: colors.text }]}>Accent</Text>
       </View>
     </View>
   );
@@ -38,7 +39,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   label: {
-    fontWeight: 'bold',
-    color: '#000',
+    fontFamily: Fonts.bold, // <-- Aquí está la clave
+    fontSize: 14,
   },
 });

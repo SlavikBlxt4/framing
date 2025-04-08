@@ -1,4 +1,5 @@
 import { View, Text } from 'react-native';
+import Fonts from '@/constants/Fonts';
 
 export default function InboxScreen() {
     return (

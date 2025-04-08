@@ -10,6 +10,7 @@ import {
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import TabBarIcon from './TabBarIcon';
 import { Colors } from '@/constants/Colors'; // Asegúrate de usar la exportación correcta
+import Fonts from '@/constants/Fonts';
 
 export default function MyCustomTabBar({ state, descriptors, navigation }: BottomTabBarProps) {
   const theme = useColorScheme();
@@ -76,7 +77,7 @@ export default function MyCustomTabBar({ state, descriptors, navigation }: Botto
                 styles.label,
                 {
                   color: isFocused ? colors.tabIconSelected : colors.tabIconDefault,
-                  fontWeight: isFocused ? 'bold' : 'normal',
+                  fontFamily: isFocused ? Fonts.bold : Fonts.regular,
                   opacity: textOpacity,
                   transform: [{ translateY: textTranslate }],
                 },
@@ -94,13 +95,14 @@ export default function MyCustomTabBar({ state, descriptors, navigation }: Botto
 const styles = StyleSheet.create({
   tabBar: {
     flexDirection: 'row',
-    height: 55,
+    height: 80,
     borderTopWidth: 1,
   },
   tabItem: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+    paddingTop: 10,
   },
   label: {
     fontSize: 12,
