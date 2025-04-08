@@ -1,9 +1,11 @@
-/**
- * Nueva barra de navegación, nos permite personalizar mucho mejor la barra de navegación.
- */
-
-import React from 'react';
-import { View, Text, Pressable, StyleSheet } from 'react-native';
+import React, { useEffect, useRef } from 'react';
+import {
+  View,
+  Text,
+  Pressable,
+  StyleSheet,
+  Animated,
+} from 'react-native';
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import TabBarIcon from './TabBarIcon';
 
@@ -15,7 +17,29 @@ export default function MyCustomTabBar({ state, descriptors, navigation }: Botto
         const label = options.title || route.name;
 
         const isFocused = state.index === index;
-        const color = isFocused ? 'white' : 'gray';
+        const iconTranslate = useRef(new Animated.Value(isFocused ? -6 : 6)).current;
+        const textOpacity = useRef(new Animated.Value(isFocused ? 1 : 0)).current;
+        const textTranslate = useRef(new Animated.Value(isFocused ? 0 : 8)).current;
+
+        useEffect(() => {
+          Animated.parallel([
+            Animated.timing(iconTranslate, {
+              toValue: isFocused ? -0 : 6, // icono se eleva
+              duration: 200,
+              useNativeDriver: true,
+            }),
+            Animated.timing(textOpacity, {
+              toValue: isFocused ? 1 : 0,
+              duration: 200,
+              useNativeDriver: true,
+            }),
+            Animated.timing(textTranslate, {
+              toValue: isFocused ? 0 : 8,
+              duration: 200,
+              useNativeDriver: true,
+            }),
+          ]).start();
+        }, [isFocused]);
 
         const onPress = () => {
           const event = navigation.emit({
@@ -35,10 +59,25 @@ export default function MyCustomTabBar({ state, descriptors, navigation }: Botto
             onPress={onPress}
             style={styles.tabItem}
           >
-            <TabBarIcon name={route.name as any} color={color} weight="regular" />
-            <Text style={[styles.label, isFocused && styles.activeLabel]}>
+            <Animated.View style={{ transform: [{ translateY: iconTranslate }] }}>
+            <TabBarIcon
+              name={route.name as any}
+              color={isFocused ? 'white' : 'gray'}
+              weight={isFocused ? 'fill' : 'regular'}
+            />
+
+            </Animated.View>
+            <Animated.Text
+              style={[
+                styles.label,
+                {
+                  opacity: textOpacity,
+                  transform: [{ translateY: textTranslate }],
+                },
+              ]}
+            >
               {label}
-            </Text>
+            </Animated.Text>
           </Pressable>
         );
       })}
@@ -58,15 +97,10 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    borderRightWidth: 1,
-    borderColor: '#333',
   },
   label: {
     color: 'white',
     fontSize: 12,
-    marginTop: 4,
-  },
-  activeLabel: {
-    fontWeight: 'bold',
+    marginTop: 2,
   },
 });

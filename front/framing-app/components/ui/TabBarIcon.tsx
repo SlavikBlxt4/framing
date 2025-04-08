@@ -21,24 +21,30 @@ type Props = {
 };
 
 export default function TabBarIcon({
-  name,
-  color,
-  size = 24,
-  weight = 'regular',
-  style = {},
-}: Props) {
-  const commonProps = { color, size, weight, style };
-
-  switch (name) {
-    case 'index':
-      return <House {...commonProps} />;
-    case 'explore':
-      return <Compass {...commonProps} />;
-    case 'inbox':
-      return <Tray {...commonProps} />;
-    case 'profile':
-      return <User {...commonProps} />;
-    default:
-      return null;
+    name,
+    color,
+    size = 24,
+    weight = 'regular',
+    style = {},
+  }: Props) {
+    const commonProps = {
+      size,
+      weight,
+      color,
+      style: [{ color, fill: color }, style],
+    };
+  
+    switch (name) {
+      case 'index':
+        return <House {...commonProps} />;
+      case 'explore':
+        return <Compass {...commonProps} />;
+      case 'inbox':
+        return <Tray {...commonProps} />;
+      case 'profile':
+        return <User {...commonProps} />;
+      default:
+        return null;
+    }
   }
-}
+  

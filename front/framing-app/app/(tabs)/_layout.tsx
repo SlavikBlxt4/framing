@@ -20,7 +20,7 @@ export default function TabLayout() {
       />
       <Tabs.Screen
         name="inbox"
-        options={{ title: 'Inbox' }}
+        options={{ title: 'Recibidos' }}
       />
       <Tabs.Screen
         name="profile"
