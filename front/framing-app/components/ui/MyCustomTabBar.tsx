@@ -1,7 +1,11 @@
-// components/ui/MyCustomTabBar.tsx
+/**
+ * Nueva barra de navegación, nos permite personalizar mucho mejor la barra de navegación.
+ */
+
 import React from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
+import TabBarIcon from './TabBarIcon';
 
 export default function MyCustomTabBar({ state, descriptors, navigation }: BottomTabBarProps) {
   return (
@@ -11,6 +15,7 @@ export default function MyCustomTabBar({ state, descriptors, navigation }: Botto
         const label = options.title || route.name;
 
         const isFocused = state.index === index;
+        const color = isFocused ? 'white' : 'gray';
 
         const onPress = () => {
           const event = navigation.emit({
@@ -30,7 +35,7 @@ export default function MyCustomTabBar({ state, descriptors, navigation }: Botto
             onPress={onPress}
             style={styles.tabItem}
           >
-            <View style={styles.icon} />
+            <TabBarIcon name={route.name as any} color={color} weight="regular" />
             <Text style={[styles.label, isFocused && styles.activeLabel]}>
               {label}
             </Text>
@@ -56,19 +61,12 @@ const styles = StyleSheet.create({
     borderRightWidth: 1,
     borderColor: '#333',
   },
-  icon: {
-    width: 28,
-    height: 28,
-    backgroundColor: 'gray',
-    borderRadius: 4,
-    marginBottom: 4,
-  },
   label: {
     color: 'white',
     fontSize: 12,
+    marginTop: 4,
   },
   activeLabel: {
-    color: 'white',
     fontWeight: 'bold',
   },
 });

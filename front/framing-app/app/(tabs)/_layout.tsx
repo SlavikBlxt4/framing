@@ -1,3 +1,7 @@
+/**
+ * Desde esta pantalla solo llamaremos a la nueva barra de navegación y le pasaremos las pantallas que debe mostrar. 
+ */
+
 import MyCustomTabBar from '@/components/ui/MyCustomTabBar';
 import { Tabs } from 'expo-router';
 import React from 'react';
@@ -13,6 +17,14 @@ export default function TabLayout() {
       <Tabs.Screen
         name="explore"
         options={{ title: 'Explorar' }}
+      />
+      <Tabs.Screen
+        name="inbox"
+        options={{ title: 'Inbox' }}
+      />
+      <Tabs.Screen
+        name="profile"
+        options={{ title: 'Perfil' }}
       />
     </Tabs>
   );
