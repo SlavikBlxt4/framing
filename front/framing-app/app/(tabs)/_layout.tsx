@@ -12,19 +12,19 @@ export default function TabLayout() {
     <Tabs tabBar={(props) => <MyCustomTabBar {...props} />}>
       <Tabs.Screen
         name="index"
-        options={{ title: 'Inicio' }}
+        options={{ title: 'Inicio', headerShown: false }}
       />
       <Tabs.Screen
         name="explore"
-        options={{ title: 'Explorar' }}
+        options={{ title: 'Explorar', headerShown: false }}
       />
       <Tabs.Screen
         name="inbox"
-        options={{ title: 'Recibidos' }}
+        options={{ title: 'Recibidos', headerShown: false }}
       />
       <Tabs.Screen
         name="profile"
-        options={{ title: 'Perfil' }}
+        options={{ title: 'Perfil', headerShown: false }}
       />
     </Tabs>
   );
