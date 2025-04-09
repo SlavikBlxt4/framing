@@ -1,44 +1,32 @@
-/**
- * Pantalla de Inicio (simbolo de casa en el tabBar)
- */
-
 import { StyleSheet, View, Text, ScrollView } from 'react-native';
 import { Colors } from '@/constants/Colors';
 import Fonts from '@/constants/Fonts';
 import HomeWelcome from '@/components/sections/HomeWelcome';
 import SesionesContratadas from '@/components/sections/SesionesContratadas';
 
-
 export default function HomeScreen() {
   const colors = Colors.light;
 
   return (
-    <ScrollView>
-        <View style={styles.container}>
-        {/* Header superior con mensaje de bienvenida, foto de perfil y barra de búsqueda */}
+    <ScrollView contentContainerStyle={styles.scrollViewContainer}>
+      <View style={styles.container}>
         <HomeWelcome username=""/>
-        {/* Seccion de las sesiones contratadas y la reserva más próxima */}
-        <SesionesContratadas /> 
-        <SesionesContratadas /> 
-        <SesionesContratadas /> 
-        <SesionesContratadas /> 
-        <SesionesContratadas /> 
-        <SesionesContratadas /> 
-        <SesionesContratadas /> 
-        <SesionesContratadas /> 
-        <SesionesContratadas /> 
+        <SesionesContratadas />
       </View>
     </ScrollView>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
+  scrollViewContainer: {
+    flexGrow: 1, // Hace que el contenido se expanda para llenar la pantalla
+  },
   container: {
     flex: 1,
     padding: 20,
     justifyContent: 'flex-start',
     alignItems: 'center',
-    backgroundColor: '#fff',
+    backgroundColor: '#fff', // Fondo blanco
     gap: 20,
   },
   box: {

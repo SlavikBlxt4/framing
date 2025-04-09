@@ -6,7 +6,7 @@
 import { StyleSheet, View, Text, Pressable } from 'react-native'
 import { Colors } from '@/constants/Colors';
 import Fonts from '@/constants/Fonts';
-import TarjetaSesiones from '@/components/ui/TarjetaSesiones';
+import TarjetaSesiones from '@/components/framing/TarjetaSesiones';
 import { useRouter } from 'expo-router';
 import { ArrowRight, Bookmark } from 'phosphor-react-native';
 

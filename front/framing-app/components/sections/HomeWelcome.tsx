@@ -2,8 +2,8 @@ import { StyleSheet, View, Text } from 'react-native';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import Fonts from '@/constants/Fonts';
-import UserProfilePicture from '@/components/ui/UserPfp';
-import SearchBar from '../utils/BarraDeBusqueda';
+import UserProfilePicture from '@/components/framing/UserPfp';
+import SearchBar from '../framing/BarraDeBusqueda';
 
 type Props = {
     username?: string; // Si no hay usuario, se mostrará "Iniciar sesión"
