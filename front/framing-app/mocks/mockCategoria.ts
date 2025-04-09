@@ -19,5 +19,9 @@ export const categorias = [
       id: '5',
       nombreCategoria: 'Eventos',
     },
+    {
+      id: '6',
+      nombreCategoria: 'Prueba',
+    },
   ];
   
