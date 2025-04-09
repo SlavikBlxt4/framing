@@ -10,8 +10,8 @@ type Props = {
 }
 
 export default function TarjetaSesiones({ nombreEstudio, fechaSesion }: Props) {
-    const estudio = nombreEstudio || 'Estudio fotográfico';
-    let fechaFormateada = 'Próximamente';
+    const estudio = nombreEstudio || '[Estudio fotográfico]';
+    let fechaFormateada = 'Sin fecha';
     if (fechaSesion) {
         try {
             const fechaParseada = parse(fechaSesion, 'dd/MM/yyyy', new Date());
