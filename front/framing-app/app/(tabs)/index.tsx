@@ -1,9 +1,8 @@
 import { StyleSheet, View, Text } from 'react-native';
 import { Colors } from '@/constants/Colors';
-import Fonts from '@/constants/Fonts'; // <-- Importante
-import UserProfilePicture from '@/components/ui/UserPfp';
+import Fonts from '@/constants/Fonts';
 import HomeWelcome from '@/components/sections/HomeWelcome';
-import SearchBar from '@/components/utils/BarraDeBusqueda';
+import SesionesContratadas from '@/components/sections/SesionesContratadas';
 
 export default function HomeScreen() {
   const colors = Colors.light;
@@ -11,7 +10,7 @@ export default function HomeScreen() {
   return (
     <View style={styles.container}>
       <HomeWelcome username=""/>
-      <SearchBar />
+      <SesionesContratadas />
     </View>
   );
 }
@@ -23,6 +22,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     alignItems: 'center',
     backgroundColor: '#fff',
+    gap: 20,
   },
   box: {
     width: 120,

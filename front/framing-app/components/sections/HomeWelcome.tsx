@@ -3,6 +3,7 @@ import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import Fonts from '@/constants/Fonts';
 import UserProfilePicture from '@/components/ui/UserPfp';
+import SearchBar from '../utils/BarraDeBusqueda';
 
 type Props = {
     username?: string; // Si no hay usuario, se mostrará "Iniciar sesión"
@@ -12,22 +13,29 @@ export default function HomeWelcome({ username }: Props ) {
     const today = format(new Date(), "d 'de' MMMM 'de' yyyy", { locale: es});
 
     return (
-        <View style={styles.container}>
-            <View>
-                <Text style={styles.date}>{today}</Text>
-                <Text style={styles.welcome}>
-                    Bienvenido, <Text style={styles.username}>
-                        {username ? username: 'Inicia Sesión'}
+        <View style={styles.header}>
+            <View style={styles.container}>
+                <View>
+                    <Text style={styles.date}>{today}</Text>
+                    <Text style={styles.welcome}>
+                        Bienvenido, <Text style={styles.username}>
+                            {username ? username: 'Inicia Sesión'}
+                        </Text>
                     </Text>
-                </Text>
-            </View>
+                </View>
 
-            <UserProfilePicture />
+                <UserProfilePicture />
+            </View>
+            <SearchBar />
         </View>
     )
 }
 
 const styles = StyleSheet.create({
+    header: {
+        width: '100%',
+        flexDirection: 'column',
+    },
     container: {
         width: '100%',
         flexDirection: 'row',
