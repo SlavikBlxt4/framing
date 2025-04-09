@@ -15,7 +15,7 @@ export default function SearchBar() {
                 placeholderTextColor={Colors.light.tint}
                 style={styles.input}
             />
-            <MagnifyingGlass size={20} color={Colors.light.tint} weight="bold"/>
+            <MagnifyingGlass size={20} color={Colors.light.tint} weight="duotone"/>
         </View>
     )
 }

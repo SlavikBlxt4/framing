@@ -8,7 +8,7 @@ import { Colors } from '@/constants/Colors';
 import Fonts from '@/constants/Fonts';
 import TarjetaSesiones from '@/components/ui/TarjetaSesiones';
 import { useRouter } from 'expo-router';
-import { ArrowRight } from 'phosphor-react-native';
+import { ArrowRight, Bookmark } from 'phosphor-react-native';
 
 export default function SesionesContratadas() {
     const router = useRouter();
@@ -31,6 +31,7 @@ export default function SesionesContratadas() {
             {/* Manda al usuario a la pantalla de Detalles de una reserva con el objeto generado */}
             <Pressable style={styles.button} onPress={() => router.push({pathname: '/reservas/DetalleReserva', params: reserva,})}>
                 <Text style={styles.buttonText}>Ver reserva</Text>
+                <Bookmark size={16} color={Colors.light.background} weight='fill'/>
             </Pressable>
         </View>
     )
@@ -53,6 +54,9 @@ const styles = StyleSheet.create({
     },
     button: {
         alignSelf: 'flex-end',
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 10,
         backgroundColor: Colors.light.tint,
         paddingHorizontal: 20,
         paddingVertical: 5,

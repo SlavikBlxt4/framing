@@ -42,7 +42,7 @@ export default function RootLayout() {
       {/* Fondo blanco también detrás del notch */}
       <SafeAreaView style={styles.safeArea}>
         <ThemeProvider value={DefaultTheme}>
-          <Stack>
+          <Stack screenOptions={{animation: 'none', headerShown: true, headerTitle: '', headerTransparent: true, headerShadowVisible: false, headerBackTitleVisible: false}}>
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
             <Stack.Screen name="+not-found" />
           </Stack>
