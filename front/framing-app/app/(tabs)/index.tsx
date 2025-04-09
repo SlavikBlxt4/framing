@@ -3,6 +3,8 @@ import { Colors } from '@/constants/Colors';
 import Fonts from '@/constants/Fonts';
 import HomeWelcome from '@/components/sections/HomeWelcome';
 import SesionesContratadas from '@/components/sections/SesionesContratadas';
+import { categorias } from '@/mocks/mockCategoria';
+import ListarHorizontalFotografos from '@/components/sections/ListaHorizontalFotografos';
 
 export default function HomeScreen() {
   const colors = Colors.light;
@@ -10,8 +12,15 @@ export default function HomeScreen() {
   return (
     <ScrollView contentContainerStyle={styles.scrollViewContainer}>
       <View style={styles.container}>
-        <HomeWelcome username=""/>
+        <HomeWelcome username="" />
         <SesionesContratadas />
+        {categorias.map((cat) => (
+          <ListarHorizontalFotografos
+            key={cat.id}
+            categoria={cat.nombreCategoria}
+          />
+        ))}
+        {/* <ListarHorizontalFotografos categoria='Exterior'/> */}
       </View>
     </ScrollView>
   );
@@ -25,10 +34,9 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
     justifyContent: 'flex-start',
-    alignItems: 'center',
-    backgroundColor: '#fff', // Fondo blanco
+    backgroundColor: '#fff',
     gap: 20,
-  },
+  },  
   box: {
     width: 120,
     height: 120,
