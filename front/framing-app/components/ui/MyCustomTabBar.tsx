@@ -69,7 +69,7 @@ export default function MyCustomTabBar({ state, descriptors, navigation }: Botto
               <TabBarIcon
                 name={route.name as any}
                 color={isFocused ? colors.tabIconSelected : colors.tabIconDefault}
-                weight={isFocused ? 'fill' : 'regular'}
+                weight={isFocused ? 'duotone' : 'regular'}
               />
             </Animated.View>
             <Animated.Text
