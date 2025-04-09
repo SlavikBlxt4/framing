@@ -1,3 +1,7 @@
+/**
+ * Pantalla de Inicio (simbolo de casa en el tabBar)
+ */
+
 import { StyleSheet, View, Text } from 'react-native';
 import { Colors } from '@/constants/Colors';
 import Fonts from '@/constants/Fonts';
@@ -9,8 +13,8 @@ export default function HomeScreen() {
 
   return (
     <View style={styles.container}>
-      <HomeWelcome username=""/>
-      <SesionesContratadas />
+      <HomeWelcome username=""/> {/* Header superior con mensaje de bienvenida, foto de perfil y barra de búsqueda */}
+      <SesionesContratadas /> {/* Seccion de las sesiones contratadas y la reserva más próxima */}
     </View>
   );
 }

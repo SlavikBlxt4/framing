@@ -10,6 +10,7 @@ type Props = {
 }
 
 export default function HomeWelcome({ username }: Props ) {
+    // Se muestra la fecha real en formato "x de mes de 20xx" a través del "es" se especifica el lenguaje del mes
     const today = format(new Date(), "d 'de' MMMM 'de' yyyy", { locale: es});
 
     return (

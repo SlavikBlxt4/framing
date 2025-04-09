@@ -1,3 +1,8 @@
+/**
+ * Seccion presente en la pantalla de inicio, muestra al usuario su sesión más próxima y lo 
+ * redirige a pantallas de interes relacionadas con el tema
+ */
+
 import { StyleSheet, View, Text, Pressable } from 'react-native'
 import { Colors } from '@/constants/Colors';
 import Fonts from '@/constants/Fonts';
@@ -7,11 +12,12 @@ import { ArrowRight } from 'phosphor-react-native';
 
 export default function SesionesContratadas() {
     const router = useRouter();
-    const reserva = { id: '123', nombre: 'Estudio Fotográfico' };
+    const reserva = { id: '123', nombre: 'Estudio Fotográfico' }; // Objeto de prueba para mandar a DetalleReserva
     
     return (
         <View style={styles.container}>
             {/* Título con flecha */}
+            {/* Se manda al usuario a la pantalla de Gestor de Reservas*/}
             <Pressable style={styles.header} onPress={() => router.push('/reservas/GestorReservas')}>
                 <Text style={styles.title}>Sesiones contratadas</Text>
                 <ArrowRight size={20} color={Colors.light.text} weight="bold"/>
@@ -21,6 +27,8 @@ export default function SesionesContratadas() {
             <TarjetaSesiones />
 
             {/* Botón "Ver Reserva" */}
+
+            {/* Manda al usuario a la pantalla de Detalles de una reserva con el objeto generado */}
             <Pressable style={styles.button} onPress={() => router.push({pathname: '/reservas/DetalleReserva', params: reserva,})}>
                 <Text style={styles.buttonText}>Ver reserva</Text>
             </Pressable>

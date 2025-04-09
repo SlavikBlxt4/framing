@@ -3,6 +3,7 @@ import React from 'react';
 import { useLocalSearchParams } from 'expo-router';
 
 export default function DetalleReserva() {
+  // Se obtienen los detalles del objeto que se ha enviado en el botón "Ver Reserva"
   const { id, nombre } = useLocalSearchParams();
 
   return (

@@ -23,7 +23,7 @@ export default function TarjetaSesiones({ nombreEstudio, fechaSesion }: Props) {
 
     return (
         <ImageBackground
-            source={require('@/assets/images/placeholder_estudio.jpg')} // Cambia por la imagen que quieras
+            source={require('@/assets/images/placeholder_estudio.jpg')}
             style={styles.container}
             imageStyle={styles.image} // esto aplica el borderRadius a la imagen
             >

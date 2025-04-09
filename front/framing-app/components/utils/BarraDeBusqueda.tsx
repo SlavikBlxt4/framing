@@ -1,4 +1,8 @@
-import { StyleSheet, View, Text, TextInput } from 'react-native';
+/**
+ * Barra de búsqueda reutilizable (Falta aplicar funcionalidad real)
+ */
+
+import { StyleSheet, View, TextInput } from 'react-native';
 import { MagnifyingGlass } from 'phosphor-react-native';
 import { Colors } from '@/constants/Colors';
 import Fonts from '@/constants/Fonts';

@@ -8,7 +8,6 @@ import {
   Compass,
   Tray,
   User,
-  // agrega más íconos si los necesitas
 } from 'phosphor-react-native';
 import { ViewStyle } from 'react-native';
 
@@ -35,6 +34,7 @@ export default function TabBarIcon({
     };
   
     switch (name) {
+      // Ignorar errores
       case 'index':
         return <House {...commonProps} />;
       case 'explore':

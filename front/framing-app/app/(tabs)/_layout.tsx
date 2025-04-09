@@ -6,6 +6,7 @@ import Fonts from '@/constants/Fonts';
 export default function TabLayout() {
   return (
     <Tabs
+      // Ignorar error
       tabBar={(props) => <MyCustomTabBar {...props} />}
       screenOptions={{
         headerTitleStyle: {
