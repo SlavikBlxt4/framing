@@ -1,26 +1,33 @@
-import { View, Text, StyleSheet } from 'react-native';
-import React from 'react';
 import { useLocalSearchParams } from 'expo-router';
+import { useNavigation } from '@react-navigation/native'; // <- ESTE
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { View, Text, StyleSheet } from 'react-native';
+import { categorias } from '@/mocks/mockCategoria';
+import GridFotografos from '@/components/sections/GridFotografos';
+import { useLayoutEffect } from 'react';
 
-export default function DetalleReserva() {
-  // Se obtienen los detalles del objeto que se ha enviado en el botón "Ver Reserva"
-  const { id, nombre } = useLocalSearchParams();
+export default function ExplorarCategoriaScreen() {
+  const { categoriaId } = useLocalSearchParams<{ categoriaId: string }>();
+  const navigation = useNavigation();
+
+  const nombreCategoria = categorias.find(c => c.id === Number(categoriaId))?.nombreCategoria || '';
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerTitle: `Fotógrafos de ${nombreCategoria}`,
+    });
+  }, [navigation, nombreCategoria]);
 
   return (
-    <View style={styles.container}>
-      <Text>Explorar categoría funciona</Text>
-    </View>
+    <SafeAreaView style={styles.safeArea}>
+      <GridFotografos categoriaId={categoriaId ? Number(categoriaId) : undefined} />
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  safeArea: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  text: {
-    fontSize: 18,
-    fontWeight: 'bold',
+    backgroundColor: '#fff',
   },
 });

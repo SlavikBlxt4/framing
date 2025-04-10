@@ -25,7 +25,10 @@ export default function ListarHorizontalFotografos({ categoria }: Props) {
         <View style={styles.container}>
             <Pressable
             style={styles.header}
-            onPress={() => router.push('/explorar/explorarCategoria')}
+            onPress={() => router.push({
+              pathname: '/explorar/explorarCategoria',
+              params: { categoriaId: categoriaId.toString() },
+            })}            
             >
             <Text style={styles.title}>Fotógrafos de {categoria}</Text>
             <ArrowRight size={20} color={Colors.light.text} weight="bold" />
