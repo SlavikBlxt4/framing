@@ -5,6 +5,7 @@ import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { SafeAreaView, StyleSheet } from 'react-native';
+import { PaperProvider } from 'react-native-paper'; // <- Importado aquí
 
 import { useColorScheme } from '@/hooks/useColorScheme';
 
@@ -15,7 +16,6 @@ import {
   Poppins_700Bold,
 } from '@expo-google-fonts/poppins';
 
-// Evitar que se cierre el splash automáticamente
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
@@ -39,17 +39,26 @@ export default function RootLayout() {
 
   return (
     <SafeAreaProvider>
-      {/* Fondo blanco también detrás del notch */}
       <SafeAreaView style={styles.safeArea}>
-        <ThemeProvider value={DefaultTheme}>
-          <Stack screenOptions={{animation: 'none', headerShown: true, headerTitle: '', headerTransparent: true, headerShadowVisible: false, headerBackTitleVisible: false}}>
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            <Stack.Screen name="+not-found" />
-          </Stack>
+        <PaperProvider>
+          <ThemeProvider value={DefaultTheme}>
+            <Stack
+              screenOptions={{
+                animation: 'none',
+                headerShown: true,
+                headerTitle: '',
+                headerTransparent: true,
+                headerShadowVisible: false,
+                headerBackTitleVisible: false,
+              }}
+            >
+              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+              <Stack.Screen name="+not-found" />
+            </Stack>
 
-          {/* Status bar con fondo blanco e íconos oscuros */}
-          <StatusBar style="dark" backgroundColor="#FFFFFF" translucent={true} />
-        </ThemeProvider>
+            <StatusBar style="dark" backgroundColor="#FFFFFF" translucent />
+          </ThemeProvider>
+        </PaperProvider>
       </SafeAreaView>
     </SafeAreaProvider>
   );
@@ -58,6 +67,6 @@ export default function RootLayout() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#FFFFFF', // Fondo blanco para el notch y la app
+    backgroundColor: '#FFFFFF',
   },
 });

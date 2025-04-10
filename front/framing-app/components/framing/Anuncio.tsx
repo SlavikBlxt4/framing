@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import { Colors } from '@/constants/Colors';
 import Fonts from '@/constants/Fonts';
+import AnuncioDrawer from '@/components/framing/AnuncioDrawer'
 
 type Props = {
   imagenUrl?: string;
@@ -24,6 +25,7 @@ export default function Anuncio({ imagenUrl, link }: Props) {
 
   return (
     <View style={styles.container}>
+      <AnuncioDrawer visible={showPopup} onClose={() => setShowPopup(false)}></AnuncioDrawer>
       <Pressable style={styles.adContainer} onPress={handlePress}>
         <Image
           source={imagenUrl ? { uri: imagenUrl } : require('@/assets/images/placeholder_ad.png')}

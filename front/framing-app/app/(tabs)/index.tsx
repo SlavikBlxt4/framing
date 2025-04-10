@@ -8,8 +8,6 @@ import ListarHorizontalFotografos from '@/components/sections/ListaHorizontalFot
 import Anuncio from '@/components/framing/Anuncio';
 
 export default function HomeScreen() {
-  const colors = Colors.light;
-
   return (
     <ScrollView contentContainerStyle={styles.scrollViewContainer}>
       <View style={styles.container}>
