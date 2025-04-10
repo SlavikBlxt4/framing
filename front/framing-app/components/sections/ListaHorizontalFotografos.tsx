@@ -33,6 +33,7 @@ export default function ListarHorizontalFotografos({ categoria }: Props) {
 
             <FlatList
             data={fotografosFiltrados}
+            style={styles.list}
             keyExtractor={(item) => item.id}
             horizontal
             showsHorizontalScrollIndicator={false}
@@ -57,7 +58,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginHorizontal: 12,
     marginBottom: 12,
   },
   title: {
@@ -65,4 +65,5 @@ const styles = StyleSheet.create({
     fontSize: 20,
     color: Colors.light.text,
   },
+  list: {}
 });

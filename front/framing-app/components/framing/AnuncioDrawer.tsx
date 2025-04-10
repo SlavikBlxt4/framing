@@ -11,6 +11,7 @@ import { Button, Portal } from 'react-native-paper';
 import { X } from 'phosphor-react-native';
 import { Colors } from '@/constants/Colors';
 import Fonts from '@/constants/Fonts';
+import { useUser } from '@/context/UserContext';
 
 const SCREEN_HEIGHT = Dimensions.get('window').height;
 
@@ -23,6 +24,7 @@ export default function PremiumDrawer({ visible, onClose }: Props) {
   const translateY = useRef(new Animated.Value(SCREEN_HEIGHT)).current;
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const [isMounted, setIsMounted] = useState(false);
+  const { setPremiumUser } = useUser();
 
   useEffect(() => {
     if (visible) {
@@ -86,7 +88,7 @@ export default function PremiumDrawer({ visible, onClose }: Props) {
               mode="contained"
               style={styles.botonSub}
               labelStyle={styles.botonSubLabel}
-              onPress={() => console.log('Suscripción iniciada')}
+              onPress={() => {setPremiumUser(true); onClose();}}
             >
               Quiero Suscribirme
             </Button>

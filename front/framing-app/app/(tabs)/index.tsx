@@ -1,29 +1,48 @@
-import { StyleSheet, View, Text, ScrollView } from 'react-native';
-import { Colors } from '@/constants/Colors';
-import Fonts from '@/constants/Fonts';
+import { StyleSheet, View, ScrollView } from 'react-native';
 import HomeWelcome from '@/components/sections/HomeWelcome';
 import SesionesContratadas from '@/components/sections/SesionesContratadas';
-import { categorias } from '@/mocks/mockCategoria';
 import ListarHorizontalFotografos from '@/components/sections/ListaHorizontalFotografos';
-import Anuncio from '@/components/framing/Anuncio';
+import Anuncio from '@/components/sections/Anuncio';
+import { categorias } from '@/mocks/mockCategoria';
+import { Colors } from '@/constants/Colors';
+import Fonts from '@/constants/Fonts';
+import { useMemo } from 'react';
 
 export default function HomeScreen() {
+  // Generamos una posición aleatoria válida solo una vez
+  const contenido = useMemo(() => {
+    // El índice debe estar entre 1 y categorias.length - 2 (nunca primero ni último)
+    const anuncioIndex = Math.floor(Math.random() * (categorias.length - 2)) + 1;
+
+    return categorias.flatMap((cat, index) => {
+      const section = (
+        <ListarHorizontalFotografos
+          key={`categoria-${cat.id}`}
+          categoria={cat.nombreCategoria}
+        />
+      );
+
+      if (index === anuncioIndex) {
+        return [
+          section,
+          <Anuncio
+            key="anuncio-home"
+            imagenUrl=""
+            link="https://tuanuncio.com"
+          />,
+        ];
+      }
+
+      return [section];
+    });
+  }, []);
+
   return (
     <ScrollView contentContainerStyle={styles.scrollViewContainer}>
       <View style={styles.container}>
         <HomeWelcome username="" />
         <SesionesContratadas />
-        <Anuncio
-          imagenUrl=""
-          link="https://tuanuncio.com"
-        />
-        {categorias.map((cat) => (
-          <ListarHorizontalFotografos
-            key={cat.id}
-            categoria={cat.nombreCategoria}
-          />
-        ))}
-        {/* <ListarHorizontalFotografos categoria='Exterior'/> */}
+        {contenido}
       </View>
     </ScrollView>
   );
@@ -31,7 +50,7 @@ export default function HomeScreen() {
 
 const styles = StyleSheet.create({
   scrollViewContainer: {
-    flexGrow: 1, // Hace que el contenido se expanda para llenar la pantalla
+    flexGrow: 1,
   },
   container: {
     flex: 1,
@@ -39,7 +58,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     backgroundColor: '#fff',
     gap: 20,
-  },  
+  },
   box: {
     width: 120,
     height: 120,

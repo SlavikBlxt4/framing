@@ -10,6 +10,7 @@ import {
 import { Colors } from '@/constants/Colors';
 import Fonts from '@/constants/Fonts';
 import AnuncioDrawer from '@/components/framing/AnuncioDrawer'
+import { useUser } from '@/context/UserContext';
 
 type Props = {
   imagenUrl?: string;
@@ -18,6 +19,9 @@ type Props = {
 
 export default function Anuncio({ imagenUrl, link }: Props) {
   const [showPopup, setShowPopup] = useState(false);
+  const { isPremiumUser } = useUser();
+
+  if (isPremiumUser) return null;
 
   const handlePress = () => {
     if (link) Linking.openURL(link);
@@ -45,12 +49,13 @@ const styles = StyleSheet.create({
   container: {
     gap: 8,
     width: '100%',
+    marginTop: 10,
   },
   adContainer: {
     width: '100%',
     aspectRatio: 16 / 9,
     backgroundColor: Colors.light.accent,
-    borderWidth: 1,
+    borderWidth: 2,
     borderColor: Colors.light.tint,
     borderRadius: 5,
     justifyContent: 'center',

@@ -15,6 +15,7 @@ import {
   Poppins_600SemiBold,
   Poppins_700Bold,
 } from '@expo-google-fonts/poppins';
+import { UserProvider } from '@/context/UserContext';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -38,29 +39,31 @@ export default function RootLayout() {
   }
 
   return (
-    <SafeAreaProvider>
-      <SafeAreaView style={styles.safeArea}>
-        <PaperProvider>
-          <ThemeProvider value={DefaultTheme}>
-            <Stack
-              screenOptions={{
-                animation: 'none',
-                headerShown: true,
-                headerTitle: '',
-                headerTransparent: true,
-                headerShadowVisible: false,
-                headerBackTitleVisible: false,
-              }}
-            >
-              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-              <Stack.Screen name="+not-found" />
-            </Stack>
+    <UserProvider>
+      <SafeAreaProvider>
+        <SafeAreaView style={styles.safeArea}>
+          <PaperProvider>
+            <ThemeProvider value={DefaultTheme}>
+              <Stack
+                screenOptions={{
+                  animation: 'none',
+                  headerShown: true,
+                  headerTitle: '',
+                  headerTransparent: true,
+                  headerShadowVisible: false,
+                  headerBackTitleVisible: false,
+                }}
+              >
+                <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+                <Stack.Screen name="+not-found" />
+              </Stack>
 
-            <StatusBar style="dark" backgroundColor="#FFFFFF" translucent />
-          </ThemeProvider>
-        </PaperProvider>
-      </SafeAreaView>
-    </SafeAreaProvider>
+              <StatusBar style="dark" backgroundColor="#FFFFFF" translucent />
+            </ThemeProvider>
+          </PaperProvider>
+        </SafeAreaView>
+      </SafeAreaProvider>
+    </UserProvider>
   );
 }
 
