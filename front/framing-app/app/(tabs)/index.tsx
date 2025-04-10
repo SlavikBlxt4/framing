@@ -16,9 +16,8 @@ export default function HomeScreen() {
         <HomeWelcome username="" />
         <SesionesContratadas />
         <Anuncio
-          imagenUrl="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS-s7br3hC63f1o-cTLo3qt4_XWb8VuuD8VeA&s"
+          imagenUrl=""
           link="https://tuanuncio.com"
-          onRemoveAds={() => console.log("Eliminar anuncios activado")}
         />
         {categorias.map((cat) => (
           <ListarHorizontalFotografos
