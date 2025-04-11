@@ -1,4 +1,4 @@
-import { StyleSheet, View, ScrollView } from 'react-native';
+import { StyleSheet, View, ScrollView, Text } from 'react-native';
 import HomeWelcome from '@/components/sections/HomeWelcome';
 import SesionesContratadas from '@/components/sections/SesionesContratadas';
 import ListarHorizontalFotografos from '@/components/sections/ListaHorizontalFotografos';
@@ -54,7 +54,8 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    padding: 20,
+    paddingHorizontal: 20,
+    paddingBottom: 20,
     justifyContent: 'flex-start',
     backgroundColor: '#fff',
     gap: 20,
