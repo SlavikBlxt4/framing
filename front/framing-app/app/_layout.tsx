@@ -47,10 +47,12 @@ export default function RootLayout() {
               <Stack
                 screenOptions={{
                   animation: 'none',
-                  headerShown: false,
+                  headerShown: true,
                   headerTitle: '',
                   headerShadowVisible: false,
                   headerBackTitleVisible: false,
+                  headerStyle: {
+                  }
                 }}
               >
                 <Stack.Screen name="(tabs)" options={{ headerShown: false }} />

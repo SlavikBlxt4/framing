@@ -1,12 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import {
-  Animated,
-  Dimensions,
-  Pressable,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import {Animated, Dimensions, Pressable, StyleSheet, Text, View, } from 'react-native';
 import { Button, Portal } from 'react-native-paper';
 import { X } from 'phosphor-react-native';
 import { Colors } from '@/constants/Colors';

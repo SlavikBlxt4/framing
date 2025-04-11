@@ -1,6 +1,5 @@
 import { useLocalSearchParams } from 'expo-router';
-import { useNavigation } from '@react-navigation/native'; // <- ESTE
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { useNavigation } from '@react-navigation/native';
 import { View, Text, StyleSheet } from 'react-native';
 import { categorias } from '@/mocks/mockCategoria';
 import GridFotografos from '@/components/sections/GridFotografos';
@@ -19,15 +18,9 @@ export default function ExplorarCategoriaScreen() {
   }, [navigation, nombreCategoria]);
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <GridFotografos categoriaId={categoriaId ? Number(categoriaId) : undefined} />
-    </SafeAreaView>
+    <GridFotografos />
   );
 }
 
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: '#fff',
-  },
 });

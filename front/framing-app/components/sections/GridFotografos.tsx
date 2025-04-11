@@ -35,10 +35,7 @@ export default function GridFotografos({ categoriaId }: Props) {
       numColumns={2}
       columnWrapperStyle={styles.row}
       showsVerticalScrollIndicator={false}
-      contentContainerStyle={[
-        styles.content,
-        { paddingTop: insets.top + 20 },
-      ]}
+      contentContainerStyle={styles.content}
       renderItem={({ item }) => (
         <View style={styles.cardWrapper}>
           <TarjetaFotografo

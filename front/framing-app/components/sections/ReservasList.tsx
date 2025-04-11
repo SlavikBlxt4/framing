@@ -1,27 +1,18 @@
-import React, { useMemo, useState } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import {
   View,
   Text,
   FlatList,
   StyleSheet,
-  TouchableOpacity,
+  Pressable,
 } from 'react-native';
-import { Menu, Provider as PaperProvider } from 'react-native-paper';
 import { reservas as mockReservas } from '@/mocks/mockReservas';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Fonts from '@/constants/Fonts';
 import { Colors } from '@/constants/Colors';
 import { useRouter } from 'expo-router';
-import {
-  CaretRight,
-  Check,
-  FadersHorizontal,
-  Calendar,
-  SortAscending,
-  SortDescending,
-} from 'phosphor-react-native';
-
-type SortOption = 'fecha-desc' | 'fecha-asc' | 'nombre-asc' | 'nombre-desc';
+import { CaretRight, FadersHorizontal } from 'phosphor-react-native';
+import FilterDrawer from '../framing/FilterDrawer';
 
 type Reserva = {
   id: string;
@@ -31,18 +22,14 @@ type Reserva = {
 
 const ReservasList: React.FC = () => {
   const insets = useSafeAreaInsets();
-  const [menuVisible, setMenuVisible] = useState(false);
-  const [sortBy, setSortBy] = useState<SortOption>('fecha-desc');
-
-  const openMenu = () => setMenuVisible(true);
-  const closeMenu = () => setMenuVisible(false);
-
   const router = useRouter();
+  const [drawerVisible, setDrawerVisible] = useState(false);
+  const [sortBy, setSortBy] = useState<'fecha-asc' | 'fecha-desc' | 'nombre-asc' | 'nombre-desc'>('fecha-desc');
 
-  const handleSortChange = (option: SortOption) => {
+  const handleSortChange = useCallback((option: 'fecha-asc' | 'fecha-desc' | 'nombre-asc' | 'nombre-desc') => {
     setSortBy(option);
-    closeMenu();
-  };
+    setDrawerVisible(false); // Cerrar el drawer después de seleccionar el filtro
+  }, []);
 
   const reservasOrdenadas = useMemo(() => {
     const sorted = [...mockReservas];
@@ -67,96 +54,66 @@ const ReservasList: React.FC = () => {
   }, [sortBy]);
 
   const renderItem = ({ item }: { item: Reserva }) => (
-    <TouchableOpacity style={styles.itemContainer} onPress={() => router.push({pathname: '/reservas/DetalleReserva', params: { nombre: item.fotografo, fecha: item.fecha}})}>
+    <Pressable
+      style={styles.itemContainer}
+      onPress={() =>
+        router.push({
+          pathname: '/reservas/DetalleReserva',
+          params: { nombre: item.fotografo, fecha: item.fecha },
+        })
+      }
+    >
       <View style={styles.textContainer}>
         <Text style={styles.fotografo}>{item.fotografo}</Text>
         <Text style={styles.fecha}>{item.fecha}</Text>
       </View>
       <CaretRight size={20} weight="bold" color={Colors.light.tint} />
-    </TouchableOpacity>
+    </Pressable>
   );
 
-  const sortOptions: { label: string; value: SortOption; icon: JSX.Element }[] = [
-    {
-      label: 'Fecha (más reciente)',
-      value: 'fecha-desc',
-      icon: <Calendar size={18} color={Colors.light.tint} weight="bold" />,
-    },
-    {
-      label: 'Fecha (más antigua)',
-      value: 'fecha-asc',
-      icon: <Calendar size={18} color={Colors.light.tint} weight="fill" />,
-    },
-    {
-      label: 'Nombre (A-Z)',
-      value: 'nombre-asc',
-      icon: <SortAscending size={18} color={Colors.light.tint} weight="bold" />,
-    },
-    {
-      label: 'Nombre (Z-A)',
-      value: 'nombre-desc',
-      icon: <SortDescending size={18} color={Colors.light.tint} weight="bold" />,
-    },
-  ];
-
   return (
-    <PaperProvider>
+    <View style={styles.container}>
       <FlatList
         data={reservasOrdenadas}
         keyExtractor={(item) => item.id}
         renderItem={renderItem}
-        contentContainerStyle={[styles.listContainer, { paddingTop: insets.top + 20 }]}
-        ListHeaderComponent={
-          <View style={styles.sortContainer}>
-            <Menu
-              visible={menuVisible}
-              onDismiss={closeMenu}
-              contentStyle={styles.menuContent}
-              anchor={
-                <TouchableOpacity style={styles.sortButton} onPress={openMenu}>
-                  <FadersHorizontal size={18} color={Colors.light.tint} weight="bold" />
-                  <Text style={styles.sortButtonText}> Ordenar</Text>
-                </TouchableOpacity>
-              }
-            >
-              {sortOptions.map(({ label, value, icon }) => (
-                <TouchableOpacity
-                  key={value}
-                  onPress={() => handleSortChange(value)}
-                  style={[
-                    styles.menuItem,
-                    sortBy === value && styles.menuItemActive,
-                  ]}
-                >
-                  <View style={styles.menuItemLeft}>
-                    {icon}
-                    <Text
-                      style={[
-                        styles.menuItemText,
-                        sortBy === value && styles.menuItemTextActive,
-                      ]}
-                    >
-                      {label}
-                    </Text>
-                  </View>
-                  {sortBy === value && (
-                    <Check size={16} weight="bold" color={Colors.light.tint} />
-                  )}
-                </TouchableOpacity>
-              ))}
-            </Menu>
+        contentContainerStyle={styles.listContainer}
+        ListFooterComponent={
+          <View style={styles.footer}>
+            <View style={styles.footerDot} />
           </View>
         }
         ItemSeparatorComponent={() => <View style={styles.separator} />}
       />
-    </PaperProvider>
+
+      {/* Botón Fijo Ordenar */}
+      <View style={[styles.floatingButtonContainer, { bottom: insets.bottom + 20 }]}>
+        <Pressable style={styles.floatingButton} onPress={() => setDrawerVisible(true)}>
+          <FadersHorizontal size={20} color="#fff" weight="bold" />
+          <Text style={styles.floatingButtonText}>Ordenar</Text>
+        </Pressable>
+      </View>
+
+      <FilterDrawer
+        visible={drawerVisible}
+        onClose={() => setDrawerVisible(false)}
+        onSortChange={handleSortChange}
+        selectedSort={sortBy}
+      />
+    </View>
   );
 };
 
 export default ReservasList;
 
 const styles = StyleSheet.create({
-  listContainer: {},
+  container: {
+    flex: 1,
+  },
+  listContainer: {
+    backgroundColor: Colors.light.background,
+    paddingBottom: 100,
+  },
   itemContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -183,54 +140,34 @@ const styles = StyleSheet.create({
     backgroundColor: '#e0e0e0',
     marginHorizontal: 20,
   },
-  sortContainer: {
-    alignItems: 'flex-end',
-    paddingHorizontal: 20,
-    paddingBottom: 10,
+  floatingButtonContainer: {
+    position: 'absolute',
+    right: 20,
+    zIndex: 1000,
   },
-  sortButton: {
+  floatingButton: {
     flexDirection: 'row',
     alignItems: 'center',
+    backgroundColor: Colors.light.tint,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderRadius: 100,
+    elevation: 4,
   },
-  sortButtonText: {
+  floatingButtonText: {
+    color: '#fff',
     fontFamily: Fonts.bold,
     fontSize: 16,
-    color: Colors.light.tint,
-    marginLeft: 4,
+    marginLeft: 6,
   },
-  menuContent: {
-    backgroundColor: Colors.light.background,
-    borderRadius: 12,
-    elevation: 4,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    marginTop: 10,
-    paddingHorizontal: 5,
-  },
-  menuItem: {
-    paddingVertical: 10,
-    paddingHorizontal: 16,
-    flexDirection: 'row',
+  footer: {
     alignItems: 'center',
-    justifyContent: 'space-between',
-    borderRadius: 8,
+    paddingVertical: 24,
   },
-  menuItemLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10, // si no funciona en tu versión, usa marginLeft en el texto
-  },
-  menuItemActive: {
-    backgroundColor: Colors.light.tint + '20',
-  },
-  menuItemText: {
-    fontFamily: Fonts.bold,
-    fontSize: 14,
-    color: '#333',
-  },
-  menuItemTextActive: {
-    color: Colors.light.tint,
-  },
+  footerDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: '#ccc', // o Colors.light.border si tienes
+  },  
 });

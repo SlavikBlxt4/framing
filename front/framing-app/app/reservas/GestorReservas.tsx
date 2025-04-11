@@ -21,9 +21,7 @@ export default function GestorReservas() {
   }, [navigation])
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <ReservasList></ReservasList>
-    </SafeAreaView>
+    <ReservasList />
   );
 }
 
