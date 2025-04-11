@@ -1,31 +1,35 @@
 // app/reservas/GestorReservas.tsx
 import { View, Text, StyleSheet } from 'react-native';
 import Fonts from '@/constants/Fonts';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import GridFotografos from '@/components/sections/GridFotografos';
+import { useNavigation } from 'expo-router';
+import { useLayoutEffect } from 'react';
+import ReservasList from '@/components/sections/ReservasList';
+import { Colors } from '@/constants/Colors';
 
 export default function GestorReservas() {
+  const navigation = useNavigation();
+  
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerTitle: 'Gestor de reservas',
+      headerStyle: {
+        backgroundColor: 'white',
+      }
+    });
+  }, [navigation])
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Gestor de reservas</Text>
-      <Text style={styles.subtitle}>Aquí verás todas tus sesiones contratadas.</Text>
-    </View>
+    <SafeAreaView style={styles.safeArea}>
+      <ReservasList></ReservasList>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  safeArea: {
     flex: 1,
-    padding: 24,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  title: {
-    fontSize: 24,
-    fontFamily: Fonts.bold,
-  },
-  subtitle: {
-    fontSize: 16,
-    fontFamily: Fonts.regular,
-    marginTop: 12,
-    textAlign: 'center',
-  },
+    backgroundColor: Colors.light.background,
+  }
 });
