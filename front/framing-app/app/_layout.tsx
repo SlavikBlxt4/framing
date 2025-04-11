@@ -47,13 +47,13 @@ export default function RootLayout() {
               <Stack
                 screenOptions={{
                   animation: 'none',
-                  headerShown: true,
+                  headerShown: false,
                   headerTitle: '',
                   headerShadowVisible: false,
                   headerBackTitleVisible: false,
                 }}
               >
-                <Stack.Screen name="(tabs)" options={{ headerShown: true }} />
+                <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
 
                 <Stack.Screen name="+not-found" />
               </Stack>

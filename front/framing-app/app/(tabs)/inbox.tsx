@@ -1,10 +1,15 @@
 import { View, Text } from 'react-native';
-import Fonts from '@/constants/Fonts';
+import ScrollWithAnimatedHeader from '@/components/framing/ScrollWithAnimatedHeader';
 
 export default function InboxScreen() {
     return (
-        <View style={{flex: 1, alignItems: 'flex-start', justifyContent: 'flex-start'}}>
-            <Text>Inbox funciona</Text>
-        </View>
+        
+
+        <ScrollWithAnimatedHeader title="Mi Título">
+            <View style={{flex: 1, alignItems: 'flex-start', justifyContent: 'flex-start'}}>
+                <Text>Inbox funciona</Text>
+            </View>
+        </ScrollWithAnimatedHeader>
+
     )
 }

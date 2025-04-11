@@ -1,17 +1,17 @@
-import { StyleSheet, View, ScrollView, Text } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+import { useMemo } from 'react';
+
 import HomeWelcome from '@/components/sections/HomeWelcome';
 import SesionesContratadas from '@/components/sections/SesionesContratadas';
 import ListarHorizontalFotografos from '@/components/sections/ListaHorizontalFotografos';
 import Anuncio from '@/components/sections/Anuncio';
 import { categorias } from '@/mocks/mockCategoria';
-import { Colors } from '@/constants/Colors';
 import Fonts from '@/constants/Fonts';
-import { useMemo } from 'react';
+import ScrollWithAnimatedHeader from '@/components/framing/ScrollWithAnimatedHeader';
+
 
 export default function HomeScreen() {
-  // Generamos una posición aleatoria válida solo una vez
   const contenido = useMemo(() => {
-    // El índice debe estar entre 1 y categorias.length - 2 (nunca primero ni último)
     const anuncioIndex = Math.floor(Math.random() * (categorias.length - 2)) + 1;
 
     return categorias.flatMap((cat, index) => {
@@ -38,34 +38,21 @@ export default function HomeScreen() {
   }, []);
 
   return (
-    <ScrollView contentContainerStyle={styles.scrollViewContainer}>
+    <ScrollWithAnimatedHeader title="">
       <View style={styles.container}>
         <HomeWelcome username="" />
         <SesionesContratadas />
         {contenido}
       </View>
-    </ScrollView>
+    </ScrollWithAnimatedHeader>
   );
 }
 
 const styles = StyleSheet.create({
-  scrollViewContainer: {
-    flexGrow: 1,
-  },
   container: {
     flex: 1,
-    paddingHorizontal: 20,
-    paddingBottom: 20,
-    justifyContent: 'flex-start',
-    backgroundColor: '#fff',
+    paddingHorizontal: 0,
     gap: 20,
-  },
-  box: {
-    width: 120,
-    height: 120,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 8,
   },
   label: {
     fontFamily: Fonts.bold,
