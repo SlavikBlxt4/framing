@@ -3,13 +3,10 @@ import ScrollWithAnimatedHeader from '@/components/framing/ScrollWithAnimatedHea
 
 export default function InboxScreen() {
     return (
-        
-
         <ScrollWithAnimatedHeader title="Mi Título">
             <View style={{flex: 1, alignItems: 'flex-start', justifyContent: 'flex-start'}}>
                 <Text>Inbox funciona</Text>
             </View>
         </ScrollWithAnimatedHeader>
-
     )
 }

@@ -1,10 +1,10 @@
 import React, { useState, useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import SearchBar from '@/components/framing/BarraDeBusqueda';
-import GridFotografos from '@/components/sections/GridFotografos';
-import FloatingSortButton from '@/components/framing/FloatingSortButton';
-import FilterDrawerExplorar from '@/components/framing/FilterDrawerExplorar';
+import SearchBar from '@/components/fm_input/BarraDeBusqueda';
+import GridFotografos from '@/components/fm_grids/GridFotografos';
+import FloatingSortButton from '@/components/fm_input/FloatingSortButton';
+import FilterDrawerExplorar from '@/components/fm_drawers/FilterDrawerExplorar';
 import { fotografos } from '@/mocks/mockFotografo';
 
 export default function ExplorarScreen() {
@@ -30,7 +30,6 @@ export default function ExplorarScreen() {
         sortBy={sortBy}
         searchQuery={search}
       />
-
 
       <FloatingSortButton onPress={() => setDrawerVisible(true)} />
 

@@ -1,5 +1,5 @@
 import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
-import TarjetaFotografo from '../framing/TarjetaFotografo';
+import TarjetaFotografo from '../fm_cards/TarjetaFotografo';
 import { fotografos } from '@/mocks/mockFotografo';
 import { ArrowRight } from 'phosphor-react-native';
 import { Colors } from '@/constants/Colors';

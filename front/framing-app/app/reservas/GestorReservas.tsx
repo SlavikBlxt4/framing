@@ -2,10 +2,10 @@
 import { View, Text, StyleSheet } from 'react-native';
 import Fonts from '@/constants/Fonts';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import GridFotografos from '@/components/sections/GridFotografos';
+import GridFotografos from '@/components/fm_grids/GridFotografos';
 import { useNavigation } from 'expo-router';
 import { useLayoutEffect } from 'react';
-import ReservasList from '@/components/sections/ReservasList';
+import ReservasList from '@/components/fm_lists/ReservasList';
 import { Colors } from '@/constants/Colors';
 
 export default function GestorReservas() {

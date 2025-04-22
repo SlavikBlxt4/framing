@@ -6,7 +6,7 @@ import {
   View,
   StatusBar,
 } from 'react-native';
-import AnimatedHeader from './AnimatedHeader';
+import AnimatedHeader from '../fm_headers/AnimatedHeader';
 
 
 const HEADER_MAX_HEIGHT = 70;

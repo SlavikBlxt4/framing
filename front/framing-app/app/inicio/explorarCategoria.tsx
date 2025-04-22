@@ -2,7 +2,7 @@ import { useLocalSearchParams } from 'expo-router';
 import { useNavigation } from '@react-navigation/native';
 import { View, Text, StyleSheet } from 'react-native';
 import { categorias } from '@/mocks/mockCategoria';
-import GridFotografos from '@/components/sections/GridFotografos';
+import GridFotografos from '@/components/fm_grids/GridFotografos';
 import { useLayoutEffect } from 'react';
 
 export default function ExplorarCategoriaScreen() {

@@ -3,7 +3,7 @@ import { FlatList, StyleSheet, Text, View } from 'react-native';
 import { Fotografo, getFotografos, getFotografosPorCategoria } from '@/services/fotografosServices';
 import { Colors } from '@/constants/Colors';
 import Fonts from '@/constants/Fonts';
-import TarjetaFotografo from '../framing/TarjetaFotografo';
+import TarjetaFotografo from '../fm_cards/TarjetaFotografo';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 type Props = {

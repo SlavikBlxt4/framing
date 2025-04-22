@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import { Colors } from '@/constants/Colors';
 import Fonts from '@/constants/Fonts';
-import AnuncioDrawer from '@/components/framing/AnuncioDrawer'
+import AnuncioDrawer from '@/components/fm_drawers/AnuncioDrawer'
 import { useUser } from '@/context/UserContext';
 
 type Props = {

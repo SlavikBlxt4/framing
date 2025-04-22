@@ -1,10 +1,10 @@
 import { StyleSheet, View } from 'react-native';
 import { useMemo } from 'react';
 
-import HomeWelcome from '@/components/sections/HomeWelcome';
-import SesionesContratadas from '@/components/sections/SesionesContratadas';
-import ListarHorizontalFotografos from '@/components/sections/ListaHorizontalFotografos';
-import Anuncio from '@/components/sections/Anuncio';
+import HomeWelcome from '@/components/fm_sections/HomeWelcome';
+import SesionesContratadas from '@/components/fm_sections/SesionesContratadas';
+import ListarHorizontalFotografos from '@/components/fm_grids/ListaHorizontalFotografos';
+import Anuncio from '@/components/fm_sections/Anuncio';
 import { categorias } from '@/mocks/mockCategoria';
 import Fonts from '@/constants/Fonts';
 import ScrollWithAnimatedHeader from '@/components/framing/ScrollWithAnimatedHeader';

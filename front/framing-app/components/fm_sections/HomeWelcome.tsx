@@ -3,7 +3,7 @@ import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import Fonts from '@/constants/Fonts';
 import UserProfilePicture from '@/components/framing/UserPfp';
-import SearchBar from '../framing/BarraDeBusqueda';
+import SearchBar from '../fm_input/BarraDeBusqueda';
 
 type Props = {
     username?: string; // Si no hay usuario, se mostrará "Iniciar sesión"

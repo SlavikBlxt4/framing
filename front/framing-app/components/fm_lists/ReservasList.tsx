@@ -13,8 +13,8 @@ import Fonts from '@/constants/Fonts';
 import { Colors } from '@/constants/Colors';
 import { useRouter } from 'expo-router';
 import { CaretRight, FadersHorizontal } from 'phosphor-react-native';
-import FilterDrawer from '../framing/FilterDrawer';
-import FloatingSortButton from '../framing/FloatingSortButton'
+import FilterDrawer from '../fm_drawers/FilterDrawer';
+import FloatingSortButton from '../fm_input/FloatingSortButton'
 
 const reservas = rawReservas.map((reserva) => {
   const fotografo = fotografos.find((f) => f.id === reserva.fotografoId);
