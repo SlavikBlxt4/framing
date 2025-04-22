@@ -29,32 +29,38 @@ export default function GridFotografos({ categoriaId }: Props) {
   }, [categoriaId]);
 
   return (
-    <FlatList
-      data={fotografos}
-      keyExtractor={(item) => item.id}
-      numColumns={2}
-      columnWrapperStyle={styles.row}
-      showsVerticalScrollIndicator={false}
-      contentContainerStyle={styles.content}
-      renderItem={({ item }) => (
-        <View style={styles.cardWrapper}>
-          <TarjetaFotografo
-            nombreEstudio={item.nombreEstudio}
-            fotografiaUrl={item.fotografiaUrl}
-            puntuacion={item.puntuacion}
-          />
-        </View>
-      )}
-      ListEmptyComponent={
-        !loading ? (
-          <Text style={styles.empty}>No se encontraron fotógrafos.</Text>
-        ) : null
-      }
-    />
+    <View style={styles.container}>
+      <FlatList
+        data={fotografos}
+        keyExtractor={(item) => item.id}
+        numColumns={2}
+        columnWrapperStyle={styles.row}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.content}
+        renderItem={({ item }) => (
+          <View style={styles.cardWrapper}>
+            <TarjetaFotografo
+              nombreEstudio={item.nombreEstudio}
+              fotografiaUrl={item.fotografiaUrl}
+              puntuacion={item.puntuacion}
+            />
+          </View>
+        )}
+        ListEmptyComponent={
+          !loading ? (
+            <Text style={styles.empty}>No se encontraron fotógrafos.</Text>
+          ) : null
+        }
+      />
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1, 
+    backgroundColor: Colors.light.background,
+  },
   content: {
     paddingBottom: 40,
     paddingHorizontal: 20,

@@ -6,7 +6,8 @@ import {
   StyleSheet,
   Pressable,
 } from 'react-native';
-import { reservas as mockReservas } from '@/mocks/mockReservas';
+import { reservas as rawReservas } from '@/mocks/mockReservas';
+import { fotografos } from '@/mocks/mockFotografo'; 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Fonts from '@/constants/Fonts';
 import { Colors } from '@/constants/Colors';
@@ -14,11 +15,17 @@ import { useRouter } from 'expo-router';
 import { CaretRight, FadersHorizontal } from 'phosphor-react-native';
 import FilterDrawer from '../framing/FilterDrawer';
 
-type Reserva = {
-  id: string;
-  fecha: string;
-  fotografo: string;
-};
+const reservas = rawReservas.map((reserva) => {
+  const fotografo = fotografos.find((f) => f.id === reserva.fotografoId);
+  return {
+    ...reserva,
+    hora: reserva.hora,
+    fotografoNombre: fotografo?.nombreEstudio,
+    fotografiaUrl: fotografo?.fotografiaUrl,
+    direccion: fotografo?.direccion,
+    puntuacion: fotografo?.puntuacion,
+  };
+});
 
 const ReservasList: React.FC = () => {
   const insets = useSafeAreaInsets();
@@ -26,45 +33,50 @@ const ReservasList: React.FC = () => {
   const [drawerVisible, setDrawerVisible] = useState(false);
   const [sortBy, setSortBy] = useState<'fecha-asc' | 'fecha-desc' | 'nombre-asc' | 'nombre-desc'>('fecha-desc');
 
-  const handleSortChange = useCallback((option: 'fecha-asc' | 'fecha-desc' | 'nombre-asc' | 'nombre-desc') => {
+  const handleSortChange = useCallback((option: typeof sortBy) => {
     setSortBy(option);
-    setDrawerVisible(false); // Cerrar el drawer después de seleccionar el filtro
+    setDrawerVisible(false);
   }, []);
 
   const reservasOrdenadas = useMemo(() => {
-    const sorted = [...mockReservas];
+    const sorted = [...reservas];
     if (sortBy.includes('fecha')) {
       sorted.sort((a, b) => {
         const [d1, m1, y1] = a.fecha.split('/').map(Number);
         const [d2, m2, y2] = b.fecha.split('/').map(Number);
-        const dateA = new Date(y1, m1 - 1, d1);
-        const dateB = new Date(y2, m2 - 1, d2);
         return sortBy === 'fecha-asc'
-          ? dateA.getTime() - dateB.getTime()
-          : dateB.getTime() - dateA.getTime();
+          ? new Date(y1, m1 - 1, d1).getTime() - new Date(y2, m2 - 1, d2).getTime()
+          : new Date(y2, m2 - 1, d2).getTime() - new Date(y1, m1 - 1, d1).getTime();
       });
     } else {
       sorted.sort((a, b) =>
         sortBy === 'nombre-asc'
-          ? a.fotografo.localeCompare(b.fotografo)
-          : b.fotografo.localeCompare(a.fotografo)
-      );
+          ? (a.fotografoNombre ?? '').localeCompare(b.fotografoNombre ?? '')
+          : (b.fotografoNombre ?? '').localeCompare(a.fotografoNombre ?? '')
+      );      
     }
     return sorted;
   }, [sortBy]);
 
-  const renderItem = ({ item }: { item: Reserva }) => (
+  const renderItem = ({ item }: { item: typeof reservas[0] }) => (
     <Pressable
       style={styles.itemContainer}
       onPress={() =>
         router.push({
           pathname: '/reservas/DetalleReserva',
-          params: { nombre: item.fotografo, fecha: item.fecha },
+          params: {
+            nombre: item.fotografoNombre,
+            fecha: item.fecha,
+            hora: item.hora,
+            fotografiaUrl: item.fotografiaUrl,
+            direccion: item.direccion,
+            puntuacion: item.puntuacion?.toString(),
+          },
         })
       }
     >
       <View style={styles.textContainer}>
-        <Text style={styles.fotografo}>{item.fotografo}</Text>
+        <Text style={styles.fotografo}>{item.fotografoNombre}</Text>
         <Text style={styles.fecha}>{item.fecha}</Text>
       </View>
       <CaretRight size={20} weight="bold" color={Colors.light.tint} />
@@ -105,6 +117,7 @@ const ReservasList: React.FC = () => {
 };
 
 export default ReservasList;
+
 
 const styles = StyleSheet.create({
   container: {

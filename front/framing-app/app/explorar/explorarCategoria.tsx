@@ -18,7 +18,7 @@ export default function ExplorarCategoriaScreen() {
   }, [navigation, nombreCategoria]);
 
   return (
-    <GridFotografos />
+    <GridFotografos categoriaId={Number(categoriaId)} />
   );
 }
 
