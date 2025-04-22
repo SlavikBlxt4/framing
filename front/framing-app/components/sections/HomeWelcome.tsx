@@ -27,7 +27,7 @@ export default function HomeWelcome({ username }: Props ) {
 
                 <UserProfilePicture />
             </View>
-            <SearchBar />
+            {/* <SearchBar /> */}
         </View>
     )
 }

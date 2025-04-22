@@ -81,12 +81,12 @@ export default function FilterDrawer({
   const options = [
     {
       value: 'fecha-asc',
-      label: 'Fecha (más antiguo)',
+      label: 'Fecha (más próximo)',
       icon: <Calendar size={18} color={Colors.light.tint} weight="regular" />,
     },
     {
       value: 'fecha-desc',
-      label: 'Fecha (más reciente)',
+      label: 'Fecha (más lejano)',
       icon: <Calendar size={18} color={Colors.light.tint} weight="fill" />,
     },
     {

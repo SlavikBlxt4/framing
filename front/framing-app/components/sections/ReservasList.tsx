@@ -32,7 +32,7 @@ const ReservasList: React.FC = () => {
   const router = useRouter();
   const [drawerVisible, setDrawerVisible] = useState(false);
   const [showPastSessions, setShowPastSessions] = useState(false);
-  const [sortBy, setSortBy] = useState<'fecha-asc' | 'fecha-desc' | 'nombre-asc' | 'nombre-desc'>('fecha-desc');
+  const [sortBy, setSortBy] = useState<'fecha-asc' | 'fecha-desc' | 'nombre-asc' | 'nombre-desc'>('fecha-asc');
 
   const handleSortChange = useCallback((option: typeof sortBy) => {
     setSortBy(option);
