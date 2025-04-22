@@ -7,7 +7,7 @@ import {
   Pressable,
 } from 'react-native';
 import { reservas as rawReservas } from '@/mocks/mockReservas';
-import { fotografos } from '@/mocks/mockFotografo'; 
+import { fotografos } from '@/mocks/mockFotografo';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Fonts from '@/constants/Fonts';
 import { Colors } from '@/constants/Colors';
@@ -31,6 +31,7 @@ const ReservasList: React.FC = () => {
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const [drawerVisible, setDrawerVisible] = useState(false);
+  const [showPastSessions, setShowPastSessions] = useState(false);
   const [sortBy, setSortBy] = useState<'fecha-asc' | 'fecha-desc' | 'nombre-asc' | 'nombre-desc'>('fecha-desc');
 
   const handleSortChange = useCallback((option: typeof sortBy) => {
@@ -38,8 +39,17 @@ const ReservasList: React.FC = () => {
     setDrawerVisible(false);
   }, []);
 
+  const reservasFiltradas = showPastSessions
+    ? reservas
+    : reservas.filter((res) => {
+        const [d, m, y] = res.fecha.split('/').map(Number);
+        const [h, min] = res.hora.split(':').map(Number);
+        const fecha = new Date(y, m - 1, d, h, min);
+        return fecha >= new Date();
+      });
+
   const reservasOrdenadas = useMemo(() => {
-    const sorted = [...reservas];
+    const sorted = [...reservasFiltradas];
     if (sortBy.includes('fecha')) {
       sorted.sort((a, b) => {
         const [d1, m1, y1] = a.fecha.split('/').map(Number);
@@ -53,10 +63,10 @@ const ReservasList: React.FC = () => {
         sortBy === 'nombre-asc'
           ? (a.fotografoNombre ?? '').localeCompare(b.fotografoNombre ?? '')
           : (b.fotografoNombre ?? '').localeCompare(a.fotografoNombre ?? '')
-      );      
+      );
     }
     return sorted;
-  }, [sortBy]);
+  }, [sortBy, showPastSessions]);
 
   const renderItem = ({ item }: { item: typeof reservas[0] }) => (
     <Pressable
@@ -111,13 +121,14 @@ const ReservasList: React.FC = () => {
         onClose={() => setDrawerVisible(false)}
         onSortChange={handleSortChange}
         selectedSort={sortBy}
+        showPastSessions={showPastSessions}
+        onTogglePastSessions={setShowPastSessions}
       />
     </View>
   );
 };
 
 export default ReservasList;
-
 
 const styles = StyleSheet.create({
   container: {
@@ -181,6 +192,6 @@ const styles = StyleSheet.create({
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: '#ccc', // o Colors.light.border si tienes
-  },  
+    backgroundColor: '#ccc',
+  },
 });

@@ -6,6 +6,7 @@ import {
   StyleSheet,
   Text,
   View,
+  Switch,
 } from 'react-native';
 import { Portal } from 'react-native-paper';
 import {
@@ -26,6 +27,8 @@ type Props = {
   onClose: () => void;
   onSortChange: (option: SortOption) => void;
   selectedSort: SortOption;
+  showPastSessions: boolean;
+  onTogglePastSessions: (value: boolean) => void;
 };
 
 export default function FilterDrawer({
@@ -33,6 +36,8 @@ export default function FilterDrawer({
   onClose,
   onSortChange,
   selectedSort,
+  showPastSessions,
+  onTogglePastSessions,
 }: Props) {
   const translateY = useRef(new Animated.Value(SCREEN_HEIGHT)).current;
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -137,6 +142,16 @@ export default function FilterDrawer({
               );
             })}
           </View>
+
+          <View style={styles.toggleContainer}>
+            <Text style={styles.toggleLabel}>Mostrar sesiones pasadas</Text>
+            <Switch
+              value={showPastSessions}
+              onValueChange={onTogglePastSessions}
+              thumbColor={showPastSessions ? Colors.light.tint : '#ccc'}
+              trackColor={{ false: '#ccc', true: Colors.light.accent }}
+            />
+          </View>
         </View>
       </Animated.View>
     </Portal>
@@ -202,4 +217,15 @@ const styles = StyleSheet.create({
     color: Colors.light.tint,
     fontFamily: Fonts.bold,
   },
+  toggleContainer: {
+    marginTop: 30,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  toggleLabel: {
+    fontSize: 16,
+    fontFamily: Fonts.regular,
+    color: Colors.light.text,
+  },  
 });
