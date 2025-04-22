@@ -14,6 +14,7 @@ import { Colors } from '@/constants/Colors';
 import { useRouter } from 'expo-router';
 import { CaretRight, FadersHorizontal } from 'phosphor-react-native';
 import FilterDrawer from '../framing/FilterDrawer';
+import FloatingSortButton from '../framing/FloatingSortButton'
 
 const reservas = rawReservas.map((reserva) => {
   const fotografo = fotografos.find((f) => f.id === reserva.fotografoId);
@@ -109,12 +110,7 @@ const ReservasList: React.FC = () => {
       />
 
       {/* Botón Fijo Ordenar */}
-      <View style={[styles.floatingButtonContainer, { bottom: insets.bottom + 20 }]}>
-        <Pressable style={styles.floatingButton} onPress={() => setDrawerVisible(true)}>
-          <FadersHorizontal size={20} color="#fff" weight="bold" />
-          <Text style={styles.floatingButtonText}>Ordenar</Text>
-        </Pressable>
-      </View>
+      <FloatingSortButton onPress={() => setDrawerVisible(true)} />
 
       <FilterDrawer
         visible={drawerVisible}
@@ -133,6 +129,7 @@ export default ReservasList;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: Colors.light.background,
   },
   listContainer: {
     backgroundColor: Colors.light.background,

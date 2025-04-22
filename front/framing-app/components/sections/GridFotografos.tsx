@@ -8,9 +8,11 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 type Props = {
   categoriaId?: number;
+  sortBy?: 'nombre-asc' | 'nombre-desc';
+  searchQuery?: string;
 };
 
-export default function GridFotografos({ categoriaId }: Props) {
+export default function GridFotografos({ categoriaId, sortBy = 'nombre-asc', searchQuery = '' }: Props) {
   const [fotografos, setFotografos] = useState<Fotografo[]>([]);
   const [loading, setLoading] = useState(true);
   const insets = useSafeAreaInsets();
@@ -28,10 +30,20 @@ export default function GridFotografos({ categoriaId }: Props) {
     fetchData();
   }, [categoriaId]);
 
+  const fotografosFiltrados = fotografos
+    .filter((f) =>
+      f.nombreEstudio.toLowerCase().includes(searchQuery.trim().toLowerCase())
+    )
+    .sort((a, b) =>
+      sortBy === 'nombre-asc'
+        ? a.nombreEstudio.localeCompare(b.nombreEstudio)
+        : b.nombreEstudio.localeCompare(a.nombreEstudio)
+    );
+
   return (
     <View style={styles.container}>
       <FlatList
-        data={fotografos}
+        data={fotografosFiltrados}
         keyExtractor={(item) => item.id}
         numColumns={2}
         columnWrapperStyle={styles.row}
@@ -56,13 +68,15 @@ export default function GridFotografos({ categoriaId }: Props) {
   );
 }
 
+
 const styles = StyleSheet.create({
   container: {
     flex: 1, 
     backgroundColor: Colors.light.background,
   },
   content: {
-    paddingBottom: 40,
+    paddingBottom: 60,
+    paddingTop: 20,
     paddingHorizontal: 20,
   },
   row: {
