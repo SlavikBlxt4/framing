@@ -48,7 +48,7 @@ export default function SesionesContratadas() {
   return (
     <View style={styles.container}>
       {/* Título con flecha */}
-      <Pressable style={styles.header} onPress={() => router.push('/reservas/GestorReservas')}>
+      <Pressable style={styles.header} onPress={() => router.push('/inicio/reservas/GestorReservas')}>
         <Text style={styles.title}>Sesiones contratadas</Text>
         <ArrowRight size={20} color={Colors.light.text} weight="bold" />
       </Pressable>
@@ -62,7 +62,7 @@ export default function SesionesContratadas() {
           style={styles.button}
           onPress={() =>
             router.push({
-              pathname: '/reservas/DetalleReserva',
+              pathname: '/inicio/reservas/DetalleReserva',
               params: reservaProxima,
             })
           }

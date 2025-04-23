@@ -26,7 +26,7 @@ export default function ListarHorizontalFotografos({ categoria }: Props) {
             <Pressable
             style={styles.header}
             onPress={() => router.push({
-              pathname: '/explorar/explorarCategoria',
+              pathname: '/inicio/explorarCategoria',
               params: { categoriaId: categoriaId.toString() },
             })}            
             >

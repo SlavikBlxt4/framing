@@ -74,7 +74,7 @@ const ReservasList: React.FC = () => {
       style={styles.itemContainer}
       onPress={() =>
         router.push({
-          pathname: '/reservas/DetalleReserva',
+          pathname: '/inicio/reservas/DetalleReserva',
           params: {
             nombre: item.fotografoNombre,
             fecha: item.fecha,

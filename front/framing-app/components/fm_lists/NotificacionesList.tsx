@@ -6,6 +6,8 @@ import Fonts from '@/constants/Fonts';
 import { CaretRight } from 'phosphor-react-native';
 
 export default function NotificacionesList() {
+  
+
   return (
     <View style={styles.container}>
       {notificaciones.map((noti) => {
@@ -40,7 +42,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     borderRadius: 12,
-    padding: 12,
+    paddingVertical: 12,
   },
   image: {
     width: 60,
