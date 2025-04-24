@@ -8,9 +8,34 @@ import Anuncio from '@/components/fm_sections/Anuncio';
 import { categorias } from '@/mocks/mockCategoria';
 import Fonts from '@/constants/Fonts';
 import ScrollWithAnimatedHeader from '@/components/framing/ScrollWithAnimatedHeader';
+import { useEffect, useState } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import mockUsers from '@/mocks/mockUsuarios';
+
+type Usuario = {
+  id: number;
+  email: string;
+  password: string;
+};
+
 
 
 export default function HomeScreen() {
+  const [currentUser, setCurrentUser] = useState<Usuario | null>(null);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const id = await AsyncStorage.getItem('userId');
+      if (id) {
+        const user = mockUsers.find((u) => u.id === parseInt(id));
+        if (user) setCurrentUser(user);
+      }
+    };
+
+    fetchUser();
+  }, []);
+
+
   const contenido = useMemo(() => {
     const anuncioIndex = Math.floor(Math.random() * (categorias.length - 2)) + 1;
 
@@ -40,7 +65,8 @@ export default function HomeScreen() {
   return (
     <ScrollWithAnimatedHeader title="">
       <View style={styles.container}>
-        <HomeWelcome username="" />
+        <HomeWelcome username={currentUser?.email || "Usuario"} />
+
         <SesionesContratadas />
         {contenido}
       </View>

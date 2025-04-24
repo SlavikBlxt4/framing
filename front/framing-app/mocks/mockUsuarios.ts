@@ -1,7 +1,7 @@
 const mockUsers = [
     {
         id: 1,
-        email: "usuario1@example.com",
+        email: "usuario1@gmail.com",
         password: "123456",
     },
     {
@@ -14,6 +14,11 @@ const mockUsers = [
         email: "test@framing.com",
         password: "framing123",
     },
+    {
+        id: 4,
+        email: "admin",
+        password: "admin",
+    }
 ];
   
 export default mockUsers;

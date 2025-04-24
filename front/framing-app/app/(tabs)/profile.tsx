@@ -4,18 +4,52 @@ import ScrollWithAnimatedHeader from '@/components/framing/ScrollWithAnimatedHea
 import { Colors } from '@/constants/Colors';
 import { useRouter } from 'expo-router';
 import { Star, BookBookmark, Heart, CreditCard, User, Gear, Info } from 'phosphor-react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useEffect, useState } from 'react';
+import mockUsers from '@/mocks/mockUsuarios';
+
+type Usuario = {
+  id: number;
+  email: string;
+  password: string;
+};
+
 
 export default function ProfileScreen() {
   const router = useRouter();
+  const [currentUser, setCurrentUser] = useState<Usuario | null>(null);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const id = await AsyncStorage.getItem('userId');
+      if (id) {
+        const user = mockUsers.find((u) => u.id === parseInt(id));
+        if (user) {
+          setCurrentUser(user);
+        }
+      }
+    };   
+
+    fetchUser();
+  }, []);
+
 
   return (
     <ScrollWithAnimatedHeader title="">
       <View style={styles.header}>
         <Text style={styles.title}>Tu Perfil</Text>
-        <Text style={styles.subtitle}>Desde esta sección podrás gestionar tu cuenta</Text>
-        <Pressable style={styles.boton} onPress={() => router.push('/perfil/Login')}>
-          <Text style={styles.botonText}>Inicia sesión o regístrate</Text>
-        </Pressable>
+        {currentUser ? (
+          <>
+            <Text style={styles.subtitle}>{currentUser.email}</Text>
+          </>
+        ) : (
+          <>
+            <Text style={styles.subtitle}>Desde esta sección podrás gestionar tu cuenta</Text>
+            <Pressable style={styles.boton} onPress={() => router.push('/perfil/Login')}>
+              <Text style={styles.botonText}>Inicia sesión o regístrate</Text>
+            </Pressable>
+          </>
+        )}
       </View>
 
       <View style={styles.content}>

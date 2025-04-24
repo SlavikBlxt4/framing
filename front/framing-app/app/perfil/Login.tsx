@@ -8,7 +8,7 @@ import { Eye, EyeSlash } from "phosphor-react-native";
 import { useState } from "react";
 import mockUsers from "@/mocks/mockUsuarios";
 import { router } from "expo-router";
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function LoginScreen() {
     const navigation = useNavigation();
@@ -22,21 +22,26 @@ export default function LoginScreen() {
         });
     }, [navigation])
 
-    const handleLogin = () => {
+    const handleLogin = async () => {
         const user = mockUsers.find(
           (u) => u.email === email.trim() && u.password === password
         );
       
         if (user) {
           console.log("Inicio de sesión exitoso. ID del usuario:", user.id);
-          // Aquí puedes navegar a la pantalla principal, por ejemplo:
-          // navigation.navigate("Home");
+      
+          try {
+            await AsyncStorage.setItem("userId", String(user.id));
+            router.replace("/profile");
+          } catch (error) {
+            console.error("Error al guardar el ID en AsyncStorage:", error);
+          }
+      
         } else {
           console.log("Credenciales incorrectas");
         }
-    };
-      
-
+    };     
+    
     return (
         <ScrollWithAnimatedHeader title="">
             <View style={styles.container}>
