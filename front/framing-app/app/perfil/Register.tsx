@@ -1,20 +1,20 @@
 import ScrollWithAnimatedHeader from "@/components/framing/ScrollWithAnimatedHeader";
 import { Colors } from "@/constants/Colors";
 import Fonts from "@/constants/Fonts";
-import { useNavigation } from "expo-router";
+import { router, useNavigation } from "expo-router";
 import { useLayoutEffect } from "react";
 import { View, Text, StyleSheet, Pressable, TextInput } from "react-native";
 import { Eye, EyeSlash } from "phosphor-react-native";
 import { useState } from "react";
 import mockUsers from "@/mocks/mockUsuarios";
-import { router } from "expo-router";
 
 
-export default function LoginScreen() {
+export default function RegisterScreen() {
     const navigation = useNavigation();
     const [showPassword, setShowPassword] = useState(false);
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [acceptedTerms, setAcceptedTerms] = useState(false);
 
     useLayoutEffect(() => {
         navigation.setOptions({
@@ -22,19 +22,23 @@ export default function LoginScreen() {
         });
     }, [navigation])
 
-    const handleLogin = () => {
+    const handleRegister = () => {
+        if (!acceptedTerms) {
+          console.log("Debes aceptar los términos y condiciones");
+          return;
+        }
+      
         const user = mockUsers.find(
           (u) => u.email === email.trim() && u.password === password
         );
       
         if (user) {
-          console.log("Inicio de sesión exitoso. ID del usuario:", user.id);
-          // Aquí puedes navegar a la pantalla principal, por ejemplo:
-          // navigation.navigate("Home");
+          console.log("Cuenta creada");
         } else {
           console.log("Credenciales incorrectas");
         }
     };
+      
       
 
     return (
@@ -42,7 +46,7 @@ export default function LoginScreen() {
             <View style={styles.container}>
                 <>
                     <Text style={styles.logo}>FRAMING</Text> 
-                    <Text style={styles.subtitle}>¡Hola de nuevo, nos alegramos de tenerte de vuelta!</Text>
+                    <Text style={styles.subtitle}>Registrate para encontrar el fotógrafo perfecto</Text>
                 </>
 
                 <View style={styles.inputContainer}>
@@ -71,26 +75,36 @@ export default function LoginScreen() {
                             )}
                         </Pressable>
                         </View>
-                        <Pressable onPress={() => console.log("Navegar a recuperar contraseña")}>
+                        {/* <Pressable onPress={() => console.log("Navegar a recuperar contraseña")}>
                             <Text style={styles.forgotPassword}>He olvidado mi contraseña</Text>
+                        </Pressable> */}
+                        <Pressable
+                            style={styles.checkboxContainer}
+                            onPress={() => setAcceptedTerms(!acceptedTerms)}
+                        >
+                            <View style={[styles.checkbox, acceptedTerms && styles.checkboxChecked]} />
+                            <Text style={styles.checkboxText}>
+                                Acepto los términos y condiciones
+                            </Text>
                         </Pressable>
+
                 </View>
 
                 <View style={styles.registerContainer}>
                     <Text style={styles.registerText}>
-                        ¿No tienes cuenta?{' '}
+                        ¿Ya tienes una cuenta?{' '}
                         <Text
                             style={styles.registerLink}
-                            onPress={() => router.push('/perfil/Register')}
+                            onPress={() => router.push('/perfil/Login')}
                         >
-                            Regístrate aquí
+                            Inicia sesión aqui
                         </Text>
                     </Text>
                 </View>
 
 
-                <Pressable style={styles.loginButton} onPress={handleLogin}>
-                    <Text style={styles.loginButtonText}>INICIAR SESIÓN</Text>
+                <Pressable style={styles.loginButton} onPress={handleRegister}>
+                    <Text style={styles.loginButtonText}>REGISTRARSE</Text>
                 </Pressable>
 
             </View>
@@ -173,4 +187,32 @@ const styles = StyleSheet.create({
         fontFamily: Fonts.semiBold,
         color: Colors.light.tint,
     },   
+    checkboxContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginTop: 10,
+        paddingHorizontal: 5,
+    },
+      
+    checkbox: {
+        width: 20,
+        height: 20,
+        borderWidth: 1,
+        borderColor: Colors.light.tint,
+        borderRadius: 4,
+        marginRight: 10,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#fff',
+    },
+      
+    checkboxChecked: {
+        backgroundColor: Colors.light.tint,
+    },
+      
+    checkboxText: {
+        fontFamily: Fonts.regular,
+        fontSize: 14,
+        color: '#333',
+    },      
 })
