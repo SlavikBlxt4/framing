@@ -5,7 +5,7 @@ import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { SafeAreaView, StyleSheet } from 'react-native';
-import { PaperProvider } from 'react-native-paper'; // <- Importado aquí
+import { PaperProvider } from 'react-native-paper';
 
 import { useColorScheme } from '@/hooks/useColorScheme';
 
@@ -15,6 +15,7 @@ import {
   Poppins_600SemiBold,
   Poppins_700Bold,
 } from '@expo-google-fonts/poppins';
+import { Montserrat_800ExtraBold} from '@expo-google-fonts/montserrat';
 import { UserProvider } from '@/context/UserContext';
 
 SplashScreen.preventAutoHideAsync();
@@ -26,6 +27,7 @@ export default function RootLayout() {
     Poppins_400Regular,
     Poppins_600SemiBold,
     Poppins_700Bold,
+    Montserrat_800ExtraBold,
   });
 
   useEffect(() => {

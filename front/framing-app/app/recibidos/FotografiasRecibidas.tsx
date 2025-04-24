@@ -6,7 +6,7 @@ import { es } from 'date-fns/locale';
 import { useNavigation, useRouter } from 'expo-router';
 
 // Datos
-import { fotografiasRecibidas } from '@/mocks/fotografiasRecibidas'; 
+import { fotografiasRecibidas } from '@/mocks/mockFotografiasRecibidas'; 
 import { fotografos } from '@/mocks/mockFotografo'; 
 
 const formatFecha = (fechaStr: string) => {
