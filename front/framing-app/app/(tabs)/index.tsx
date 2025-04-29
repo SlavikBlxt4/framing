@@ -16,8 +16,9 @@ type Usuario = {
   id: number;
   email: string;
   password: string;
+  fotografia_url: string;
+  nombre: string;
 };
-
 
 
 export default function HomeScreen() {
@@ -65,7 +66,7 @@ export default function HomeScreen() {
   return (
     <ScrollWithAnimatedHeader title="">
       <View style={styles.container}>
-        <HomeWelcome username={currentUser?.email || "Usuario"} />
+        <HomeWelcome username={currentUser?.nombre || "Usuario"} />
 
         <SesionesContratadas />
         {contenido}

@@ -12,6 +12,8 @@ type Usuario = {
   id: number;
   email: string;
   password: string;
+  fotografia_url: string;
+  nombre: string;
 };
 
 
@@ -32,6 +34,12 @@ export default function ProfileScreen() {
 
     fetchUser();
   }, []);
+
+  const handleLogout = async () => {
+    await AsyncStorage.removeItem('userId');
+    setCurrentUser(null);
+    router.push('/profile');
+  }
 
 
   return (
@@ -55,15 +63,15 @@ export default function ProfileScreen() {
       <View style={styles.content}>
         <View>
           <Text style={styles.contentTitle}>Tu actividad</Text>
-          <Pressable style={styles.contentButton} onPress={() => router.push('/perfil/Login')}> 
+          <Pressable style={styles.contentButton} onPress={() => router.push('/inicio/reservas/GestorReservas')}> 
             <BookBookmark />
-            <Text style={styles.contentText}>Historial de reservas</Text> 
+            <Text style={styles.contentText}>Gestor de reservas</Text> 
           </Pressable>
-          <Pressable style={styles.contentButton} onPress={() => router.push('/perfil/Login')}> 
+          <Pressable style={styles.contentButton} onPress={() => router.push('/perfil/MiniPantallas/Rate')}> 
             <Star />
             <Text style={styles.contentText}>Reseñas</Text> 
           </Pressable>
-          <Pressable style={styles.contentButton} onPress={() => router.push('/perfil/Login')}> 
+          <Pressable style={styles.contentButton} onPress={() => router.push('/perfil/MiniPantallas/Favoritos')}> 
             <Heart />
             <Text style={styles.contentText}>Favoritos</Text> 
           </Pressable>
@@ -71,7 +79,7 @@ export default function ProfileScreen() {
 
         <View>
           <Text style={styles.contentTitle}>Métodos de pago</Text>
-          <Pressable style={styles.contentButton} onPress={() => router.push('/perfil/Login')}> 
+          <Pressable style={styles.contentButton} onPress={() => router.push('/perfil/MiniPantallas/Pago')}> 
             <CreditCard />
             <Text style={styles.contentText}>Pago</Text> 
           </Pressable>
@@ -79,11 +87,11 @@ export default function ProfileScreen() {
 
         <View>
           <Text style={styles.contentTitle}>Información sobre ti</Text>
-          <Pressable style={styles.contentButton} onPress={() => router.push('/perfil/Login')}> 
+          <Pressable style={styles.contentButton} onPress={() => router.push('/perfil/MiniPantallas/DatosPersonales')}> 
             <User />
             <Text style={styles.contentText}>Datos personales</Text> 
           </Pressable>
-          <Pressable style={styles.contentButton} onPress={() => router.push('/perfil/Login')}> 
+          <Pressable style={styles.contentButton} onPress={() => router.push('/perfil/MiniPantallas/Ajustes')}> 
             <Gear />
             <Text style={styles.contentText}>Ajustes</Text> 
           </Pressable>
@@ -91,11 +99,16 @@ export default function ProfileScreen() {
 
         <View>
           <Text style={styles.contentTitle}>Centro de ayuda</Text>
-          <Pressable style={styles.contentButton} onPress={() => router.push('/perfil/Login')}> 
+          <Pressable style={styles.contentButton} onPress={() => router.push('/perfil/MiniPantallas/ObtenerAyuda')}> 
             <Info />
             <Text style={styles.contentText}>Obtener ayuda</Text> 
           </Pressable>
         </View>
+
+        <Pressable style={styles.logout} onPress={handleLogout}>
+          <Text style={styles.logoutText}>Cerrar sesión</Text>
+      </Pressable>
+
 
       </View>
     </ScrollWithAnimatedHeader>
@@ -156,5 +169,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: Colors.light.text,
     marginBottom: 5,
+  },
+  logout: {},
+  logoutText: {
+    fontSize: 16,
+    fontFamily: Fonts.bold,
+    color: '#DC2621',
   }
 })
