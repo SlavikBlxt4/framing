@@ -19,44 +19,74 @@ export default function PerfilFotografo() {
   return (
     <ScrollView contentContainerStyle={styles.container}>
       {/* Portada */}
-      <Image source={{ uri: fotoPortada as string }} style={styles.portada} />
-
+      <View style={styles.portadaWrapper}>
+        <Image source={{ uri: fotoPortada as string }} style={styles.portada} />
+      </View>
+  
+      {/* Avatar fuera del contenedor portada */}
+      <View style={styles.avatarWrapper}>
+        <Image source={{ uri: fotografiaUrl as string }} style={styles.avatar} />
+      </View>
+  
       {/* Info principal */}
       <View style={styles.infoContainer}>
         <Text style={styles.nombre}>
           {nombreEstudio} {verificado === 'true' && <Text style={styles.verificado}>✔️</Text>}
         </Text>
-
         <View style={styles.ratingRow}>
           <Star size={16} color="#FFD700" weight="fill" />
           <Text style={styles.ratingText}>{puntuacion}</Text>
           <Text style={styles.separator}>·</Text>
           <Text style={styles.seguidores}>{seguidores} seguidores</Text>
         </View>
-
         <Text style={styles.direccion}>{direccion}</Text>
       </View>
-
-      {/* Imagen del fotógrafo o avatar */}
-      <Image source={{ uri: fotografiaUrl as string }} style={styles.avatar} />
     </ScrollView>
   );
+  
 }
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1, 
     paddingBottom: 32,
     backgroundColor: '#fff',
   },
-  portada: {
+  portadaWrapper: {
+    position: 'relative',
     width: '100%',
     height: 220,
-    borderBottomLeftRadius: 16,
-    borderBottomRightRadius: 16,
+    paddingHorizontal: 20,
+    // overflow: 'hidden',
   },
+  portada: {
+    width: '100%',
+    height: '100%',
+    borderTopLeftRadius: 16,
+    borderTopRightRadius: 16,
+  },
+  avatarWrapper: {
+    position: 'absolute',
+    top: 160, // altura para que sobresalga
+    left: '50%',
+    transform: [{ translateX: -50 }],
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    borderWidth: 4,
+    borderColor: '#fff',
+    backgroundColor: '#eee',
+    overflow: 'hidden',
+    zIndex: 10,
+  },
+  avatar: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'cover',
+  },   
   infoContainer: {
     paddingHorizontal: 20,
-    paddingTop: 20,
+    paddingTop: 50,
   },
   nombre: {
     fontSize: 24,
@@ -90,12 +120,5 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#666',
     marginBottom: 12,
-  },
-  avatar: {
-    marginTop: 16,
-    marginHorizontal: 20,
-    height: 300,
-    borderRadius: 12,
-    resizeMode: 'cover',
   },
 });
