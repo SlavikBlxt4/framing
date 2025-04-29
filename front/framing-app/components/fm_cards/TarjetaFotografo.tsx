@@ -1,22 +1,45 @@
+// TarjetaFotografo.tsx
 import { StyleSheet, View, Text, ImageBackground, Pressable } from "react-native";
 import { ArrowRight, Star } from "phosphor-react-native";
 import { Colors } from '@/constants/Colors';
 import Fonts from '@/constants/Fonts';
+import { useRouter } from 'expo-router';
 
 type Props = {
     nombreEstudio?: string;
     fotografiaUrl?: string;
     puntuacion?: number;
-    onPress?: () => void;
+    direccion: string,
+    fotoPortada: string,
+    seguidores?: number;
+    verificado?: boolean;
 }
 
-export default function TarjetaFotografo({ nombreEstudio, fotografiaUrl, puntuacion, onPress }: Props) {
-    return(
-        <Pressable style={styles.container} onPress={onPress}>
+export default function TarjetaFotografo({ nombreEstudio, fotografiaUrl, puntuacion, direccion, fotoPortada, seguidores, verificado }: Props) {
+    const router = useRouter();
+
+    const handlePress = () => {
+        router.push({
+            pathname: '/fotografo/perfil',
+            params: {
+            nombreEstudio,
+            fotografiaUrl,
+            puntuacion: puntuacion?.toString(),
+            direccion,
+            fotoPortada,
+            seguidores: seguidores?.toString(),
+            verificado: verificado ? 'true' : 'false',
+            },
+          });
+          
+    };
+
+    return (
+        <Pressable style={styles.container} onPress={handlePress}>
             <ImageBackground
                 source={{ uri: fotografiaUrl }}
                 style={styles.imagen}
-                imageStyle={{ borderTopLeftRadius: 12, borderTopRightRadius: 12}}
+                imageStyle={{ borderTopLeftRadius: 12, borderTopRightRadius: 12 }}
             >
                 <View style={styles.ratingContainer}>
                     <Star size={16} color={Colors.light.background} weight="fill" />
@@ -27,18 +50,21 @@ export default function TarjetaFotografo({ nombreEstudio, fotografiaUrl, puntuac
             <View style={styles.infoContainer}>
                 <View style={styles.textWrapper}>
                     <Text
-                    style={styles.nombreEstudio}
-                    numberOfLines={2}
-                    ellipsizeMode="tail"
+                        style={styles.nombreEstudio}
+                        numberOfLines={2}
+                        ellipsizeMode="tail"
                     >
-                    {nombreEstudio}
+                        {nombreEstudio}
                     </Text>
                 </View>
                 <ArrowRight size={20} color={Colors.light.tint} weight="bold" />
             </View>
         </Pressable>
-    )
+    );
 }
+
+// (styles sin cambios)
+
 
 const styles = StyleSheet.create({
     container: {

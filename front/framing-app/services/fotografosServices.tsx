@@ -5,7 +5,10 @@ export type Fotografo = {
   nombreEstudio: string;
   fotografiaUrl: string;
   puntuacion: number;
-  categoriaId: number;
+  direccion: string;
+  fotoPortada: string;
+  seguidores: number;
+  verificado: boolean;
 };
 
 export const getFotografos = (): Promise<Fotografo[]> => {

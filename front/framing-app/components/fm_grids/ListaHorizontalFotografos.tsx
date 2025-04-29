@@ -42,11 +42,15 @@ export default function ListarHorizontalFotografos({ categoria }: Props) {
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={{ gap: 12, paddingHorizontal: 0 }}
             renderItem={({ item }) => (
-                <TarjetaFotografo
+              <TarjetaFotografo
                 nombreEstudio={item.nombreEstudio}
                 fotografiaUrl={item.fotografiaUrl}
                 puntuacion={item.puntuacion}
-                />
+                direccion={item.direccion}
+                fotoPortada={item.fotoPortada}
+                seguidores={item.seguidores}
+                verificado={item.verificado}
+              />
             )}
             />
         </View>

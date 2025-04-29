@@ -55,6 +55,10 @@ export default function GridFotografos({ categoriaId, sortBy = 'nombre-asc', sea
               nombreEstudio={item.nombreEstudio}
               fotografiaUrl={item.fotografiaUrl}
               puntuacion={item.puntuacion}
+              direccion={item.direccion}
+              fotoPortada={item.fotoPortada}
+              seguidores={item.seguidores}
+              verificado={item.verificado}
             />
           </View>
         )}
