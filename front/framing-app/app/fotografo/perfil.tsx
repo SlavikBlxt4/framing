@@ -1,6 +1,7 @@
-import { View, Text, Image, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, Image, StyleSheet, ScrollView, Pressable } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
-import { Star } from 'phosphor-react-native';
+import { Star, SealCheck } from 'phosphor-react-native';
+import { Colors } from '@/constants/Colors';
 
 export default function PerfilFotografo() {
   const params = useLocalSearchParams();
@@ -16,6 +17,11 @@ export default function PerfilFotografo() {
     verificado,
   } = useLocalSearchParams();
 
+  const handleSeguir = () => {
+    // Lógica para seguir al estudio
+    console.log('Seguir presionado');
+  };  
+
   return (
     <ScrollView contentContainerStyle={styles.container}>
       {/* Portada */}
@@ -27,11 +33,17 @@ export default function PerfilFotografo() {
       <View style={styles.avatarWrapper}>
         <Image source={{ uri: fotografiaUrl as string }} style={styles.avatar} />
       </View>
+
+      <View style={styles.seguirButtonWrapper}>
+        <Pressable style={styles.seguirButton} onPress={handleSeguir}>
+          <Text style={styles.seguirButtonText}>Seguir</Text>
+        </Pressable>
+      </View>
   
       {/* Info principal */}
       <View style={styles.infoContainer}>
         <Text style={styles.nombre}>
-          {nombreEstudio} {verificado === 'true' && <Text style={styles.verificado}>✔️</Text>}
+          {nombreEstudio} {verificado === 'true' && <SealCheck size={16} weight='duotone' color={Colors.light.tint}/>}
         </Text>
         <View style={styles.ratingRow}>
           <Star size={16} color="#FFD700" weight="fill" />
@@ -55,7 +67,7 @@ const styles = StyleSheet.create({
   portadaWrapper: {
     position: 'relative',
     width: '100%',
-    height: 220,
+    height: 150,
     paddingHorizontal: 20,
     // overflow: 'hidden',
   },
@@ -67,13 +79,13 @@ const styles = StyleSheet.create({
   },
   avatarWrapper: {
     position: 'absolute',
-    top: 160, // altura para que sobresalga
+    top: 100, // altura para que sobresalga
     left: '50%',
     transform: [{ translateX: -50 }],
     width: 100,
     height: 100,
     borderRadius: 50,
-    borderWidth: 4,
+    borderWidth: 7,
     borderColor: '#fff',
     backgroundColor: '#eee',
     overflow: 'hidden',
@@ -86,16 +98,12 @@ const styles = StyleSheet.create({
   },   
   infoContainer: {
     paddingHorizontal: 20,
-    paddingTop: 50,
+    paddingTop: 5,
   },
   nombre: {
     fontSize: 24,
     fontWeight: 'bold',
     color: '#111',
-  },
-  verificado: {
-    fontSize: 20,
-    color: '#1DA1F2',
   },
   ratingRow: {
     flexDirection: 'row',
@@ -120,5 +128,22 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#666',
     marginBottom: 12,
+  },
+  seguirButtonWrapper: {
+    alignItems: 'flex-end',
+    marginTop: 30,
+    marginRight: 20,
+  },
+  seguirButton: {
+    backgroundColor: Colors.light.accent,
+    borderWidth: 2,
+    borderColor: Colors.light.tint,
+    paddingVertical: 8,
+    paddingHorizontal: 30,
+    borderRadius: 20,
+  },
+  seguirButtonText: {
+    color: Colors.light.tint,
+    fontWeight: '600',
   },
 });
