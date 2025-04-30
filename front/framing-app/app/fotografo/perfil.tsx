@@ -77,7 +77,8 @@ export default function PerfilFotografo() {
       {selectedTab === 'sesiones' && <Sesiones />}
       {selectedTab === 'calificaciones' && <Calificaciones />}
       {selectedTab === 'portfolio' && <Portfolio />}
-      {selectedTab === 'detalles' && <Detalles />}
+      {selectedTab === 'detalles' && (<Detalles nombre={nombreEstudio as string} direccion={direccion as string} />)}
+
     </ScrollView>
   );
 }
