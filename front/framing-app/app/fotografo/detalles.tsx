@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { StyleSheet, Text, View, Image, Pressable, Linking } from "react-native";
-import { PaperPlaneTilt } from "phosphor-react-native";
+import { PaperPlaneTilt, Phone, EnvelopeSimple } from "phosphor-react-native";
 import Fonts from "@/constants/Fonts";
 import { Colors } from "@/constants/Colors";
 import { horariosSemana } from "@/mocks/mockHorario";
@@ -63,6 +63,18 @@ export default function Detalles({ nombre = "Nombre", direccion }: Props) {
             </Text>
           </Pressable>
         </View>
+
+        <View>
+            <Text style={styles.title}>Contacto</Text>
+            <View style={styles.contactRow}>
+                <Phone size={20} color={Colors.light.text} />
+                <Text style={styles.contactText}>123 456 789</Text>
+            </View>
+            <View style={styles.contactRow}>
+                <EnvelopeSimple size={20} color={Colors.light.text} />
+                <Text style={styles.contactText}>correo@gmail.com</Text>
+            </View>
+        </View>
       </View>
     );
   }
@@ -102,7 +114,7 @@ const styles = StyleSheet.create({
     color: Colors.light.tint,
   },
   horarioContainer: {
-    paddingHorizontal: 25,
+    // paddingHorizontal: ,
     gap: 12,
   },
   horarioRow: {
@@ -129,7 +141,18 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: Colors.light.tint,
     marginTop: 8,
-    marginLeft: 25,
+    // marginLeft: 25,
     textDecorationLine: "underline",
   },
+  contactRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    marginTop: 8,
+  },
+  contactText: {
+    fontFamily: Fonts.regular,
+    fontSize: 16,
+    color: Colors.light.text,
+    marginLeft: 8,
+  },  
 });

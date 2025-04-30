@@ -1,4 +1,5 @@
 // TarjetaReserva.tsx
+import { router } from 'expo-router';
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 
@@ -12,7 +13,20 @@ interface Props {
   sesion: SesionFotografo;
 }
 
+
 const TarjetaReserva: React.FC<Props> = ({ sesion }) => {
+  const handleReservar = () => {
+    router.push({
+      pathname: '/fotografo/confirmarReserva',
+      params: {
+        nombre: sesion.nombre,
+        fecha: new Date().toISOString().split('T')[0], // ejemplo de fecha YYYY-MM-DD
+        precio: sesion.precio.toString(),
+      },
+    });
+  };
+  
+
   return (
     <View style={styles.card}>
       <View>
@@ -21,7 +35,7 @@ const TarjetaReserva: React.FC<Props> = ({ sesion }) => {
           {sesion.duracion} · <Text style={styles.precio}>{sesion.precio}€</Text>
         </Text>
       </View>
-      <TouchableOpacity style={styles.boton}>
+      <TouchableOpacity style={styles.boton} onPress={handleReservar}>
         <Text style={styles.botonTexto}>Reservar</Text>
       </TouchableOpacity>
     </View>
