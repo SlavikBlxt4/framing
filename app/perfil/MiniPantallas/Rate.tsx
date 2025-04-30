@@ -1,10 +1,16 @@
-// app/reservas/GestorReservas.tsx
-import { View, Text, StyleSheet } from 'react-native';
-import Fonts from '@/constants/Fonts';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { useNavigation } from 'expo-router';
+// React y React Native
+import { Text, StyleSheet, View } from 'react-native';
 import { useLayoutEffect } from 'react';
-import { Colors } from '@/constants/Colors';
+import { SafeAreaView } from 'react-native-safe-area-context';
+
+// Navegación
+import { useNavigation } from 'expo-router';
+
+// Constantes del proyecto
+import Colors from '@/constants/Colors';
+import Fonts from '@/constants/Fonts';
+
+// Iconos (phosphor)
 import { StarHalf } from 'phosphor-react-native';
 
 export default function ReseñasScreen() {

@@ -14,7 +14,9 @@ const shared = {
   border: '#E5E5E5',             // Bordes (tabBar, inputs...)
 };
 
-export const Colors = {
+const Colors = {
   light: shared,
   dark: shared,
 };
+
+export default Colors;

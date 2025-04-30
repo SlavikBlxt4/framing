@@ -1,28 +1,33 @@
+// React y React Native
 import React from 'react';
 import { View, Text, Image, StyleSheet } from 'react-native';
+
+// Íconos (phosphor)
 import { Star } from 'phosphor-react-native';
 
-type Props = {
-  nombre: string;
-  fecha: string;
-  comentario: string;
-  puntuacion: number;
-  avatarUrl?: string;
-};
+// Interfaz
+import { CalificacionesProps } from '@/types/Calificaciones.type';
 
-const TarjetaCalificacion: React.FC<Props> = ({ nombre, fecha, comentario, puntuacion, avatarUrl }) => {
+// [Falta colors + fonts]
+
+// Componente que muestra una tarjeta con calificación de usuario
+const TarjetaCalificacion: React.FC<CalificacionesProps> = ({ nombre, fecha, comentario, puntuacion, avatarUrl }) => {
+  // Genera un arreglo de 5 estrellas, llenas o vacías según la puntuación recibida
   const estrellas = Array.from({ length: 5 }, (_, i) => (
     <Star
       key={i}
       size={20}
-      weight={i < puntuacion ? 'fill' : 'regular'}
-      color="#008080"
-      style={{ marginRight: 2 }}
+      weight={i < puntuacion ? 'fill' : 'regular'} // 'fill' si la posición es menor que la puntuación, si no 'regular'
+      color="#008080" // Color personalizado para las estrellas (puedes usar una constante como Colors.primary)
+      style={{ marginRight: 2 }} // Espaciado entre estrellas
     />
   ));
 
   return (
+    // Contenedor principal de la tarjeta
     <View style={styles.card}>
+
+      {/* Bloque con la info del usuario (avatar, nombre, fecha...) */}
       <View style={styles.userInfo}>
         <Image
           source={{
@@ -36,10 +41,12 @@ const TarjetaCalificacion: React.FC<Props> = ({ nombre, fecha, comentario, puntu
         </View>
       </View>
 
+      {/* Bloque de estrellas y calificaciones */}
       <View style={styles.estrellas}>
         {estrellas}
       </View>
 
+      {/* Comentario del usuario */}
       <Text style={styles.comentario}>{comentario}</Text>
     </View>
   );

@@ -13,7 +13,7 @@ import {
 } from 'react-native';
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs'; // Ignorar error si no impide la ejecución de la aplicación
 import TabBarIcon from './TabBarIcon';
-import { Colors } from '@/constants/Colors'; // Asegúrate de usar la exportación correcta
+import Colors from '@/constants/Colors'; // Asegúrate de usar la exportación correcta
 import Fonts from '@/constants/Fonts';
 
 export default function MyCustomTabBar({ state, descriptors, navigation }: BottomTabBarProps) {

@@ -2,7 +2,7 @@ import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import TarjetaFotografo from '../fm_cards/TarjetaFotografo';
 import { fotografos } from '@/mocks/mockFotografo';
 import { ArrowRight } from 'phosphor-react-native';
-import { Colors } from '@/constants/Colors';
+import Colors from '@/constants/Colors';
 import Fonts from '@/constants/Fonts';
 import { router } from 'expo-router';
 import { categorias } from '@/mocks/mockCategoria';

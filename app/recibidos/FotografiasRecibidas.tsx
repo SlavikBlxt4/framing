@@ -1,14 +1,23 @@
+// React y React Native
 import React, { useLayoutEffect } from 'react';
 import { View, Text, FlatList, StyleSheet, Pressable } from 'react-native';
-import { CaretRight } from 'phosphor-react-native';
-import { format } from 'date-fns';
-import { es } from 'date-fns/locale';
+
+// Navegación (expo-router)
 import { useNavigation, useRouter } from 'expo-router';
 
-// Datos
-import { fotografiasRecibidas } from '@/mocks/mockFotografiasRecibidas'; 
-import { fotografos } from '@/mocks/mockFotografo'; 
+// Íconos
+import { CaretRight } from 'phosphor-react-native';
 
+// Utilidades de fecha
+import { format } from 'date-fns';
+import { es } from 'date-fns/locale';
+
+// Datos simulados (mocks)
+import { fotografiasRecibidas } from '@/mocks/mockFotografiasRecibidas';
+import { fotografos } from '@/mocks/mockFotografo';
+
+
+// Función para formatear fechas desde "dd/mm/yyyy" a "1 de enero de 2024" en español
 const formatFecha = (fechaStr: string) => {
   const [day, month, year] = fechaStr.split('/');
   const fecha = new Date(`${year}-${month}-${day}`);
@@ -16,19 +25,23 @@ const formatFecha = (fechaStr: string) => {
 };
 
 const FotografiasScreen = () => {
-  const navigation = useNavigation();
-  const router = useRouter();
+  const navigation = useNavigation(); // Hook para controlar el header
+  const router = useRouter(); // Hook para navegar entre pantallas
 
+  // Establece el titulo del header al montar el componente
   useLayoutEffect(() => {
     navigation.setOptions({
       headerTitle: 'Fotografías recibidas',
     });
   }, [navigation]);
 
+  // Funcion que renderiza cada tarjeta de fotógrafo
   const renderItem = ({ item }: any) => {
+    // Busca los datos del fotografo asociado a la sesion
     const fotografo = fotografos.find(f => f.id === item.fotografoId);
 
     return (
+      // Tarjeta presionable que lleva al detalle de las fotos
       <Pressable
         style={styles.card}
         onPress={() => router.push({
@@ -37,22 +50,28 @@ const FotografiasScreen = () => {
         })}        
       >
         <View style={styles.textContainer}>
+          {/* Nombre del estudio o fallback */}
           <Text style={styles.titulo}>{fotografo?.nombreEstudio || 'Estudio fotográfico'}</Text>
+          
+          {/* Fecha formateada y cantidad de archivos */}
           <Text style={styles.detalle}>
             {formatFecha(item.fecha)} · {item.archivos} archivos
           </Text>
         </View>
+
+        {/* Icono de flecha */}
         <CaretRight size={24} color="#333" weight="bold" />
       </Pressable>
     );
   };
 
   return (
+    // Lista de sesiones con fotos recibidas
     <FlatList
-      data={fotografiasRecibidas}
-      keyExtractor={item => item.id.toString()}
-      renderItem={renderItem}
-      contentContainerStyle={styles.container}
+      data={fotografiasRecibidas} // Fuente de datos simulados
+      keyExtractor={item => item.id.toString()} // Clave única por elemento
+      renderItem={renderItem} // Renderiza cada tarjeta
+      contentContainerStyle={styles.container} // Estilo de contenedor
     />
   );
 };

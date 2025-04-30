@@ -1,48 +1,42 @@
+// React y React Native
 import React, { useEffect, useRef, useState } from 'react';
-import {
-  Animated,
-  Dimensions,
-  Pressable,
-  StyleSheet,
-  Text,
-  View,
-  Switch,
-} from 'react-native';
+import {Animated, Dimensions, Pressable, StyleSheet, Text, View, Switch } from 'react-native';
+
+// UI (react-native-paper)
 import { Portal } from 'react-native-paper';
-import {
-  Calendar,
-  SortAscending,
-  SortDescending,
-  Check,
-} from 'phosphor-react-native';
-import { Colors } from '@/constants/Colors';
+
+// Íconos
+import { Calendar, SortAscending, SortDescending, Check, } from 'phosphor-react-native';
+
+// Constantes
+import Colors from '@/constants/Colors';
 import Fonts from '@/constants/Fonts';
 
-const SCREEN_HEIGHT = Dimensions.get('window').height;
 
+const SCREEN_HEIGHT = Dimensions.get('window').height; // Obtiene la altura total de la pantalla
+
+// Tipos de opciones de ordenamiento
 type SortOption = 'fecha-asc' | 'fecha-desc' | 'nombre-asc' | 'nombre-desc';
 
+// Props que acepta el componente
 type Props = {
-  visible: boolean;
-  onClose: () => void;
-  onSortChange: (option: SortOption) => void;
-  selectedSort: SortOption;
-  showPastSessions: boolean;
-  onTogglePastSessions: (value: boolean) => void;
+  visible: boolean;                      // Controla visibilidad del drawer
+  onClose: () => void;                   // Función para cerrar el drawer
+  onSortChange: (option: SortOption) => void; // Callback para cambiar el orden seleccionado
+  selectedSort: SortOption;             // Orden actual seleccionado
+  showPastSessions: boolean;            // Estado del switch "mostrar sesiones pasadas"
+  onTogglePastSessions: (value: boolean) => void; // Callback para cambiar estado del switch
 };
 
-export default function FilterDrawer({
-  visible,
-  onClose,
-  onSortChange,
-  selectedSort,
-  showPastSessions,
-  onTogglePastSessions,
-}: Props) {
+export default function FilterDrawer({ visible, onClose, onSortChange, selectedSort, showPastSessions, onTogglePastSessions, }: Props) {
+  // Estado animado para la transición vertical y opacidad del fondo
   const translateY = useRef(new Animated.Value(SCREEN_HEIGHT)).current;
   const fadeAnim = useRef(new Animated.Value(0)).current;
+
+  // Controla el montaje del componente animado
   const [isMounted, setIsMounted] = useState(false);
 
+  // useEffect para manejar la animación cuando cambia a "visible"
   useEffect(() => {
     if (visible) {
       setIsMounted(true);
@@ -76,8 +70,10 @@ export default function FilterDrawer({
     }
   }, [visible]);
 
+  // Si el drawer no ha sido montado, no se renderiza nada
   if (!isMounted) return null;
 
+  // Opciones de ordenamiento
   const options = [
     {
       value: 'fecha-asc',

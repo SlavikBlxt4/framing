@@ -1,23 +1,40 @@
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Pressable } from 'react-native';
+// React - React Native
+import { Text, StyleSheet, ScrollView, Pressable } from 'react-native';
+
+// Navegación
 import { useRouter } from 'expo-router';
+
+// Componentes propios
 import ScrollWithAnimatedHeader from '@/components/framing/ScrollWithAnimatedHeader';
-import { Colors } from '@/constants/Colors';
-import Fonts from '@/constants/Fonts';
 import NotificacionesList from '@/components/fm_lists/NotificacionesList';
 
+// Constantes
+import Colors from '@/constants/Colors';
+import Fonts from '@/constants/Fonts';
+
+// Pantalla de "Recibidos" que muestra notificaciones y un acceso directo a las fotografías recibidas
 export default function InboxScreen() {
+    // Hook de navegación proporcionado por expo-router
     const router = useRouter();
 
     return (
+        // Componente que renderiza una cabecera animada con scroll integrado
         <ScrollWithAnimatedHeader title="">
+            {/* ScrollView para permitir el desplazamiento del contenido */}
             <ScrollView contentContainerStyle={styles.scrollContent}>
+
+                {/* Titulo principal de la pantalla */}
                 <Text style={styles.label}>Notificaciones</Text>
+
+                {/* Botón que navega a la pantalla de fotografías recibidas */}
                 <Pressable
                     style={styles.button}
                     onPress={() => router.push('/recibidos/FotografiasRecibidas')}
                 >
                     <Text style={styles.buttonText}>Fotografías recibidas</Text>
                 </Pressable>
+
+                {/* Lista de notificaciones */}
                 <NotificacionesList />
 
             </ScrollView>

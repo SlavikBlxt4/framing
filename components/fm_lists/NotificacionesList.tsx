@@ -1,7 +1,7 @@
 import { View, Text, Image, StyleSheet } from 'react-native';
 import { fotografos } from '@/mocks/mockFotografo';
 import { notificaciones } from '@/mocks/mockNotificación';
-import { Colors } from '@/constants/Colors';
+import Colors from '@/constants/Colors';
 import Fonts from '@/constants/Fonts';
 import { CaretRight } from 'phosphor-react-native';
 

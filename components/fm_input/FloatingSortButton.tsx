@@ -3,7 +3,7 @@ import React from 'react';
 import { Pressable, StyleSheet, Text, View, ViewStyle } from 'react-native';
 import { FadersHorizontal } from 'phosphor-react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Colors } from '@/constants/Colors';
+import Colors from '@/constants/Colors';
 import Fonts from '@/constants/Fonts';
 
 interface Props {

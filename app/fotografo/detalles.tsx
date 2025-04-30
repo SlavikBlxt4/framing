@@ -1,83 +1,110 @@
+// React y React Native
 import React, { useState } from "react";
 import { StyleSheet, Text, View, Image, Pressable, Linking } from "react-native";
+
+// Íconos (Phosphor)
 import { PaperPlaneTilt, Phone, EnvelopeSimple } from "phosphor-react-native";
+
+// Constantes del proyecto
 import Fonts from "@/constants/Fonts";
-import { Colors } from "@/constants/Colors";
+import Colors from "@/constants/Colors";
+
+// Datos simulados
 import { horariosSemana } from "@/mocks/mockHorario";
 
-type Props = {
-  nombre?: string;
-  direccion: string;
-};
+// Interfaces
+import { DetallesProps } from "@/types/Detalles.type";
 
-export default function Detalles({ nombre = "Nombre", direccion }: Props) {
-    const [expandido, setExpandido] = useState(false);
+// Componente que muestra inforamción detallada: dirección, horario y contacto
+export default function Detalles({ nombre = "Nombre", direccion }: DetallesProps) {
+  // Estado para controlar si se muestra el horario completo o solo el primer día 
+  const [expandido, setExpandido] = useState(false);
   
-    const handleAbrirMaps = () => {
-      const url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(direccion)}`;
-      Linking.openURL(url);
-    };
+  // Función que abre Google Maps con la dirección proporcionada
+  const handleAbrirMaps = () => {
+    const url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(direccion)}`;
+    Linking.openURL(url); // Abre la URL en el navegador o en la app de Maps
+  };
   
-    const diasVisibles = expandido ? horariosSemana : [horariosSemana[0]];
+  // Dependiendo del estado, muestra todos los días o solo el primero
+  const diasVisibles = expandido ? horariosSemana : [horariosSemana[0]];
   
-    return (
-      <View style={styles.container}>
-        {/* Dirección */}
-        <View>
-          <Text style={styles.title}>Dirección</Text>
-          <View style={styles.card}>
-            <View style={styles.info}>
-              <Text style={styles.nombre}>{nombre}</Text>
-              <Text style={styles.direccion}>{direccion}</Text>
-            </View>
-            <Pressable onPress={handleAbrirMaps}>
-              <PaperPlaneTilt size={24} color={Colors.light.tint} weight="duotone" />
-            </Pressable>
+  return (
+    <View style={styles.container}>
+      {/* Sección Dirección */}
+      <View>
+        <Text style={styles.title}>Dirección</Text>
+
+        <View style={styles.card}>
+          {/* Información textual */}
+          <View style={styles.info}>
+            <Text style={styles.nombre}>{nombre}</Text>
+            <Text style={styles.direccion}>{direccion}</Text>
           </View>
-        </View>
-  
-        {/* Horario */}
-        <View>
-          <Text style={styles.title}>Horario</Text>
-          <View style={styles.horarioContainer}>
-            {diasVisibles.map((dia, index) => (
-              <View key={index} style={styles.horarioRow}>
-                <Text style={styles.diaTexto}>{dia.day}</Text>
-                <View style={styles.horariosColumn}>
-                  {dia.hours.length === 0 ? (
-                    <Text style={styles.horaTexto}>Cerrado</Text>
-                  ) : (
-                    dia.hours.map((hora, i) => (
-                      <Text key={i} style={styles.horaTexto}>
-                        {hora.start} - {hora.end}
-                      </Text>
-                    ))
-                  )}
-                </View>
-              </View>
-            ))}
-          </View>
-          <Pressable onPress={() => setExpandido(!expandido)}>
-            <Text style={styles.expandirTexto}>
-              {expandido ? "Colapsar horario" : "Expandir horario"}
-            </Text>
+
+          {/* Botón con ícono que abre la dirección en maps */}
+          <Pressable onPress={handleAbrirMaps}>
+            <PaperPlaneTilt size={24} color={Colors.light.tint} weight="duotone" />
           </Pressable>
+
         </View>
 
-        <View>
-            <Text style={styles.title}>Contacto</Text>
-            <View style={styles.contactRow}>
-                <Phone size={20} color={Colors.light.text} />
-                <Text style={styles.contactText}>123 456 789</Text>
-            </View>
-            <View style={styles.contactRow}>
-                <EnvelopeSimple size={20} color={Colors.light.text} />
-                <Text style={styles.contactText}>correo@gmail.com</Text>
-            </View>
-        </View>
       </View>
-    );
-  }
+
+      {/* Horario */}
+      <View>
+        <Text style={styles.title}>Horario</Text>
+
+        <View style={styles.horarioContainer}>
+          {diasVisibles.map((dia, index) => (
+            <View key={index} style={styles.horarioRow}>
+              {/* Dia de la semana */}
+              <Text style={styles.diaTexto}>{dia.day}</Text>
+
+              {/* Horas de apertura / cierre */}
+              <View style={styles.horariosColumn}>
+                {dia.hours.length === 0 ? (
+                  <Text style={styles.horaTexto}>Cerrado</Text>
+                ) : (
+                  dia.hours.map((hora, i) => (
+                    <Text key={i} style={styles.horaTexto}>
+                      {hora.start} - {hora.end}
+                    </Text>
+                  ))
+                )}
+              </View>
+
+            </View>
+          ))}
+        </View>
+
+        {/* Botón para expandir o colapsar el horario */}
+        <Pressable onPress={() => setExpandido(!expandido)}>
+          <Text style={styles.expandirTexto}>
+            {expandido ? "Colapsar horario" : "Expandir horario"}
+          </Text>
+        </Pressable>
+      </View>
+
+      {/* Sección: Contacto */}
+      <View>
+          <Text style={styles.title}>Contacto</Text>
+          
+          {/* Teléfono */}
+          <View style={styles.contactRow}>
+              <Phone size={20} color={Colors.light.text} />
+              <Text style={styles.contactText}>123 456 789</Text>
+          </View>
+
+          {/* Correo */}
+          <View style={styles.contactRow}>
+              <EnvelopeSimple size={20} color={Colors.light.text} />
+              <Text style={styles.contactText}>correo@gmail.com</Text>
+          </View>
+      </View>
+    </View>
+  );
+}
 
 const styles = StyleSheet.create({
   container: {

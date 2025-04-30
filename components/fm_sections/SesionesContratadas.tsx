@@ -1,5 +1,5 @@
 import { StyleSheet, View, Text, Pressable } from 'react-native';
-import { Colors } from '@/constants/Colors';
+import Colors from '@/constants/Colors';
 import Fonts from '@/constants/Fonts';
 import TarjetaSesiones from '@/components/fm_cards/TarjetaSesiones';
 import { useRouter } from 'expo-router';

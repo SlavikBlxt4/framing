@@ -1,39 +1,55 @@
-import ScrollWithAnimatedHeader from "@/components/framing/ScrollWithAnimatedHeader";
-import { Colors } from "@/constants/Colors";
-import Fonts from "@/constants/Fonts";
-import { router, useNavigation } from "expo-router";
-import { useLayoutEffect } from "react";
+// React y React Native
+import { useState, useLayoutEffect } from "react";
 import { View, Text, StyleSheet, Pressable, TextInput } from "react-native";
+
+// Navegación (expo-router)
+import { router, useNavigation } from "expo-router";
+
+// Íconos
 import { Eye, EyeSlash } from "phosphor-react-native";
-import { useState } from "react";
+
+// Componentes propios
+import ScrollWithAnimatedHeader from "@/components/framing/ScrollWithAnimatedHeader";
+
+// Constantes del proyecto
+import Colors from "@/constants/Colors";
+import Fonts from "@/constants/Fonts";
+
+// Datos simulados
 import mockUsers from "@/mocks/mockUsuarios";
 
-
 export default function RegisterScreen() {
+    // Hook de navegación de expo-router
     const navigation = useNavigation();
-    const [showPassword, setShowPassword] = useState(false);
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const [acceptedTerms, setAcceptedTerms] = useState(false);
 
+    // EEstados del formulario 
+    const [showPassword, setShowPassword] = useState(false); // Mostrar u ocultar contraseña
+    const [email, setEmail] = useState(""); // Campo de correo
+    const [password, setPassword] = useState(""); // Campo de contraseña
+    const [acceptedTerms, setAcceptedTerms] = useState(false); // Checkbox de términos
+
+    // Oculta el header de navegación al entrar en esta pantalla
     useLayoutEffect(() => {
         navigation.setOptions({
             headerShown: false,
         });
     }, [navigation])
 
+    // Lógica del botón de registro
     const handleRegister = () => {
+        // Verificar que el usuario acepte los términos antes de continuar
         if (!acceptedTerms) {
           console.log("Debes aceptar los términos y condiciones");
           return;
         }
       
+        // Aqui esta haciendo una simulacion: verifica si el usuario ya existe
         const user = mockUsers.find(
           (u) => u.email === email.trim() && u.password === password
         );
       
         if (user) {
-          console.log("Cuenta creada");
+          console.log("Cuenta creada"); // Aqui deberiamos prevenir duplicados
         } else {
           console.log("Credenciales incorrectas");
         }
@@ -44,12 +60,15 @@ export default function RegisterScreen() {
     return (
         <ScrollWithAnimatedHeader title="">
             <View style={styles.container}>
+                {/* Encabezado visual */}
                 <>
                     <Text style={styles.logo}>FRAMING</Text> 
                     <Text style={styles.subtitle}>Registrate para encontrar el fotógrafo perfecto</Text>
                 </>
 
+                {/* Campos del formulario */}
                 <View style={styles.inputContainer}>
+                    {/* Campo de correo */}
                     <TextInput 
                         placeholder="Correo electrónico" 
                         keyboardType="email-address" 
@@ -58,6 +77,8 @@ export default function RegisterScreen() {
                         value={email}
                         onChangeText={setEmail}
                     />
+
+                    {/* Campo de contraseña con icono para mostrar / ocultar */}
                     <View style={styles.passwordContainer}>
                         <TextInput
                             placeholder="Contraseña"
@@ -74,22 +95,21 @@ export default function RegisterScreen() {
                             <Eye size={24} color={Colors.light.tint} />
                             )}
                         </Pressable>
-                        </View>
-                        {/* <Pressable onPress={() => console.log("Navegar a recuperar contraseña")}>
-                            <Text style={styles.forgotPassword}>He olvidado mi contraseña</Text>
-                        </Pressable> */}
-                        <Pressable
-                            style={styles.checkboxContainer}
-                            onPress={() => setAcceptedTerms(!acceptedTerms)}
-                        >
-                            <View style={[styles.checkbox, acceptedTerms && styles.checkboxChecked]} />
-                            <Text style={styles.checkboxText}>
-                                Acepto los términos y condiciones
-                            </Text>
-                        </Pressable>
+                    </View>
 
+                    {/* Checkbox de aceptación de terminos */}
+                    <Pressable
+                        style={styles.checkboxContainer}
+                        onPress={() => setAcceptedTerms(!acceptedTerms)}
+                    >
+                        <View style={[styles.checkbox, acceptedTerms && styles.checkboxChecked]} />
+                        <Text style={styles.checkboxText}>
+                            Acepto los términos y condiciones
+                        </Text>
+                    </Pressable>
                 </View>
 
+                {/* Enlace para iniciar sesión si ya tiene una cuenta */}
                 <View style={styles.registerContainer}>
                     <Text style={styles.registerText}>
                         ¿Ya tienes una cuenta?{' '}
@@ -102,7 +122,7 @@ export default function RegisterScreen() {
                     </Text>
                 </View>
 
-
+                {/* Botón de registro */}
                 <Pressable style={styles.loginButton} onPress={handleRegister}>
                     <Text style={styles.loginButtonText}>REGISTRARSE</Text>
                 </Pressable>

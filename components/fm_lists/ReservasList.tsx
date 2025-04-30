@@ -10,7 +10,7 @@ import { reservas as rawReservas } from '@/mocks/mockReservas';
 import { fotografos } from '@/mocks/mockFotografo';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Fonts from '@/constants/Fonts';
-import { Colors } from '@/constants/Colors';
+import Colors from '@/constants/Colors';
 import { useRouter } from 'expo-router';
 import { CaretRight, FadersHorizontal } from 'phosphor-react-native';
 import FilterDrawer from '../fm_drawers/FilterDrawer';

@@ -1,69 +1,75 @@
-// TarjetaFotografo.tsx
+// React Native
 import { StyleSheet, View, Text, ImageBackground, Pressable } from "react-native";
-import { ArrowRight, Star } from "phosphor-react-native";
-import { Colors } from '@/constants/Colors';
-import Fonts from '@/constants/Fonts';
+
+// Navegación (expo-router)
 import { useRouter } from 'expo-router';
 
-type Props = {
-    nombreEstudio?: string;
-    fotografiaUrl?: string;
-    puntuacion?: number;
-    direccion: string,
-    fotoPortada: string,
-    seguidores?: number;
-    verificado?: boolean;
-}
+// Íconos
+import { ArrowRight, Star } from "phosphor-react-native";
 
-export default function TarjetaFotografo({ nombreEstudio, fotografiaUrl, puntuacion, direccion, fotoPortada, seguidores, verificado }: Props) {
+// Constantes
+import Colors from '@/constants/Colors';
+import Fonts from '@/constants/Fonts';
+
+// Interfaces
+import { FotografosProps } from '@/types/Fotografos.type';
+
+// Componente que representa una tarjeta interactiva de un fotógrafo o estudio fotógrafico
+export default function TarjetaFotografo({ nombreEstudio, fotografiaUrl, puntuacion, direccion, fotoPortada, seguidores, verificado }: FotografosProps) {
+    // Hook de navegación de Expo Router
     const router = useRouter();
 
+    // Función que maneja el evento de presionar la tarjeta
     const handlePress = () => {
         router.push({
-            pathname: '/fotografo/perfil',
+            pathname: '/fotografo/perfil', // Ruta a la que se navega
             params: {
             nombreEstudio,
             fotografiaUrl,
-            puntuacion: puntuacion?.toString(),
+            puntuacion: puntuacion?.toString(), // Se convierte en string para pasar por parámetros
             direccion,
             fotoPortada,
             seguidores: seguidores?.toString(),
-            verificado: verificado ? 'true' : 'false',
+            verificado: verificado ? 'true' : 'false', // Booleano convertido a string
             },
           });
           
     };
 
     return (
+        // Contenedor principal que actúa como botón
         <Pressable style={styles.container} onPress={handlePress}>
+            {/* Imagen de portada con fondo y contenedor de calificación */}
             <ImageBackground
                 source={{ uri: fotografiaUrl }}
                 style={styles.imagen}
                 imageStyle={{ borderTopLeftRadius: 12, borderTopRightRadius: 12 }}
             >
+                {/* Contenedor de calificación */}
                 <View style={styles.ratingContainer}>
                     <Star size={16} color={Colors.light.background} weight="fill" />
                     <Text style={styles.ratingText}>{puntuacion}</Text>
                 </View>
             </ImageBackground>
 
+            {/* Contenedor con el nombre del estudio y flecha de acción */}
             <View style={styles.infoContainer}>
                 <View style={styles.textWrapper}>
                     <Text
                         style={styles.nombreEstudio}
-                        numberOfLines={2}
-                        ellipsizeMode="tail"
+                        numberOfLines={2} // Limita el nombre a 2 líneas
+                        ellipsizeMode="tail" // Agrega "..." si el texto es muy largo
                     >
                         {nombreEstudio}
                     </Text>
                 </View>
+
+                {/* Flecha a la derecha indicando navegación */}
                 <ArrowRight size={20} color={Colors.light.tint} weight="bold" />
             </View>
         </Pressable>
     );
 }
-
-// (styles sin cambios)
 
 
 const styles = StyleSheet.create({

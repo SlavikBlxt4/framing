@@ -1,17 +1,17 @@
-// components/framing/FilterDrawerExplorar.tsx
+// React y React Native
 import React, { useEffect, useRef, useState } from 'react';
-import {
-  Animated,
-  Dimensions,
-  Pressable,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { Animated, Dimensions, Pressable, StyleSheet, Text, View } from 'react-native';
+
+// UI (react-native-paper)
 import { Portal } from 'react-native-paper';
+
+// Íconos
 import { SortAscending, SortDescending, Check } from 'phosphor-react-native';
-import { Colors } from '@/constants/Colors';
+
+// Constantes
+import Colors from '@/constants/Colors';
 import Fonts from '@/constants/Fonts';
+
 
 const SCREEN_HEIGHT = Dimensions.get('window').height;
 

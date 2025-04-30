@@ -1,28 +1,48 @@
-import ScrollWithAnimatedHeader from "@/components/framing/ScrollWithAnimatedHeader";
-import { Colors } from "@/constants/Colors";
-import Fonts from "@/constants/Fonts";
-import { useNavigation } from "expo-router";
-import { useLayoutEffect } from "react";
+// React y React Native
+import { useState, useLayoutEffect } from "react";
 import { View, Text, StyleSheet, Pressable, TextInput } from "react-native";
+
+// Navegación (expo-router)
+import { useNavigation, router } from "expo-router";
+
+// Íconos
 import { Eye, EyeSlash } from "phosphor-react-native";
-import { useState } from "react";
+
+// Componentes propios
+import ScrollWithAnimatedHeader from "@/components/framing/ScrollWithAnimatedHeader";
+
+// Constantes
+import Colors from "@/constants/Colors";
+import Fonts from "@/constants/Fonts";
+
+// Datos simulados
 import mockUsers from "@/mocks/mockUsuarios";
-import { router } from "expo-router";
-import AsyncStorage from '@react-native-async-storage/async-storage';
+
+// Almacenamiento local
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 
 export default function LoginScreen() {
+    // Hook de navegiación de expo-router
     const navigation = useNavigation();
+
+    // Estado para mostrar/ocultar la contraseña
     const [showPassword, setShowPassword] = useState(false);
+
+    // Estado para guardar el mail y contraseña del input
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
+    // Oculta el header del navegador en esta pantalla (pantalla de login limpia)
     useLayoutEffect(() => {
         navigation.setOptions({
             headerShown: false,
         });
     }, [navigation])
 
+    // Funcion de login 
     const handleLogin = async () => {
+        // Busca un usuario en el mock con email y contraseña iguales
         const user = mockUsers.find(
           (u) => u.email === email.trim() && u.password === password
         );
@@ -31,7 +51,10 @@ export default function LoginScreen() {
           console.log("Inicio de sesión exitoso. ID del usuario:", user.id);
       
           try {
+            // Guarda el ID del usuario en AsyncStorage
             await AsyncStorage.setItem("userId", String(user.id));
+
+            // Navega a la pantalla de perfil reemplazando el historial
             router.replace("/profile");
           } catch (error) {
             console.error("Error al guardar el ID en AsyncStorage:", error);
@@ -45,11 +68,13 @@ export default function LoginScreen() {
     return (
         <ScrollWithAnimatedHeader title="">
             <View style={styles.container}>
+                {/* Logo y saludo */}
                 <>
                     <Text style={styles.logo}>FRAMING</Text> 
                     <Text style={styles.subtitle}>¡Hola de nuevo, nos alegramos de tenerte de vuelta!</Text>
                 </>
 
+                {/* Inputs: email y contraseña */}
                 <View style={styles.inputContainer}>
                     <TextInput 
                         placeholder="Correo electrónico" 
@@ -59,6 +84,8 @@ export default function LoginScreen() {
                         value={email}
                         onChangeText={setEmail}
                     />
+
+                    {/* Input de contraseña con boton de mostrar / ocultar */}
                     <View style={styles.passwordContainer}>
                         <TextInput
                             placeholder="Contraseña"
@@ -75,12 +102,15 @@ export default function LoginScreen() {
                             <Eye size={24} color={Colors.light.tint} />
                             )}
                         </Pressable>
-                        </View>
-                        <Pressable onPress={() => console.log("Navegar a recuperar contraseña")}>
-                            <Text style={styles.forgotPassword}>He olvidado mi contraseña</Text>
-                        </Pressable>
+                    </View>
+
+                    {/* Enlace para recuperación de contraseña */}
+                    <Pressable onPress={() => console.log("Navegar a recuperar contraseña")}>
+                        <Text style={styles.forgotPassword}>He olvidado mi contraseña</Text>
+                    </Pressable>
                 </View>
 
+                {/* Enlace para registro si no tiene cuenta */}
                 <View style={styles.registerContainer}>
                     <Text style={styles.registerText}>
                         ¿No tienes cuenta?{' '}
@@ -93,7 +123,7 @@ export default function LoginScreen() {
                     </Text>
                 </View>
 
-
+                {/* Botón de login */}
                 <Pressable style={styles.loginButton} onPress={handleLogin}>
                     <Text style={styles.loginButtonText}>INICIAR SESIÓN</Text>
                 </Pressable>

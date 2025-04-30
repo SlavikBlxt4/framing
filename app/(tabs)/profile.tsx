@@ -1,26 +1,37 @@
+// React - React Native
 import { View, Text, StyleSheet, Pressable } from 'react-native';
-import Fonts from '@/constants/Fonts';
-import ScrollWithAnimatedHeader from '@/components/framing/ScrollWithAnimatedHeader';
-import { Colors } from '@/constants/Colors';
-import { useRouter } from 'expo-router';
-import { Star, BookBookmark, Heart, CreditCard, User, Gear, Info } from 'phosphor-react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useEffect, useState } from 'react';
+
+// Navegación
+import { useRouter } from 'expo-router';
+
+// Almacenamiento local
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+// Componentes
+import ScrollWithAnimatedHeader from '@/components/framing/ScrollWithAnimatedHeader';
+
+// Íconos (Phosphor)
+import { Star, BookBookmark, Heart, CreditCard, User, Gear, Info } from 'phosphor-react-native';
+
+// Constantes
+import Fonts from '@/constants/Fonts';
+import Colors from '@/constants/Colors';
+
+// Datos simulados
 import mockUsers from '@/mocks/mockUsuarios';
+import { UsuarioProps } from '@/types/Usuario.type';
 
-type Usuario = {
-  id: number;
-  email: string;
-  password: string;
-  fotografia_url: string;
-  nombre: string;
-};
 
+// Pantalla de perfil de un usuario
 
 export default function ProfileScreen() {
   const router = useRouter();
-  const [currentUser, setCurrentUser] = useState<Usuario | null>(null);
 
+  // Estado para almacenar el usuario actual (si está logueado)
+  const [currentUser, setCurrentUser] = useState<UsuarioProps | null>(null);
+
+  // Al montar el componente, busca el usuario guardado en AsyncStorage
   useEffect(() => {
     const fetchUser = async () => {
       const id = await AsyncStorage.getItem('userId');
@@ -35,6 +46,7 @@ export default function ProfileScreen() {
     fetchUser();
   }, []);
 
+  // Función para cerrar sesión: elimina el ID guardado y redirige
   const handleLogout = async () => {
     await AsyncStorage.removeItem('userId');
     setCurrentUser(null);
@@ -44,14 +56,18 @@ export default function ProfileScreen() {
 
   return (
     <ScrollWithAnimatedHeader title="">
+      {/* Sección del encabezado del perfil */}
       <View style={styles.header}>
         <Text style={styles.title}>Tu Perfil</Text>
+        
+        {/* Si el usuario está logueaado, muestra su email */}
         {currentUser ? (
           <>
             <Text style={styles.subtitle}>{currentUser.email}</Text>
           </>
         ) : (
           <>
+          {/* Si no está logueado, muestra un mensaje y botón para login / register */}
             <Text style={styles.subtitle}>Desde esta sección podrás gestionar tu cuenta</Text>
             <Pressable style={styles.boton} onPress={() => router.push('/perfil/Login')}>
               <Text style={styles.botonText}>Inicia sesión o regístrate</Text>
@@ -60,7 +76,10 @@ export default function ProfileScreen() {
         )}
       </View>
 
+      {/* Contenido de la pantalla: accesos rápidos y configuraciones */}
       <View style={styles.content}>
+        
+        {/* Actividad del usuario */}
         <View>
           <Text style={styles.contentTitle}>Tu actividad</Text>
           <Pressable style={styles.contentButton} onPress={() => router.push('/inicio/reservas/GestorReservas')}> 
@@ -77,6 +96,7 @@ export default function ProfileScreen() {
           </Pressable>
         </View>
 
+        {/* Métodos de pago */}
         <View>
           <Text style={styles.contentTitle}>Métodos de pago</Text>
           <Pressable style={styles.contentButton} onPress={() => router.push('/perfil/MiniPantallas/Pago')}> 
@@ -85,6 +105,7 @@ export default function ProfileScreen() {
           </Pressable>
         </View>
 
+        {/* Información personal del usuario */}
         <View>
           <Text style={styles.contentTitle}>Información sobre ti</Text>
           <Pressable style={styles.contentButton} onPress={() => router.push('/perfil/MiniPantallas/DatosPersonales')}> 
@@ -97,6 +118,7 @@ export default function ProfileScreen() {
           </Pressable>
         </View>
 
+        {/* Centro de ayuda */}
         <View>
           <Text style={styles.contentTitle}>Centro de ayuda</Text>
           <Pressable style={styles.contentButton} onPress={() => router.push('/perfil/MiniPantallas/ObtenerAyuda')}> 
@@ -105,6 +127,7 @@ export default function ProfileScreen() {
           </Pressable>
         </View>
 
+        {/* Botón de cerrar sesión (solo visible si hay un usuario logueado) */}
         <Pressable style={styles.logout} onPress={handleLogout}>
           <Text style={styles.logoutText}>Cerrar sesión</Text>
       </Pressable>

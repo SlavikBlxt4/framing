@@ -1,14 +1,25 @@
-import { View, Text, Image, StyleSheet, ScrollView, Pressable } from 'react-native';
-import { useLocalSearchParams } from 'expo-router';
-import { Star, SealCheck } from 'phosphor-react-native';
-import { Colors } from '@/constants/Colors';
+// React y React Native
 import { useState } from 'react';
+import { View, Text, Image, StyleSheet, ScrollView, Pressable } from 'react-native';
+
+// Navegación y parámetros
+import { useLocalSearchParams } from 'expo-router';
+
+// Íconos
+import { Star, SealCheck } from 'phosphor-react-native';
+
+// Constantes
+import Colors from '@/constants/Colors';
+
+// Componentes
 import Sesiones from './sesiones';
 import Calificaciones from './calificaciones';
 import Portfolio from './portfolio';
 import Detalles from './detalles';
 
+
 export default function PerfilFotografo() {
+  // Extrae parámetros desde la URL con expo-router
   const {
     id,
     nombreEstudio,
@@ -20,20 +31,22 @@ export default function PerfilFotografo() {
     verificado,
   } = useLocalSearchParams();
 
+  // Estado para controlar la pestaña actualmente seleccionada
+  const [selectedTab, setSelectedTab] = useState<'sesiones' | 'calificaciones' | 'portfolio' | 'detalles'>('sesiones');
+  
+  // Acción simulada para botón "seguir"
   const handleSeguir = () => {
     console.log('Seguir presionado');
   };
 
-  const [selectedTab, setSelectedTab] = useState<'sesiones' | 'calificaciones' | 'portfolio' | 'detalles'>('sesiones');
-
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      {/* Portada */}
+      {/* Imagen de portada del fotógrafo */}
       <View style={styles.portadaWrapper}>
         <Image source={{ uri: fotoPortada as string }} style={styles.portada} />
       </View>
 
-      {/* Avatar */}
+      {/* Imagen de avatar / perfil */}
       <View style={styles.avatarWrapper}>
         <Image source={{ uri: fotografiaUrl as string }} style={styles.avatar} />
       </View>
@@ -45,7 +58,7 @@ export default function PerfilFotografo() {
         </Pressable>
       </View>
 
-      {/* Info principal */}
+      {/* Info del fotografo: nombre, puntuacion, seguidores, direccion */}
       <View style={styles.infoContainer}>
         <Text style={styles.nombre}>
           {nombreEstudio}{' '}
@@ -53,6 +66,8 @@ export default function PerfilFotografo() {
             <SealCheck size={16} weight="duotone" color={Colors.light.tint} />
           )}
         </Text>
+
+        {/* Fila con estrella, puntuacion y seguidores */}
         <View style={styles.ratingRow}>
           <Star size={16} color="#FFD700" weight="fill" />
           <Text style={styles.ratingText}>{puntuacion}</Text>
@@ -62,18 +77,19 @@ export default function PerfilFotografo() {
         <Text style={styles.direccion}>{direccion}</Text>
       </View>
 
-      {/* Tabs */}
+      {/* Barra de pestañas (tabs) para mostrar secciones dinámicas */}
       <View style={styles.tabBar}>
         {['sesiones', 'calificaciones', 'portfolio', 'detalles'].map((tab) => (
           <Pressable key={tab} onPress={() => setSelectedTab(tab)}>
             <Text style={[styles.tabText, selectedTab === tab && styles.tabTextSelected]}>
+              {/* Capitaliza el nombre de la pestaña */}
               {tab.charAt(0).toUpperCase() + tab.slice(1)}
             </Text>
           </Pressable>
         ))}
       </View>
 
-      {/* Contenido dinámico */}
+      {/* Contenido que cambia según la pestaña seleccionada */}
       {selectedTab === 'sesiones' && <Sesiones />}
       {selectedTab === 'calificaciones' && <Calificaciones />}
       {selectedTab === 'portfolio' && <Portfolio />}

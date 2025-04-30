@@ -1,40 +1,59 @@
+// React y React Native
 import React, { useEffect, useRef, useState } from 'react';
-import {Animated, Dimensions, Pressable, StyleSheet, Text, View, } from 'react-native';
+import { Animated, Dimensions, Pressable, StyleSheet, Text, View } from 'react-native';
+
+// UI (react-native-paper)
 import { Button, Portal } from 'react-native-paper';
+
+// Íconos
 import { X } from 'phosphor-react-native';
-import { Colors } from '@/constants/Colors';
+
+// Constantes
+import Colors from '@/constants/Colors';
 import Fonts from '@/constants/Fonts';
+
+// Contextos
 import { useUser } from '@/context/UserContext';
 
-const SCREEN_HEIGHT = Dimensions.get('window').height;
+
+
+const SCREEN_HEIGHT = Dimensions.get('window').height; // Obtiene la altura total de la pantalla 
 
 type Props = {
-  visible: boolean;
-  onClose: () => void;
+  visible: boolean; // Controla la visibilidad del drawer
+  onClose: () => void; // Función que se ejecuta al cerrar el drawer
 };
 
 export default function PremiumDrawer({ visible, onClose }: Props) {
+  // Valores animados para la transición vertical y opacidad del fondo
   const translateY = useRef(new Animated.Value(SCREEN_HEIGHT)).current;
   const fadeAnim = useRef(new Animated.Value(0)).current;
+
+  // Controla el montaje del componente animado
   const [isMounted, setIsMounted] = useState(false);
+
+  // Accede al contexto de usuario para marcarlo como premium
   const { setPremiumUser } = useUser();
 
+  // useEffect para manejar la animación cuando cambia a "visible"
   useEffect(() => {
     if (visible) {
-      setIsMounted(true);
+      setIsMounted(true); // Montar el drawer
       Animated.parallel([
-        Animated.timing(translateY, {
+        Animated.timing(translateY, { // Animacion para deslizar el drawer desde abajo
           toValue: 0,
           duration: 300,
-          useNativeDriver: false, // 🔧 Aquí el cambio
+          useNativeDriver: false,
         }),
+        // Animación para mostrar un fondo semitransparente
         Animated.timing(fadeAnim, {
           toValue: 0.5,
           duration: 300,
-          useNativeDriver: false, // 🔧 Aquí también
+          useNativeDriver: false,
         }),
       ]).start();
     } else {
+      // Ocultar el drawer y fondo
       Animated.parallel([
         Animated.timing(translateY, {
           toValue: SCREEN_HEIGHT,
@@ -52,6 +71,7 @@ export default function PremiumDrawer({ visible, onClose }: Props) {
     }
   }, [visible]);
 
+  // Si el drawer no ha sido montado, no se renderiza nada
   if (!isMounted) return null;
 
   return (

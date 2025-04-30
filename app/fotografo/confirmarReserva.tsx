@@ -1,24 +1,39 @@
+// React y React Native
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, Pressable } from 'react-native';
+
+// Navegación y parámetros
 import { useLocalSearchParams } from 'expo-router';
+
+// Componentes de terceros
 import { Calendar } from 'react-native-calendars';
-import { Colors } from '@/constants/Colors';
+
+// Constantes del proyecto
+import Colors from '@/constants/Colors';
 import Fonts from '@/constants/Fonts';
 
+
+// Componente para confirmar una reserva de sesión fotográfica
 export default function ConfirmarReserva() {
+  // Extrae los parámetros de la ruta (nombre y precio de la sesión)
   const { nombre, precio } = useLocalSearchParams();
+
+  // Estado que guarda la fecha seleccionada, con la fecha de hoy por defecto
   const [selectedDate, setSelectedDate] = useState<string>(
     new Date().toISOString().split('T')[0]
   );
 
+  // Función que se ejecuta al confirmar la reserva
   const handleConfirmar = () => {
     alert(`Reserva confirmada para ${selectedDate}`);
   };
 
   return (
     <View style={styles.container}>
+      {/* Titulo principal */}
       <Text style={styles.title}>Confirmación de Reserva</Text>
 
+      {/* Tarjeta con los detalles de la reserva */}
       <View style={styles.card}>
         <Text style={styles.label}>Sesión:</Text>
         <Text style={styles.value}>{nombre}</Text>
@@ -30,6 +45,7 @@ export default function ConfirmarReserva() {
         <Text style={styles.value}>{precio}€</Text>
       </View>
 
+      {/* Calendario para elegir una fecha */}
       <Calendar
         onDayPress={(day) => setSelectedDate(day.dateString)}
         markedDates={{
@@ -42,6 +58,7 @@ export default function ConfirmarReserva() {
         style={styles.calendar}
       />
 
+      {/* Botón para confirmar la reserva */}
       <Pressable style={styles.button} onPress={handleConfirmar}>
         <Text style={styles.buttonText}>Confirmar Reserva</Text>
       </Pressable>

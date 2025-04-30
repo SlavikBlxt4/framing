@@ -1,10 +1,18 @@
+// React y React Native
 import React, { useEffect, useState } from 'react';
 import { FlatList, StyleSheet, Text, View } from 'react-native';
-import { Fotografo, getFotografos, getFotografosPorCategoria } from '@/services/fotografosServices';
-import { Colors } from '@/constants/Colors';
-import Fonts from '@/constants/Fonts';
-import TarjetaFotografo from '../fm_cards/TarjetaFotografo';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+// Servicios / API
+import { Fotografo, getFotografos, getFotografosPorCategoria } from '@/services/fotografosServices';
+
+// Constantes
+import Colors from '@/constants/Colors';
+import Fonts from '@/constants/Fonts';
+
+// Componentes
+import TarjetaFotografo from '../fm_cards/TarjetaFotografo';
+
 
 type Props = {
   categoriaId?: number;

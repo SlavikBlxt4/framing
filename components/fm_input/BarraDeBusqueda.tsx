@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, View, TextInput, Pressable } from 'react-native';
 import { MagnifyingGlass, X } from 'phosphor-react-native';
-import { Colors } from '@/constants/Colors';
+import Colors from '@/constants/Colors';
 import Fonts from '@/constants/Fonts';
 
 type Props = {
