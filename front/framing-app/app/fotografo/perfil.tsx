@@ -2,12 +2,15 @@ import { View, Text, Image, StyleSheet, ScrollView, Pressable } from 'react-nati
 import { useLocalSearchParams } from 'expo-router';
 import { Star, SealCheck } from 'phosphor-react-native';
 import { Colors } from '@/constants/Colors';
+import { useState } from 'react';
+import Sesiones from './sesiones';
+import Calificaciones from './calificaciones';
+import Portfolio from './portfolio';
+import Detalles from './detalles';
 
 export default function PerfilFotografo() {
-  const params = useLocalSearchParams();
-  console.log("🔍 Params recibidos:", params);
-  
   const {
+    id,
     nombreEstudio,
     fotografiaUrl,
     puntuacion,
@@ -18,9 +21,10 @@ export default function PerfilFotografo() {
   } = useLocalSearchParams();
 
   const handleSeguir = () => {
-    // Lógica para seguir al estudio
     console.log('Seguir presionado');
-  };  
+  };
+
+  const [selectedTab, setSelectedTab] = useState<'sesiones' | 'calificaciones' | 'portfolio' | 'detalles'>('sesiones');
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -28,22 +32,26 @@ export default function PerfilFotografo() {
       <View style={styles.portadaWrapper}>
         <Image source={{ uri: fotoPortada as string }} style={styles.portada} />
       </View>
-  
-      {/* Avatar fuera del contenedor portada */}
+
+      {/* Avatar */}
       <View style={styles.avatarWrapper}>
         <Image source={{ uri: fotografiaUrl as string }} style={styles.avatar} />
       </View>
 
+      {/* Botón seguir */}
       <View style={styles.seguirButtonWrapper}>
         <Pressable style={styles.seguirButton} onPress={handleSeguir}>
           <Text style={styles.seguirButtonText}>Seguir</Text>
         </Pressable>
       </View>
-  
+
       {/* Info principal */}
       <View style={styles.infoContainer}>
         <Text style={styles.nombre}>
-          {nombreEstudio} {verificado === 'true' && <SealCheck size={16} weight='duotone' color={Colors.light.tint}/>}
+          {nombreEstudio}{' '}
+          {verificado === 'true' && (
+            <SealCheck size={16} weight="duotone" color={Colors.light.tint} />
+          )}
         </Text>
         <View style={styles.ratingRow}>
           <Star size={16} color="#FFD700" weight="fill" />
@@ -53,33 +61,47 @@ export default function PerfilFotografo() {
         </View>
         <Text style={styles.direccion}>{direccion}</Text>
       </View>
+
+      {/* Tabs */}
+      <View style={styles.tabBar}>
+        {['sesiones', 'calificaciones', 'portfolio', 'detalles'].map((tab) => (
+          <Pressable key={tab} onPress={() => setSelectedTab(tab)}>
+            <Text style={[styles.tabText, selectedTab === tab && styles.tabTextSelected]}>
+              {tab.charAt(0).toUpperCase() + tab.slice(1)}
+            </Text>
+          </Pressable>
+        ))}
+      </View>
+
+      {/* Contenido dinámico */}
+      {selectedTab === 'sesiones' && <Sesiones />}
+      {selectedTab === 'calificaciones' && <Calificaciones />}
+      {selectedTab === 'portfolio' && <Portfolio />}
+      {selectedTab === 'detalles' && <Detalles />}
     </ScrollView>
   );
-  
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1, 
     paddingBottom: 32,
     backgroundColor: '#fff',
   },
   portadaWrapper: {
-    position: 'relative',
     width: '100%',
     height: 150,
     paddingHorizontal: 20,
-    // overflow: 'hidden',
   },
   portada: {
     width: '100%',
     height: '100%',
-    borderTopLeftRadius: 16,
-    borderTopRightRadius: 16,
+    borderRadius: 16,
+    // borderTopLeftRadius: 16,
+    // borderTopRightRadius: 16,
   },
   avatarWrapper: {
     position: 'absolute',
-    top: 100, // altura para que sobresalga
+    top: 100,
     left: '50%',
     transform: [{ translateX: -50 }],
     width: 100,
@@ -95,7 +117,24 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
     resizeMode: 'cover',
-  },   
+  },
+  seguirButtonWrapper: {
+    alignItems: 'flex-end',
+    marginTop: 30,
+    marginRight: 20,
+  },
+  seguirButton: {
+    backgroundColor: Colors.light.accent,
+    borderWidth: 2,
+    borderColor: Colors.light.tint,
+    paddingVertical: 8,
+    paddingHorizontal: 30,
+    borderRadius: 20,
+  },
+  seguirButtonText: {
+    color: Colors.light.tint,
+    fontWeight: '600',
+  },
   infoContainer: {
     paddingHorizontal: 20,
     paddingTop: 5,
@@ -129,21 +168,22 @@ const styles = StyleSheet.create({
     color: '#666',
     marginBottom: 12,
   },
-  seguirButtonWrapper: {
-    alignItems: 'flex-end',
-    marginTop: 30,
-    marginRight: 20,
+  tabBar: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    borderBottomWidth: 1,
+    borderColor: '#ccc',
+    marginBottom: 10,
   },
-  seguirButton: {
-    backgroundColor: Colors.light.accent,
-    borderWidth: 2,
-    borderColor: Colors.light.tint,
+  tabText: {
     paddingVertical: 8,
-    paddingHorizontal: 30,
-    borderRadius: 20,
+    fontSize: 16,
+    color: '#999',
   },
-  seguirButtonText: {
-    color: Colors.light.tint,
-    fontWeight: '600',
+  tabTextSelected: {
+    color: '#007C82',
+    fontWeight: 'bold',
+    borderBottomWidth: 2,
+    borderColor: '#007C82',
   },
 });
