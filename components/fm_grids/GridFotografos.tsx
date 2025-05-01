@@ -1,0 +1,108 @@
+// React y React Native
+import React, { useEffect, useState } from 'react';
+import { FlatList, StyleSheet, Text, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+// Servicios / API
+import { Fotografo, getFotografos, getFotografosPorCategoria } from '@/services/fotografosServices';
+
+// Constantes
+import Colors from '@/constants/Colors';
+import Fonts from '@/constants/Fonts';
+
+// Componentes
+import TarjetaFotografo from '../fm_cards/TarjetaFotografo';
+
+
+type Props = {
+  categoriaId?: number;
+  sortBy?: 'nombre-asc' | 'nombre-desc';
+  searchQuery?: string;
+};
+
+export default function GridFotografos({ categoriaId, sortBy = 'nombre-asc', searchQuery = '' }: Props) {
+  const [fotografos, setFotografos] = useState<Fotografo[]>([]);
+  const [loading, setLoading] = useState(true);
+  const insets = useSafeAreaInsets();
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      const data = categoriaId
+        ? await getFotografosPorCategoria(categoriaId)
+        : await getFotografos();
+      setFotografos(data);
+      setLoading(false);
+    };
+
+    fetchData();
+  }, [categoriaId]);
+
+  const fotografosFiltrados = fotografos
+    .filter((f) =>
+      f.nombreEstudio.toLowerCase().includes(searchQuery.trim().toLowerCase())
+    )
+    .sort((a, b) =>
+      sortBy === 'nombre-asc'
+        ? a.nombreEstudio.localeCompare(b.nombreEstudio)
+        : b.nombreEstudio.localeCompare(a.nombreEstudio)
+    );
+
+  return (
+    <View style={styles.container}>
+      <FlatList
+        data={fotografosFiltrados}
+        keyExtractor={(item) => item.id}
+        numColumns={2}
+        columnWrapperStyle={styles.row}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.content}
+        renderItem={({ item }) => (
+          <View style={styles.cardWrapper}>
+            <TarjetaFotografo
+              nombreEstudio={item.nombreEstudio}
+              fotografiaUrl={item.fotografiaUrl}
+              puntuacion={item.puntuacion}
+              direccion={item.direccion}
+              fotoPortada={item.fotoPortada}
+              seguidores={item.seguidores}
+              verificado={item.verificado}
+            />
+          </View>
+        )}
+        ListEmptyComponent={
+          !loading ? (
+            <Text style={styles.empty}>No se encontraron fotógrafos.</Text>
+          ) : null
+        }
+      />
+    </View>
+  );
+}
+
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1, 
+    backgroundColor: Colors.light.background,
+  },
+  content: {
+    paddingBottom: 60,
+    paddingTop: 20,
+    paddingHorizontal: 20,
+  },
+  row: {
+    justifyContent: 'space-between',
+    marginBottom: 20,
+  },
+  cardWrapper: {
+    width: '48%',
+    alignItems: 'center',
+  },
+  empty: {
+    textAlign: 'center',
+    fontFamily: Fonts.regular,
+    color: Colors.light.text,
+    fontSize: 16,
+  },
+});

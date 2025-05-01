@@ -1,37 +1,50 @@
-# Proyecto Spring Boot con PostgreSQL Dockerizada
+# Welcome to your Expo app 👋
 
-Este proyecto utiliza Spring Boot y una base de datos PostgreSQL, que se ejecuta en un contenedor Docker. A continuación, se detallan las instrucciones para clonar el repositorio y configurar el entorno local.
+This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
 
-## Requisitos Previos
+## Get started
 
-Asegúrate de tener instalados los siguientes programas:
+1. Install dependencies
 
-- [Git](https://git-scm.com/)
-- [Docker](https://www.docker.com/)
-- [Docker Compose](https://docs.docker.com/compose/)
-
-## Clonación del Repositorio
-
-1. Clona el repositorio:
    ```bash
-   git clone https://github.com/SlavikBlxt4/framing.git
-   cd framing/demo
-## Montar el Contenedor Docker
+   npm install
+   ```
 
-    Ejecuta el siguiente comando para levantar el contenedor:
-    docker-compose up -d
+2. Start the app
 
-Esto creará y ejecutará un contenedor PostgreSQL con las siguientes credenciales:
+   ```bash
+    npx expo start
+   ```
 
-    Usuario: slavik
-    Contraseña: mipassword
-    Base de datos: framing
+In the output, you'll find options to open the app in a
 
-## Acceso a la Base de Datos
+- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
+- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
+- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
+- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
 
-    Puedes acceder a la base de datos PostgreSQL en localhost:5432 usando las credenciales proporcionadas.
+You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
 
-## Detener el Contenedor Docker
+## Get a fresh project
 
-    Para detener el contenedor, puedes usar el siguiente comando:
-    docker-compose down
+When you're ready, run:
+
+```bash
+npm run reset-project
+```
+
+This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+
+## Learn more
+
+To learn more about developing your project with Expo, look at the following resources:
+
+- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
+- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+
+## Join the community
+
+Join our community of developers creating universal apps.
+
+- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
+- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
