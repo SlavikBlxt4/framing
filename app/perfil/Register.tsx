@@ -1,6 +1,6 @@
 // React y React Native
 import { useState, useLayoutEffect } from "react";
-import { View, Text, StyleSheet, Pressable, TextInput } from "react-native";
+import { View, Text, StyleSheet, Pressable, TextInput, Alert } from "react-native";
 
 // Navegación (expo-router)
 import { router, useNavigation } from "expo-router";
@@ -15,121 +15,153 @@ import ScrollWithAnimatedHeader from "@/components/framing/ScrollWithAnimatedHea
 import Colors from "@/constants/Colors";
 import Fonts from "@/constants/Fonts";
 
-// Datos simulados
-import mockUsers from "@/mocks/mockUsuarios";
+// Servicio
+import { register } from "@/services/authService";
 
 export default function RegisterScreen() {
-    // Hook de navegación de expo-router
-    const navigation = useNavigation();
+  const navigation = useNavigation();
 
-    // EEstados del formulario 
-    const [showPassword, setShowPassword] = useState(false); // Mostrar u ocultar contraseña
-    const [email, setEmail] = useState(""); // Campo de correo
-    const [password, setPassword] = useState(""); // Campo de contraseña
-    const [acceptedTerms, setAcceptedTerms] = useState(false); // Checkbox de términos
+  const [showPassword, setShowPassword] = useState(false);
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [role, setRole] = useState<"CLIENT" | "VENDOR">("CLIENT");
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
-    // Oculta el header de navegación al entrar en esta pantalla
-    useLayoutEffect(() => {
-        navigation.setOptions({
-            headerShown: false,
-        });
-    }, [navigation])
 
-    // Lógica del botón de registro
-    const handleRegister = () => {
-        // Verificar que el usuario acepte los términos antes de continuar
-        if (!acceptedTerms) {
-          console.log("Debes aceptar los términos y condiciones");
-          return;
-        }
+  useLayoutEffect(() => {
+    navigation.setOptions({ headerShown: false });
+  }, [navigation]);
+
+  const handleRegister = async () => {
+    if (!acceptedTerms) {
+      Alert.alert("Aviso", "Debes aceptar los términos y condiciones");
+      return;
+    }
+  
+    try {
+        const response = await register({
+            name: name.trim(),
+            email: email.trim().toLowerCase(),
+            password,
+            phone_number: phoneNumber.trim(),
+            role,
+        });  
+        console.log("✅ Usuario registrado:", response);
+  
+        // Redirige directamente a la pantalla de login
+        router.replace("/perfil/Login");
+  
+    } catch (error: any) {
+        console.error("❌ Error al registrar:", error);
       
-        // Aqui esta haciendo una simulacion: verifica si el usuario ya existe
-        const user = mockUsers.find(
-          (u) => u.email === email.trim() && u.password === password
-        );
+        const backendMessage =
+          error?.response?.data?.message ?? "Error desconocido al registrar.";
       
-        if (user) {
-          console.log("Cuenta creada"); // Aqui deberiamos prevenir duplicados
-        } else {
-          console.log("Credenciales incorrectas");
-        }
-    };
-      
-      
+        setErrorMessage(typeof backendMessage === "string" ? backendMessage : backendMessage.join?.(", ") || backendMessage);
+    }
+         
+  };
+  
 
-    return (
-        <ScrollWithAnimatedHeader title="">
-            <View style={styles.container}>
-                {/* Encabezado visual */}
-                <>
-                    <Text style={styles.logo}>FRAMING</Text> 
-                    <Text style={styles.subtitle}>Registrate para encontrar el fotógrafo perfecto</Text>
-                </>
+  return (
+    <ScrollWithAnimatedHeader title="">
+      <View style={styles.container}>
+        <Text style={styles.logo}>FRAMING</Text>
+        <Text style={styles.subtitle}>
+          Regístrate para encontrar el fotógrafo perfecto
+        </Text>
 
-                {/* Campos del formulario */}
-                <View style={styles.inputContainer}>
-                    {/* Campo de correo */}
-                    <TextInput 
-                        placeholder="Correo electrónico" 
-                        keyboardType="email-address" 
-                        autoCapitalize="none" 
-                        style={styles.input}
-                        value={email}
-                        onChangeText={setEmail}
-                    />
+        <View style={styles.inputContainer}>
+          <TextInput
+            placeholder="Nombre completo"
+            style={styles.input}
+            value={name}
+            onChangeText={setName}
+          />
 
-                    {/* Campo de contraseña con icono para mostrar / ocultar */}
-                    <View style={styles.passwordContainer}>
-                        <TextInput
-                            placeholder="Contraseña"
-                            secureTextEntry={!showPassword}
-                            autoCapitalize="none"
-                            style={styles.passwordInput}
-                            value={password}
-                            onChangeText={setPassword}
-                        />
-                        <Pressable onPress={() => setShowPassword(!showPassword)}>
-                            {showPassword ? (
-                            <EyeSlash size={24} color={Colors.light.tint} />
-                            ) : (
-                            <Eye size={24} color={Colors.light.tint} />
-                            )}
-                        </Pressable>
-                    </View>
+          <TextInput
+            placeholder="Correo electrónico"
+            keyboardType="email-address"
+            autoCapitalize="none"
+            style={styles.input}
+            value={email}
+            onChangeText={setEmail}
+          />
 
-                    {/* Checkbox de aceptación de terminos */}
-                    <Pressable
-                        style={styles.checkboxContainer}
-                        onPress={() => setAcceptedTerms(!acceptedTerms)}
-                    >
-                        <View style={[styles.checkbox, acceptedTerms && styles.checkboxChecked]} />
-                        <Text style={styles.checkboxText}>
-                            Acepto los términos y condiciones
-                        </Text>
-                    </Pressable>
-                </View>
+          <TextInput
+            placeholder="Teléfono"
+            keyboardType="phone-pad"
+            style={styles.input}
+            value={phoneNumber}
+            onChangeText={setPhoneNumber}
+          />
 
-                {/* Enlace para iniciar sesión si ya tiene una cuenta */}
-                <View style={styles.registerContainer}>
-                    <Text style={styles.registerText}>
-                        ¿Ya tienes una cuenta?{' '}
-                        <Text
-                            style={styles.registerLink}
-                            onPress={() => router.push('/perfil/Login')}
-                        >
-                            Inicia sesión aqui
-                        </Text>
-                    </Text>
-                </View>
+          <View style={styles.passwordContainer}>
+            <TextInput
+              placeholder="Contraseña"
+              secureTextEntry={!showPassword}
+              autoCapitalize="none"
+              style={styles.passwordInput}
+              value={password}
+              onChangeText={setPassword}
+            />
+            <Pressable onPress={() => setShowPassword(!showPassword)}>
+              {showPassword ? (
+                <EyeSlash size={24} color={Colors.light.tint} />
+              ) : (
+                <Eye size={24} color={Colors.light.tint} />
+              )}
+            </Pressable>
+          </View>
 
-                {/* Botón de registro */}
-                <Pressable style={styles.loginButton} onPress={handleRegister}>
-                    <Text style={styles.loginButtonText}>REGISTRARSE</Text>
-                </Pressable>
+          <Pressable
+            style={styles.checkboxContainer}
+            onPress={() => setAcceptedTerms(!acceptedTerms)}
+          >
+            <View
+              style={[
+                styles.checkbox,
+                acceptedTerms && styles.checkboxChecked,
+              ]}
+            />
+            <Text style={styles.checkboxText}>
+              Acepto los términos y condiciones
+            </Text>
+          </Pressable>
 
-            </View>
-        </ScrollWithAnimatedHeader>
-    )
+          <Pressable onPress={() => setRole(role === "CLIENT" ? "VENDOR" : "CLIENT")}>
+            <Text style={styles.checkboxText}>
+              Soy {role === "CLIENT" ? "cliente" : "fotógrafo"} (tocar para cambiar)
+            </Text>
+          </Pressable>
+        </View>
+
+        <View style={styles.registerContainer}>
+          <Text style={styles.registerText}>
+            ¿Ya tienes una cuenta?{" "}
+            <Text
+              style={styles.registerLink}
+              onPress={() => router.push("/perfil/Login")}
+            >
+              Inicia sesión aquí
+            </Text>
+          </Text>
+        </View>
+
+        {errorMessage !== "" && (
+            <Text style={styles.errorText}>{errorMessage}</Text>    
+        )}
+
+
+        <Pressable style={styles.loginButton} onPress={handleRegister}>
+          <Text style={styles.loginButtonText}>REGISTRARSE</Text>
+        </Pressable>
+      </View>
+    </ScrollWithAnimatedHeader>
+  );
 }
 
 const styles = StyleSheet.create({
@@ -157,8 +189,8 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
     },
     passwordContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
+        flexDirection: "row",
+        alignItems: "center",
         backgroundColor: Colors.light.accent,
         borderWidth: 1,
         borderRadius: 10,
@@ -167,53 +199,43 @@ const styles = StyleSheet.create({
     },
     passwordInput: {
         flex: 1,
-        // paddingVertical: 12,
         includeFontPadding: false,
         fontFamily: Fonts.regular,
     },
-    forgotPassword: {
-        alignSelf: 'flex-end',
-        marginTop: 5,
-        marginRight: 10,
-        fontFamily: Fonts.semiBold,
-        color: Colors.light.tint,
-        fontSize: 14,
-    }, 
     loginButton: {
         marginTop: 25,
         backgroundColor: Colors.light.tint,
         paddingVertical: 20,
         borderRadius: 5,
-        alignItems: 'center',
-        justifyContent: 'center',
+        alignItems: "center",
+        justifyContent: "center",
     },
     loginButtonText: {
-        color: '#fff',
+        color: "#fff",
         fontSize: 16,
         fontFamily: Fonts.bold,
         includeFontPadding: false,
     },
     registerContainer: {
         marginTop: 20,
-        alignItems: 'center',
+        alignItems: "center",
     },
     registerText: {
         fontFamily: Fonts.regular,
         fontSize: 14,
-        color: '#333',
+        color: "#333",
     },
     registerLink: {
-        textDecorationLine: 'underline',
+        textDecorationLine: "underline",
         fontFamily: Fonts.semiBold,
         color: Colors.light.tint,
-    },   
+    },
     checkboxContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
+        flexDirection: "row",
+        alignItems: "center",
         marginTop: 10,
         paddingHorizontal: 5,
     },
-      
     checkbox: {
         width: 20,
         height: 20,
@@ -221,18 +243,21 @@ const styles = StyleSheet.create({
         borderColor: Colors.light.tint,
         borderRadius: 4,
         marginRight: 10,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: '#fff',
+        backgroundColor: "#fff",
     },
-      
     checkboxChecked: {
         backgroundColor: Colors.light.tint,
     },
-      
     checkboxText: {
         fontFamily: Fonts.regular,
         fontSize: 14,
-        color: '#333',
+        color: "#333",
+    },
+    errorText: {
+        color: "#DC2626", // rojo
+        fontSize: 14,
+        fontFamily: Fonts.semiBold,
+        textAlign: "center",
+        marginTop: 10,
     },      
-})
+});
