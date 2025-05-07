@@ -1,6 +1,6 @@
 // React y React Native
 import { useState, useLayoutEffect } from "react";
-import { View, Text, StyleSheet, Pressable, TextInput } from "react-native";
+import { View, Text, StyleSheet, Pressable, TextInput, Alert } from "react-native";
 
 // Navegación (expo-router)
 import { useNavigation, router } from "expo-router";
@@ -17,6 +17,9 @@ import Fonts from "@/constants/Fonts";
 
 // Datos simulados
 import mockUsers from "@/mocks/mockUsuarios";
+
+// Datos reales
+import { login as loginService} from '@/services/authService';
 
 // Almacenamiento local
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -41,29 +44,51 @@ export default function LoginScreen() {
     }, [navigation])
 
     // Funcion de login 
-    const handleLogin = async () => {
-        // Busca un usuario en el mock con email y contraseña iguales
-        const user = mockUsers.find(
-          (u) => u.email === email.trim() && u.password === password
-        );
+    // const handleLogin = async () => {
+    //     // Busca un usuario en el mock con email y contraseña iguales
+    //     const user = mockUsers.find(
+    //       (u) => u.email === email.trim() && u.password === password
+    //     );
       
-        if (user) {
-          console.log("Inicio de sesión exitoso. ID del usuario:", user.id);
+    //     if (user) {
+    //       console.log("Inicio de sesión exitoso. ID del usuario:", user.id);
       
-          try {
-            // Guarda el ID del usuario en AsyncStorage
-            await AsyncStorage.setItem("userId", String(user.id));
+    //       try {
+    //         // Guarda el ID del usuario en AsyncStorage
+    //         await AsyncStorage.setItem("userId", String(user.id));
 
-            // Navega a la pantalla de perfil reemplazando el historial
-            router.replace("/profile");
-          } catch (error) {
-            console.error("Error al guardar el ID en AsyncStorage:", error);
+    //         // Navega a la pantalla de perfil reemplazando el historial
+    //         router.replace("/profile");
+    //       } catch (error) {
+    //         console.error("Error al guardar el ID en AsyncStorage:", error);
+    //       }
+      
+    //     } else {
+    //       console.log("Credenciales incorrectas");
+    //     }
+    // };     
+
+    const handleLogin = async () => {
+        try {
+          const token = await loginService({ email: email.trim(), password });
+      
+          if (!token) {
+            throw new Error("No se recibió token en la respuesta.");
           }
       
-        } else {
-          console.log("Credenciales incorrectas");
+          await AsyncStorage.setItem("token", token);
+          console.log("Inicio de sesión exitoso");
+      
+          router.replace("/profile");
+      
+        } catch (error: any) {
+          if (error.response?.status === 401) {
+            Alert.alert("Error", "Correo o contraseña incorrectos");
+          } else {
+            console.error("Error en login:", error.message);
+          }
         }
-    };     
+    };      
     
     return (
         <ScrollWithAnimatedHeader title="">
