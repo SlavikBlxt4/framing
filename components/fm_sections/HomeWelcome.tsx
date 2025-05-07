@@ -4,6 +4,7 @@ import { es } from 'date-fns/locale';
 import Fonts from '@/constants/Fonts';
 import UserProfilePicture from '@/components/framing/UserPfp';
 import SearchBar from '../fm_input/BarraDeBusqueda';
+import { formatUsernameFromEmail } from "@/utils/string";
 
 type Props = {
     username?: string; // Si no hay usuario, se mostrará "Iniciar sesión"
@@ -20,11 +21,10 @@ export default function HomeWelcome({ username }: Props ) {
                     <Text style={styles.date}>{today}</Text>
                     <Text style={styles.welcome}>
                         Bienvenido, <Text style={styles.username}>
-                            {username ? username: 'Inicia Sesión'}
+                            {username ? formatUsernameFromEmail(username) : "Inicia Sesión"}
                         </Text>
                     </Text>
                 </View>
-
                 <UserProfilePicture />
             </View>
             {/* <SearchBar /> */}
