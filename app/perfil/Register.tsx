@@ -49,13 +49,13 @@ export default function RegisterScreen() {
             phone_number: phoneNumber.trim(),
             role,
         });  
-        console.log("✅ Usuario registrado:", response);
+        console.log("Usuario registrado:", response);
   
         // Redirige directamente a la pantalla de login
         router.replace("/perfil/Login");
   
     } catch (error: any) {
-        console.error("❌ Error al registrar:", error);
+        console.error("Error al registrar:", error);
       
         const backendMessage =
           error?.response?.data?.message ?? "Error desconocido al registrar.";

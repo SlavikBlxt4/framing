@@ -66,7 +66,7 @@ export default function LoginScreen() {
             ["userRole", decoded.role],
           ]);
       
-          router.replace("/profile");
+          router.replace("/(tabs)");
         } catch (error: any) {
             if (error.response?.status === 401) {
                 Alert.alert("Error", "Correo o contraseña incorrectos");

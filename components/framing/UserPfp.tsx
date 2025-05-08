@@ -58,7 +58,7 @@ export default function UserProfilePicture() {
         source={
           isRemote 
             ? { uri: imageUrl }
-            : require("@/assets/images/placeholder_profile.jpg")
+            : require("@/assets/images/placeholder_profile.png")
         }
         style={styles.image}
         resizeMode="cover"

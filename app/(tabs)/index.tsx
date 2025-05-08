@@ -15,16 +15,19 @@ import Anuncio from '@/components/fm_sections/Anuncio';
 
 // Datos simulados
 // import { UsuarioProps } from '@/types/Usuario.type';
-import { categorias } from '@/mocks/mockCategoria';
+// import { categorias } from '@/mocks/mockCategoria';
 import mockUsers from '@/mocks/mockUsuarios';
 
 // Datos reales
 import { UsuarioProps } from '@/types/user';
+import { Categoria } from '@/types/category';
+import { getCategorias } from '@/services/categoryService';
 
 // Componente principal de la pantalla de inicio
 export default function HomeScreen() {
   // Estado para guardar el usuario actualmente logueado (o null si no hay ninguno)
   const [currentUser, setCurrentUser] = useState<UsuarioProps | null>(null);
+  const [categorias, setCategorias] = useState<Categoria[]>([]);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -40,8 +43,18 @@ export default function HomeScreen() {
         });
       }
     };
+
+    const fetchCategorias = async () => {
+      try {
+        const data = await getCategorias();
+        setCategorias(data);
+      } catch (error) {
+        console.error('Error al obtener las categorías: ', error);
+      }
+    }
   
     fetchUser();
+    fetchCategorias();
   }, []);
 
 
@@ -56,7 +69,8 @@ export default function HomeScreen() {
       const section = (
         <ListarHorizontalFotografos
           key={`categoria-${cat.id}`}
-          categoria={cat.nombreCategoria}
+          categoria={cat.name}
+          categorias={categorias}
         />
       );
 
@@ -75,7 +89,7 @@ export default function HomeScreen() {
       // En caso contrario, solo se devuelve la sección
       return [section];
     });
-  }, []); // Solo se recalcula si las dependencias cambian (vacío: solo una vez)
+  }, [categorias]); // Solo se recalcula si las dependencias cambian (vacío: solo una vez)
 
   // Renderizado del componente
   return (

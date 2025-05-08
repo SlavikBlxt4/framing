@@ -5,15 +5,17 @@ import { ArrowRight } from 'phosphor-react-native';
 import Colors from '@/constants/Colors';
 import Fonts from '@/constants/Fonts';
 import { router } from 'expo-router';
-import { categorias } from '@/mocks/mockCategoria';
+// import { categorias } from '@/mocks/mockCategoria';
+import { Categoria } from '@/types/category';
 
 type Props = {
   categoria: string;
+  categorias: Categoria[];
 };
 
-export default function ListarHorizontalFotografos({ categoria }: Props) {
+export default function ListarHorizontalFotografos({ categoria, categorias }: Props) {
     // 1 -> Busca el ID de la categoría por su nombre
-    const categoriaId = categorias.find(cat => cat.nombreCategoria === categoria)?.id || null;
+    const categoriaId = categorias.find(cat => cat.name === categoria)?.id || null;
 
     // 2 -> Filtra los fotógrafos por ese id
     const fotografosFiltrados = fotografos.filter(fotografo => fotografo.categoriaId === categoriaId);
