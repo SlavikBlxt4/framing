@@ -1,6 +1,6 @@
 // React - React Native
 import React, { useState, useMemo } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 // Componentes
@@ -11,6 +11,8 @@ import FilterDrawerExplorar from '@/components/fm_drawers/FilterDrawerExplorar';
 
 // Datos simulados
 import { fotografos } from '@/mocks/mockFotografo';
+import BotonesCategorias from '@/components/fm_input/BotonesCategorias';
+import Fonts from '@/constants/Fonts';
 
 
 // Componente principla de la pantalla "Explorar"
@@ -43,22 +45,24 @@ export default function ExplorarScreen() {
         <SearchBar value={search} onChangeText={setSearch} />
       </View>
 
+      <BotonesCategorias></BotonesCategorias>
+
       {/* Grid de fotógrafos filitrada por búsqueda y ordenada por sortBy */}
-      <GridFotografos
+      {/* <GridFotografos
         sortBy={sortBy}
         searchQuery={search}
-      />
+      /> */}
 
       {/* Botón flotante que abre el drawer de filtros/ordenamiento */}
-      <FloatingSortButton onPress={() => setDrawerVisible(true)} />
+      {/* <FloatingSortButton onPress={() => setDrawerVisible(true)} /> */}
 
       {/* Drawer para elegir criterio de ordenamiento */}
-      <FilterDrawerExplorar
+      {/* <FilterDrawerExplorar
         visible={drawerVisible} // Muestra u oculta el drawer
         onClose={() => setDrawerVisible(false)} // Función para cerrar el drawer
         onSortChange={setSortBy} // Cambia el criterio de ordenamiento
         selectedSort={sortBy} // Criterio actualmente seleccionado
-      />
+      /> */}
     </SafeAreaView>
   );
 }

@@ -15,7 +15,7 @@ export interface LoginResponse {
 
 export interface TokenPayload {
     email: string;
-    role: "CLIENT" | "VENDOR" | string;
+    role: "CLIENT" | "PHOTOGRAPHER" | string;
     sub: number;
     iat: number;
     exp: number;
@@ -26,7 +26,7 @@ export interface RegisterRequest {
     email: string;
     password: string;
     phone_number: string;
-    role: "CLIENT" | "VENDOR";
+    role: "CLIENT" | "PHOTOGRAPHER";
 }
   
   export interface RegisterResponse {

@@ -26,7 +26,7 @@ export default function RegisterScreen() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
-  const [role, setRole] = useState<"CLIENT" | "VENDOR">("CLIENT");
+  const [role, setRole] = useState<"CLIENT" | "PHOTOGRAPHER">("CLIENT");
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -132,7 +132,7 @@ export default function RegisterScreen() {
             </Text>
           </Pressable>
 
-          <Pressable onPress={() => setRole(role === "CLIENT" ? "VENDOR" : "CLIENT")}>
+          <Pressable onPress={() => setRole(role === "CLIENT" ? "PHOTOGRAPHER" : "CLIENT")}>
             <Text style={styles.checkboxText}>
               Soy {role === "CLIENT" ? "cliente" : "fotógrafo"} (tocar para cambiar)
             </Text>
