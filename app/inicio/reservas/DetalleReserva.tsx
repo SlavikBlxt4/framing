@@ -3,12 +3,12 @@ import React, { useLayoutEffect, useState } from 'react';
 import { View, Text, StyleSheet, Image, Pressable, Linking } from 'react-native';
 
 // Navegación
-import { useLocalSearchParams } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { useNavigation } from '@react-navigation/native';
 
 // Componentes de terceros
 import { Dialog, Portal, Button, Paragraph, Provider as PaperProvider } from 'react-native-paper';
-import { PaperPlaneTilt, CalendarX } from 'phosphor-react-native';
+import { PaperPlaneTilt, CalendarX, Star } from 'phosphor-react-native';
 
 // Constantes del proyecto
 import Fonts from '@/constants/Fonts';
@@ -22,7 +22,8 @@ export default function DetalleReserva() {
   const navigation = useNavigation();
 
   // Obtiene los parámetros pasados por la ruta (desde la URL)
-  const { nombre, fecha, direccion, fotografiaUrl, hora } = useLocalSearchParams();
+  const { nombre, fecha, direccion, fotografiaUrl, hora, status } = useLocalSearchParams();
+  const statusStr = typeof status === 'string' ? status: status?.[0];
 
   // Convierte los parámetros en string si vienen como arrays (puede ocurrir con query params)
   const fechaStr = typeof fecha === 'string' ? fecha : fecha?.[0];
@@ -132,10 +133,26 @@ export default function DetalleReserva() {
         </View>
 
         {/* Boton para cancelar la reserva */}
-        <Pressable onPress={mostrarDialogo} style={styles.botonCancelar}>
-          <Text style={styles.botonCancelarTexto}>Quiero cancelar mi reserva</Text>
-          <CalendarX weight='fill' color='#fff' />
+        {statusStr === 'done' ? (
+        <Pressable
+          onPress={() =>
+            router.push({
+              pathname: '/inicio/reservas/RateScreen',
+              params: { serviceId: '5' }, // reemplaza "5" por el ID real si lo tienes como parámetro
+            })
+          }
+          style={[styles.botonCancelar, { backgroundColor: Colors.light.tint }]}
+        >
+          <Text style={styles.botonCancelarTexto}>Calificar servicio</Text>
+          <PaperPlaneTilt weight='fill' color='#fff' />
         </Pressable>
+        ) : (
+          <Pressable onPress={mostrarDialogo} style={styles.botonCancelar}>
+            <Text style={styles.botonCancelarTexto}>Quiero cancelar mi reserva</Text>
+            <CalendarX weight='fill' color='#fff' />
+          </Pressable>
+        )}
+
 
         {/* Dialogo de confirmacion de cancelacion */}
         <Portal>

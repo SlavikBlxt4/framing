@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import {
   View,
   Text,
@@ -6,89 +6,95 @@ import {
   StyleSheet,
   Pressable,
 } from 'react-native';
-import { reservas as rawReservas } from '@/mocks/mockReservas';
-import { fotografos } from '@/mocks/mockFotografo';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import Fonts from '@/constants/Fonts';
-import Colors from '@/constants/Colors';
 import { useRouter } from 'expo-router';
-import { CaretRight, FadersHorizontal } from 'phosphor-react-native';
-import FilterDrawer from '../fm_drawers/FilterDrawer';
-import FloatingSortButton from '../fm_input/FloatingSortButton'
+import { CaretRight } from 'phosphor-react-native';
 
-const reservas = rawReservas.map((reserva) => {
-  const fotografo = fotografos.find((f) => f.id === reserva.fotografoId);
-  return {
-    ...reserva,
-    hora: reserva.hora,
-    fotografoNombre: fotografo?.nombreEstudio,
-    fotografiaUrl: fotografo?.fotografiaUrl,
-    direccion: fotografo?.direccion,
-    puntuacion: fotografo?.puntuacion,
-  };
-});
+import Colors from '@/constants/Colors';
+import Fonts from '@/constants/Fonts';
+
+import { getBookingHistory } from '@/services/bookingsService';
+import { BookingHistoryDto } from '@/types/bookings';
+import FilterDrawer from '../fm_drawers/FilterDrawer';
+import FloatingSortButton from '../fm_input/FloatingSortButton';
 
 const ReservasList: React.FC = () => {
   const insets = useSafeAreaInsets();
   const router = useRouter();
+
+  const [reservas, setReservas] = useState<BookingHistoryDto[]>([]);
   const [drawerVisible, setDrawerVisible] = useState(false);
   const [showPastSessions, setShowPastSessions] = useState(false);
   const [sortBy, setSortBy] = useState<'fecha-asc' | 'fecha-desc' | 'nombre-asc' | 'nombre-desc'>('fecha-asc');
+  const [statusFilter, setStatusFilter] = useState<'all' | 'pending' | 'active' | 'done'>('all');
+
+  useEffect(() => {
+    getBookingHistory()
+      .then(setReservas)
+      .catch((err) => console.error('Error al cargar reservas:', err));
+  }, []);
 
   const handleSortChange = useCallback((option: typeof sortBy) => {
     setSortBy(option);
     setDrawerVisible(false);
   }, []);
 
-  const reservasFiltradas = showPastSessions
-    ? reservas
-    : reservas.filter((res) => {
-        const [d, m, y] = res.fecha.split('/').map(Number);
-        const [h, min] = res.hora.split(':').map(Number);
-        const fecha = new Date(y, m - 1, d, h, min);
-        return fecha >= new Date();
-      });
+  const estadoTraducido: Record<string, string> = {
+    pending: 'Pendiente de aceptar',
+    active: 'Confirmada',
+    done: 'Finalizada',
+  }
+
+  const reservasFiltradas = useMemo(() => {
+    return reservas.filter((res) => {
+      const fecha = new Date(res.date);
+      const isFuture = fecha >= new Date();
+      const matchesStatus = statusFilter === 'all' || res.status === statusFilter;
+      return matchesStatus && (showPastSessions || isFuture);
+    });
+  }, [reservas, showPastSessions, statusFilter]);
 
   const reservasOrdenadas = useMemo(() => {
     const sorted = [...reservasFiltradas];
     if (sortBy.includes('fecha')) {
-      sorted.sort((a, b) => {
-        const [d1, m1, y1] = a.fecha.split('/').map(Number);
-        const [d2, m2, y2] = b.fecha.split('/').map(Number);
-        return sortBy === 'fecha-asc'
-          ? new Date(y1, m1 - 1, d1).getTime() - new Date(y2, m2 - 1, d2).getTime()
-          : new Date(y2, m2 - 1, d2).getTime() - new Date(y1, m1 - 1, d1).getTime();
-      });
+      sorted.sort((a, b) =>
+        sortBy === 'fecha-asc'
+          ? new Date(a.date).getTime() - new Date(b.date).getTime()
+          : new Date(b.date).getTime() - new Date(a.date).getTime()
+      );
     } else {
       sorted.sort((a, b) =>
         sortBy === 'nombre-asc'
-          ? (a.fotografoNombre ?? '').localeCompare(b.fotografoNombre ?? '')
-          : (b.fotografoNombre ?? '').localeCompare(a.fotografoNombre ?? '')
+          ? a.serviceName.localeCompare(b.serviceName)
+          : b.serviceName.localeCompare(a.serviceName)
       );
     }
     return sorted;
-  }, [sortBy, showPastSessions]);
+  }, [reservasFiltradas, sortBy]);
 
-  const renderItem = ({ item }: { item: typeof reservas[0] }) => (
+  const renderItem = ({ item }: { item: BookingHistoryDto }) => (
     <Pressable
       style={styles.itemContainer}
       onPress={() =>
         router.push({
           pathname: '/inicio/reservas/DetalleReserva',
           params: {
-            nombre: item.fotografoNombre,
-            fecha: item.fecha,
-            hora: item.hora,
-            fotografiaUrl: item.fotografiaUrl,
-            direccion: item.direccion,
-            puntuacion: item.puntuacion?.toString(),
+            nombre: item.serviceName,
+            fecha: new Date(item.date).toLocaleDateString(),
+            hora: new Date(item.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            fotografiaUrl: '', // opcional
+            direccion: '',
+            puntuacion: '',
+            status: item.status,
           },
         })
       }
     >
       <View style={styles.textContainer}>
-        <Text style={styles.fotografo}>{item.fotografoNombre}</Text>
-        <Text style={styles.fecha}>{item.fecha}</Text>
+        <Text style={styles.fotografo}>{item.serviceName}</Text>
+        <Text style={styles.fecha}>
+          {new Date(item.date).toLocaleDateString()} · {estadoTraducido[item.status]}
+        </Text>
       </View>
       <CaretRight size={20} weight="bold" color={Colors.light.tint} />
     </Pressable>
@@ -98,7 +104,7 @@ const ReservasList: React.FC = () => {
     <View style={styles.container}>
       <FlatList
         data={reservasOrdenadas}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item.bookingId.toString()}
         renderItem={renderItem}
         contentContainerStyle={styles.listContainer}
         ListFooterComponent={
@@ -109,7 +115,6 @@ const ReservasList: React.FC = () => {
         ItemSeparatorComponent={() => <View style={styles.separator} />}
       />
 
-      {/* Botón Fijo Ordenar */}
       <FloatingSortButton onPress={() => setDrawerVisible(true)} />
 
       <FilterDrawer
@@ -119,6 +124,8 @@ const ReservasList: React.FC = () => {
         selectedSort={sortBy}
         showPastSessions={showPastSessions}
         onTogglePastSessions={setShowPastSessions}
+        statusFilter={statusFilter}
+        onStatusFilterChange={setStatusFilter}
       />
     </View>
   );
@@ -160,26 +167,6 @@ const styles = StyleSheet.create({
     height: 1,
     backgroundColor: '#e0e0e0',
     marginHorizontal: 20,
-  },
-  floatingButtonContainer: {
-    position: 'absolute',
-    right: 20,
-    zIndex: 1000,
-  },
-  floatingButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: Colors.light.tint,
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    borderRadius: 100,
-    elevation: 4,
-  },
-  floatingButtonText: {
-    color: '#fff',
-    fontFamily: Fonts.bold,
-    fontSize: 16,
-    marginLeft: 6,
   },
   footer: {
     alignItems: 'center',
