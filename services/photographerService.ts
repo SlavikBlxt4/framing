@@ -15,8 +15,16 @@ export const getPhotographers = async (): Promise<Photographer[]> => {
 
 export const getPhotographerById = async (id: number): Promise<Photographer> => {
   try {
-    const response = await axios.get(`${API_URL}/users/photographers/${id}`);
-    return response.data;
+    // Primero obtenemos todos los fotógrafos
+    const photographers = await getPhotographers();
+    // Luego filtramos el fotógrafo específico
+    const photographer = photographers.find(p => p.id === id);
+    
+    if (!photographer) {
+      throw new Error(`Photographer with id ${id} not found`);
+    }
+    
+    return photographer;
   } catch (error) {
     console.error(`Error fetching photographer ${id}:`, error);
     throw error;

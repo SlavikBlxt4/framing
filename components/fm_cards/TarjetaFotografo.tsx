@@ -15,6 +15,7 @@ import Fonts from '@/constants/Fonts';
 import { FotografosProps } from '@/types/Fotografos.type';
 
 interface TarjetaFotografoProps {
+  id: number;
   nombreEstudio: string;
   fotografiaUrl: string;
   puntuacion: number;
@@ -26,6 +27,7 @@ interface TarjetaFotografoProps {
 
 // Componente que representa una tarjeta interactiva de un fotógrafo o estudio fotográfico
 export default function TarjetaFotografo({
+  id,
   nombreEstudio,
   fotografiaUrl,
   puntuacion,
@@ -40,15 +42,7 @@ export default function TarjetaFotografo({
   const handlePress = () => {
     router.push({
       pathname: '/fotografo/perfil',
-      params: {
-        nombreEstudio,
-        fotografiaUrl,
-        puntuacion: puntuacion.toString(),
-        direccion,
-        fotoPortada,
-        seguidores: seguidores.toString(),
-        verificado: verificado.toString(),
-      },
+      params: { id: id.toString() }
     });
   };
 

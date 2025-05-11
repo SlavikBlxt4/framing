@@ -66,6 +66,7 @@ export default function ListarHorizontalFotografos({ categoria, categorias }: Pr
             contentContainerStyle={{ gap: 12, paddingHorizontal: 0 }}
             renderItem={({ item }) => (
               <TarjetaFotografo
+                id={item.id}
                 nombreEstudio={item.name}
                 fotografiaUrl={item.url_profile_image || ''}
                 puntuacion={item.averageRating}
