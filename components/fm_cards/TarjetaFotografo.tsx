@@ -14,6 +14,16 @@ import Fonts from '@/constants/Fonts';
 // Interfaces
 import { FotografosProps } from '@/types/Fotografos.type';
 
+interface TarjetaFotografoProps {
+  nombreEstudio: string;
+  fotografiaUrl: string;
+  puntuacion: number;
+  direccion: string;
+  fotoPortada: string;
+  seguidores: number;
+  verificado: boolean;
+}
+
 // Componente que representa una tarjeta interactiva de un fotógrafo o estudio fotográfico
 export default function TarjetaFotografo({
   nombreEstudio,
@@ -23,7 +33,7 @@ export default function TarjetaFotografo({
   fotoPortada,
   seguidores,
   verificado,
-}: FotografosProps) {
+}: TarjetaFotografoProps) {
   const router = useRouter();
   const [imageError, setImageError] = useState(false);
 
@@ -33,11 +43,11 @@ export default function TarjetaFotografo({
       params: {
         nombreEstudio,
         fotografiaUrl,
-        puntuacion: puntuacion?.toString(),
+        puntuacion: puntuacion.toString(),
         direccion,
         fotoPortada,
-        seguidores: seguidores?.toString(),
-        verificado: verificado ? 'true' : 'false',
+        seguidores: seguidores.toString(),
+        verificado: verificado.toString(),
       },
     });
   };
@@ -57,7 +67,7 @@ export default function TarjetaFotografo({
       >
         <View style={styles.ratingContainer}>
           <Star size={16} color={Colors.light.background} weight="fill" />
-          <Text style={styles.ratingText}>{puntuacion}</Text>
+          <Text style={styles.ratingText}>{puntuacion.toFixed(1)}</Text>
         </View>
       </ImageBackground>
 
