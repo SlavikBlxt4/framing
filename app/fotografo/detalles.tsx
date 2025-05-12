@@ -1,6 +1,6 @@
 // React y React Native
 import React, { useState } from "react";
-import { StyleSheet, Text, View, Image, Pressable, Linking } from "react-native";
+import { StyleSheet, Text, View, Image, Pressable, Linking, ScrollView } from "react-native";
 
 // Íconos (Phosphor)
 import { PaperPlaneTilt, Phone, EnvelopeSimple } from "phosphor-react-native";
@@ -30,7 +30,7 @@ export default function Detalles({ nombre = "Nombre", direccion }: DetallesProps
   const diasVisibles = expandido ? horariosSemana : [horariosSemana[0]];
   
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       {/* Sección Dirección */}
       <View>
         <Text style={styles.title}>Dirección</Text>
@@ -102,13 +102,13 @@ export default function Detalles({ nombre = "Nombre", direccion }: DetallesProps
               <Text style={styles.contactText}>correo@gmail.com</Text>
           </View>
       </View>
-    </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    paddingVertical: 10,
+    paddingVertical: 0,
     paddingHorizontal: 20,
     gap: 20,
   },

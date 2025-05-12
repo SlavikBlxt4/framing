@@ -39,9 +39,9 @@ export default function ExplorarScreen() {
   }, [sortBy]); // Solo se recalcula si cambia el criterio de orden
 
   return (
-    <View >
+    <View style={styles.container}>
       {/* Contenedor principal */}
-      <View style={styles.container}>
+      <View>
         {/* Barra de búsqueda, actualiza el estado de 'search' */}
         <SearchBar value={search} onChangeText={setSearch} />
       </View>

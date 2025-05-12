@@ -1,6 +1,6 @@
 // React y React Native
 import React from "react";
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, ScrollView } from "react-native";
 
 // Componentes propios
 import TarjetaCalificacion from "@/components/fm_cards/TarjetaCalificacion";
@@ -12,7 +12,7 @@ import { calificacionesMock } from "@/mocks/mockCalificaciones";
 export default function Calificaciones() {
   return (
     // Contenedor principal de la vista
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
 
       {/* Mapeo de arreglo de calificaciones simuladas para renderizar una tarjeta por cada una */}
       {calificacionesMock.map((item, index) => (
@@ -25,7 +25,7 @@ export default function Calificaciones() {
           avatarUrl={item.avatarUrl} // Imagen de perfil del usuario
         />
       ))}
-    </View>
+    </ScrollView>
   );
 }
 

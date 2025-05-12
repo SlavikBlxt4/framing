@@ -1,6 +1,6 @@
 // React y React Native
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, Image, ActivityIndicator, Text, Dimensions } from 'react-native';
+import { View, StyleSheet, Image, ActivityIndicator, Text, Dimensions, ScrollView } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 import { getPhotographerPortfolio } from '@/services/photographerService';
 import { Portfolio } from '@/types/portfolio';
@@ -58,7 +58,7 @@ export default function PortfolioScreen() {
   }
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       {portfolio.images.map((imageUrl, index) => (
         <Image
           key={index}
@@ -67,7 +67,7 @@ export default function PortfolioScreen() {
           resizeMode="cover"
         />
       ))}
-    </View>
+    </ScrollView>
   );
 }
 

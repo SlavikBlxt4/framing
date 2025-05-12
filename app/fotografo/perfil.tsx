@@ -133,6 +133,7 @@ const styles = StyleSheet.create({
   container: {
     paddingBottom: 32,
     backgroundColor: '#fff',
+    flex: 1,
   },
   portadaWrapper: {
     width: '100%',

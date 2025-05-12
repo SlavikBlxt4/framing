@@ -1,6 +1,6 @@
 // React - React Native
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, ScrollView } from 'react-native';
 
 // Componentes
 import TarjetaReserva from '@/components/fm_cards/TarjetaReserva';
@@ -17,7 +17,7 @@ interface Props {
 export default function Sesiones({ services }: Props) {
   return (
     // Contenedor principal
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       {/* Mapea el arreglo de sesiones y renderiza una tarjeta por cada una */}
       {services.map((service) => (
         <TarjetaReserva
@@ -34,7 +34,7 @@ export default function Sesiones({ services }: Props) {
           }}
         />
       ))}
-    </View>
+    </ScrollView>
   );
 }
 
