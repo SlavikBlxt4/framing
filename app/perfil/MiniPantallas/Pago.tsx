@@ -1,36 +1,107 @@
-// React y React Native
-import { Text, StyleSheet } from 'react-native';
-import { useLayoutEffect } from 'react';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import React from 'react';
+import { View, Text, StyleSheet, Pressable } from 'react-native';
+import { CreditCard, CheckCircle, LockKey } from 'phosphor-react-native';
+import { useRouter } from 'expo-router';
 
-// Navegación
-import { useNavigation } from 'expo-router';
-
-// Constantes del proyecto
+import ScrollWithAnimatedHeader from '@/components/framing/ScrollWithAnimatedHeader';
 import Colors from '@/constants/Colors';
+import Fonts from '@/constants/Fonts';
 
-export default function PagosScreen() {
-  const navigation = useNavigation();
-  
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerTitle: 'Pago',
-      headerStyle: {
-        backgroundColor: 'white',
-      }
-    });
-  }, [navigation])
+export default function PagoScreen() {
+  const router = useRouter();
 
   return (
-    <SafeAreaView>
-        <Text>Aqui van los pagos</Text>
-    </SafeAreaView>
+    <ScrollWithAnimatedHeader title="">
+      <View style={styles.container}>
+        <CreditCard size={64} color={Colors.light.tint} weight="fill" />
+
+        <Text style={styles.title}>Métodos de pago</Text>
+
+        <Text style={styles.description}>
+          Actualmente los pagos en la plataforma son simulados para fines de
+          demostración.
+        </Text>
+
+        <Text style={styles.description}>
+          En versiones futuras podrás pagar con tarjeta de crédito y débito,
+          incluyendo:
+        </Text>
+
+        <View style={styles.list}>
+          <Text style={styles.bullet}><CheckCircle size={18} color={Colors.light.tint} /> Visa</Text>
+          <Text style={styles.bullet}><CheckCircle size={18} color={Colors.light.tint} /> MasterCard</Text>
+          <Text style={styles.bullet}><CheckCircle size={18} color={Colors.light.tint} /> American Express</Text>
+          <Text style={styles.bullet}><CheckCircle size={18} color={Colors.light.tint} /> Apple Pay / Google Pay</Text>
+        </View>
+
+        <Text style={styles.footerNote}>
+          Nuestro objetivo es garantizar una experiencia de pago segura y confiable.
+        </Text>
+
+        <LockKey size={24} color={Colors.light.text} weight="bold" />
+        <Text style={styles.footerSub}>Sistema en desarrollo - versión académica</Text>
+
+        <Pressable style={styles.button} onPress={() => router.back()}>
+          <Text style={styles.buttonText}>Volver</Text>
+        </Pressable>
+      </View>
+    </ScrollWithAnimatedHeader>
   );
 }
 
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: Colors.light.background,
-  }
+  container: {
+    padding: 24,
+    gap: 16,
+    alignItems: 'center',
+  },
+  title: {
+    fontFamily: Fonts.bold,
+    fontSize: 24,
+    color: Colors.light.text,
+    textAlign: 'center',
+  },
+  description: {
+    fontFamily: Fonts.regular,
+    fontSize: 16,
+    color: Colors.light.text,
+    textAlign: 'center',
+  },
+  list: {
+    marginTop: 8,
+    gap: 6,
+    width: '100%',
+  },
+  bullet: {
+    fontFamily: Fonts.regular,
+    fontSize: 16,
+    color: Colors.light.text,
+    paddingLeft: 10,
+    flexDirection: 'row',
+  },
+  footerNote: {
+    marginTop: 20,
+    fontFamily: Fonts.regular,
+    fontSize: 15,
+    color: Colors.light.tint,
+    textAlign: 'center',
+  },
+  footerSub: {
+    fontFamily: Fonts.regular,
+    fontSize: 13,
+    color: Colors.light.text,
+    textAlign: 'center',
+  },
+  button: {
+    marginTop: 24,
+    backgroundColor: Colors.light.tint,
+    paddingHorizontal: 30,
+    paddingVertical: 10,
+    borderRadius: 10,
+  },
+  buttonText: {
+    fontFamily: Fonts.bold,
+    color: Colors.light.background,
+    fontSize: 16,
+  },
 });
