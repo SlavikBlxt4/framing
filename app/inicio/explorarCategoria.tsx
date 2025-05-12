@@ -1,40 +1,48 @@
-// React y React Native
-import { useLayoutEffect } from 'react';
+import { useEffect, useLayoutEffect, useState } from 'react';
 import { StyleSheet } from 'react-native';
-
-// Navegación
 import { useLocalSearchParams } from 'expo-router';
 import { useNavigation } from '@react-navigation/native';
 
-// Componentes propios
 import GridFotografos from '@/components/fm_grids/GridFotografos';
 
-// Datos simulados
-import { categorias } from '@/mocks/mockCategoria';
-
+import { Categoria } from '@/types/category';
+import { getCategorias } from '@/services/categoryService';
 
 export default function ExplorarCategoriaScreen() {
-  // Obtiene el parámetro "categoriaId" de la URL (tipo string)
   const { categoriaId } = useLocalSearchParams<{ categoriaId: string }>();
-
-  // Hook para acceder a la navegación (React Navigation)
   const navigation = useNavigation();
 
-  // Busca el nombre de la categoría correspondiente al ID recibido
-  const nombreCategoria = categorias.find(c => c.id === Number(categoriaId))?.nombreCategoria || '';
+  const [categorias, setCategorias] = useState<Categoria[]>([]);
+  const [nombreCategoria, setNombreCategoria] = useState<string>('');
 
-  // Establece el título del header cuando el componente se monta o cambia el nombre
+  useEffect(() => {
+    const fetchCategorias = async () => {
+      try {
+        const data = await getCategorias();
+        setCategorias(data);
+        const categoria = data.find(c => c.id === Number(categoriaId));
+        setNombreCategoria(categoria?.name || '');
+      } catch (error) {
+        console.error('Error al obtener las categorías:', error);
+      }
+    };
+
+    if (categoriaId) {
+      fetchCategorias();
+    }
+  }, [categoriaId]);
+
   useLayoutEffect(() => {
-    navigation.setOptions({
-      headerTitle: `Fotógrafos de ${nombreCategoria}`,
-    });
+    if (nombreCategoria) {
+      navigation.setOptions({
+        headerTitle: `Fotógrafos de ${nombreCategoria}`,
+      });
+    }
   }, [navigation, nombreCategoria]);
 
-  // Renderiza la grid de fotógrafos filtrada por categoría
   return (
     <GridFotografos categoriaId={Number(categoriaId)} />
   );
 }
 
-const styles = StyleSheet.create({
-});
+const styles = StyleSheet.create({});

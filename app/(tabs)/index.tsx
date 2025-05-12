@@ -1,6 +1,6 @@
 // React - React Native
 import React, { useEffect, useMemo, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { ScrollView, StyleSheet, View } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Constantes
@@ -22,6 +22,7 @@ import mockUsers from '@/mocks/mockUsuarios';
 import { UsuarioProps } from '@/types/user';
 import { Categoria } from '@/types/category';
 import { getCategorias } from '@/services/categoryService';
+import Colors from '@/constants/Colors';
 
 // Componente principal de la pantalla de inicio
 export default function HomeScreen() {
@@ -93,21 +94,22 @@ export default function HomeScreen() {
 
   // Renderizado del componente
   return (
-    <ScrollWithAnimatedHeader title="">
+    <ScrollView>
       <View style={styles.container}>
         <HomeWelcome username={currentUser?.email} />
         <SesionesContratadas />
         {contenido}
       </View>
-    </ScrollWithAnimatedHeader>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingHorizontal: 0,
+    paddingHorizontal: 20,
     gap: 20,
+    backgroundColor: Colors.light.background,
   },
   label: {
     fontFamily: Fonts.bold,

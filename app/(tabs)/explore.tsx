@@ -1,6 +1,6 @@
 // React - React Native
 import React, { useState, useMemo } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 // Componentes
@@ -13,6 +13,7 @@ import FilterDrawerExplorar from '@/components/fm_drawers/FilterDrawerExplorar';
 import { fotografos } from '@/mocks/mockFotografo';
 import BotonesCategorias from '@/components/fm_input/BotonesCategorias';
 import Fonts from '@/constants/Fonts';
+import Colors from '@/constants/Colors';
 
 
 // Componente principla de la pantalla "Explorar"
@@ -38,7 +39,7 @@ export default function ExplorarScreen() {
   }, [sortBy]); // Solo se recalcula si cambia el criterio de orden
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <View >
       {/* Contenedor principal */}
       <View style={styles.container}>
         {/* Barra de búsqueda, actualiza el estado de 'search' */}
@@ -46,35 +47,14 @@ export default function ExplorarScreen() {
       </View>
 
       <BotonesCategorias></BotonesCategorias>
-
-      {/* Grid de fotógrafos filitrada por búsqueda y ordenada por sortBy */}
-      {/* <GridFotografos
-        sortBy={sortBy}
-        searchQuery={search}
-      /> */}
-
-      {/* Botón flotante que abre el drawer de filtros/ordenamiento */}
-      {/* <FloatingSortButton onPress={() => setDrawerVisible(true)} /> */}
-
-      {/* Drawer para elegir criterio de ordenamiento */}
-      {/* <FilterDrawerExplorar
-        visible={drawerVisible} // Muestra u oculta el drawer
-        onClose={() => setDrawerVisible(false)} // Función para cerrar el drawer
-        onSortChange={setSortBy} // Cambia el criterio de ordenamiento
-        selectedSort={sortBy} // Criterio actualmente seleccionado
-      /> */}
-    </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: '#fff',
-    paddingTop: 10,
-  },
   container: {
-    paddingHorizontal: 25,
-    paddingTop: 10,
+    paddingHorizontal: 10,
+    flex: 1,
+    backgroundColor: Colors.light.background,
   },
 });

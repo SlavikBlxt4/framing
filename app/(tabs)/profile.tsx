@@ -1,5 +1,5 @@
 // React - React Native
-import { View, Text, StyleSheet, Pressable } from 'react-native';
+import { View, Text, StyleSheet, Pressable, ScrollView } from 'react-native';
 import { useEffect, useState } from 'react';
 
 // Navegación
@@ -61,7 +61,7 @@ export default function ProfileScreen() {
   }
 
   return (
-    <ScrollWithAnimatedHeader title="">
+    <ScrollView style={styles.container}>
       {/* Sección del encabezado del perfil */}
       <View style={styles.header}>
         <Text style={styles.title}>Tu Perfil</Text>
@@ -140,11 +140,15 @@ export default function ProfileScreen() {
 
 
       </View>
-    </ScrollWithAnimatedHeader>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
+  container: {
+    paddingHorizontal: 20,
+    backgroundColor: Colors.light.background,
+  },
   header: {
     width: '100%',
     flexDirection: 'column',

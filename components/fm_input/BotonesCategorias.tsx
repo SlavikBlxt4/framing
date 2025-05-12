@@ -66,18 +66,20 @@ const styles = StyleSheet.create({
   grid: {
     paddingVertical: 10,
     alignItems: 'center',
+    backgroundColor: Colors.light.background,
+    height: '100%',
   },
   boton: {
-    aspectRatio: 2, // ancho:alto = 2:1
-    backgroundColor: Colors.light.accent,
+    aspectRatio: 3, // ancho:alto = 2:1
+    backgroundColor: Colors.light.tint,
     borderRadius: 12,
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: Colors.light.tint
+    borderColor: Colors.light.background,
   },
   texto: {
-    color: Colors.light.tint,
+    color: Colors.light.background,
     fontFamily: Fonts.regular,
     fontSize: 16,
   },

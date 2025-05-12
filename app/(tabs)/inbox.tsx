@@ -19,32 +19,31 @@ export default function InboxScreen() {
 
     return (
         // Componente que renderiza una cabecera animada con scroll integrado
-        <ScrollWithAnimatedHeader title="">
-            {/* ScrollView para permitir el desplazamiento del contenido */}
-            <ScrollView contentContainerStyle={styles.scrollContent}>
+    <ScrollView contentContainerStyle={styles.scrollContent}>
 
-                {/* Titulo principal de la pantalla */}
-                <Text style={styles.label}>Notificaciones</Text>
+        {/* Titulo principal de la pantalla */}
+        <Text style={styles.label}>Notificaciones</Text>
 
-                {/* Botón que navega a la pantalla de fotografías recibidas */}
-                <Pressable
-                    style={styles.button}
-                    onPress={() => router.push('/recibidos/FotografiasRecibidas')}
-                >
-                    <Text style={styles.buttonText}>Fotografías recibidas</Text>
-                </Pressable>
+        {/* Botón que navega a la pantalla de fotografías recibidas */}
+        <Pressable
+            style={styles.button}
+            onPress={() => router.push('/recibidos/FotografiasRecibidas')}
+        >
+            <Text style={styles.buttonText}>Fotografías recibidas</Text>
+        </Pressable>
 
-                {/* Lista de notificaciones */}
-                <NotificacionesList />
+        {/* Lista de notificaciones */}
+        <NotificacionesList />
 
-            </ScrollView>
-        </ScrollWithAnimatedHeader>
+    </ScrollView>
     );
 }
 
 const styles = StyleSheet.create({
     scrollContent: {
-        paddingBottom: 32,
+        paddingHorizontal: 20,
+        backgroundColor: Colors.light.background,
+        flex: 1,
     },
     label: {
         fontFamily: Fonts.bold,
