@@ -23,7 +23,6 @@ export default function ObtenerAyudaScreen() {
   };
 
   return (
-    <ScrollWithAnimatedHeader title="">
       <View style={styles.container}>
         <Text style={styles.title}>Centro de ayuda</Text>
         <Text style={styles.subtitle}>
@@ -60,14 +59,15 @@ export default function ObtenerAyudaScreen() {
           Framing sigue en desarrollo. Gracias por confiar en nosotros 🧡
         </Text>
       </View>
-    </ScrollWithAnimatedHeader>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    padding: 20,
+    paddingHorizontal: 20,
     gap: 24,
+    flex: 1,
+    backgroundColor: Colors.light.background,
   },
   title: {
     fontFamily: Fonts.bold,

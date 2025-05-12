@@ -1,9 +1,8 @@
 import React from 'react';
-import { View, Text, StyleSheet, Pressable } from 'react-native';
+import { View, Text, StyleSheet, Pressable, ScrollView } from 'react-native';
 import { CreditCard, CheckCircle, LockKey } from 'phosphor-react-native';
 import { useRouter } from 'expo-router';
 
-import ScrollWithAnimatedHeader from '@/components/framing/ScrollWithAnimatedHeader';
 import Colors from '@/constants/Colors';
 import Fonts from '@/constants/Fonts';
 
@@ -11,7 +10,6 @@ export default function PagoScreen() {
   const router = useRouter();
 
   return (
-    <ScrollWithAnimatedHeader title="">
       <View style={styles.container}>
         <CreditCard size={64} color={Colors.light.tint} weight="fill" />
 
@@ -45,15 +43,16 @@ export default function PagoScreen() {
           <Text style={styles.buttonText}>Volver</Text>
         </Pressable>
       </View>
-    </ScrollWithAnimatedHeader>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    padding: 24,
+    paddingHorizontal: 24,
     gap: 16,
     alignItems: 'center',
+    backgroundColor: Colors.light.background,
+    flex: 1,
   },
   title: {
     fontFamily: Fonts.bold,

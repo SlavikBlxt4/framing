@@ -77,7 +77,6 @@ export default function LoginScreen() {
     };
     
     return (
-        <ScrollWithAnimatedHeader title="">
             <View style={styles.container}>
                 {/* Logo y saludo */}
                 <>
@@ -140,7 +139,6 @@ export default function LoginScreen() {
                 </Pressable>
 
             </View>
-        </ScrollWithAnimatedHeader>
     )
 }
 
@@ -148,11 +146,14 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         gap: 20,
+        padding: 20,
+        backgroundColor: Colors.light.background,
     },
     logo: {
         fontSize: 40,
         fontFamily: Fonts.logo,
         includeFontPadding: false,
+        paddingTop: 20,
     },
     subtitle: {
         fontSize: 20,

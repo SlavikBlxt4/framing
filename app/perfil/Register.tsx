@@ -67,7 +67,6 @@ export default function RegisterScreen() {
   
 
   return (
-    <ScrollWithAnimatedHeader title="">
       <View style={styles.container}>
         <Text style={styles.logo}>FRAMING</Text>
         <Text style={styles.subtitle}>
@@ -160,19 +159,21 @@ export default function RegisterScreen() {
           <Text style={styles.loginButtonText}>REGISTRARSE</Text>
         </Pressable>
       </View>
-    </ScrollWithAnimatedHeader>
   );
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        gap: 20,
+  container: {
+    flex: 1,
+    gap: 20,
+    padding: 20,
+    backgroundColor: Colors.light.background,
     },
     logo: {
         fontSize: 40,
         fontFamily: Fonts.logo,
         includeFontPadding: false,
+        paddingTop: 20,
     },
     subtitle: {
         fontSize: 20,

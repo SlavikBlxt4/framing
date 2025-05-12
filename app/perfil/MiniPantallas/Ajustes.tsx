@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, Pressable, Switch, Alert } from 'react-native';
+import { View, Text, StyleSheet, Pressable, Switch, Alert, ScrollView } from 'react-native';
 import { useRouter } from 'expo-router';
 
 import ScrollWithAnimatedHeader from '@/components/framing/ScrollWithAnimatedHeader';
@@ -23,8 +23,8 @@ export default function AjustesScreen() {
   };
 
   return (
-    <ScrollWithAnimatedHeader title="">
-      <View style={styles.container}>
+    <ScrollView style={styles.container}>
+      <View>
         <Text style={styles.title}>Ajustes</Text>
 
         <View style={styles.group}>
@@ -65,14 +65,14 @@ export default function AjustesScreen() {
           </Pressable>
         </View>
       </View>
-    </ScrollWithAnimatedHeader>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    padding: 20,
-    gap: 24,
+    paddingHorizontal: 20,
+    backgroundColor: Colors.light.background,
   },
   title: {
     fontFamily: Fonts.bold,
@@ -80,19 +80,19 @@ const styles = StyleSheet.create({
     color: Colors.light.text,
   },
   group: {
-    gap: 16,
+    // gap: 10,
   },
   groupTitle: {
     fontFamily: Fonts.semiBold,
     fontSize: 16,
     color: Colors.light.tint,
-    marginBottom: 6,
+    marginTop: 20,
   },
   item: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 12,
-    paddingVertical: 10,
+    paddingVertical: 5,
   },
   label: {
     flex: 1,

@@ -109,7 +109,7 @@ export default function DatosPersonales() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
+    paddingHorizontal: 20,
     gap: 16,
     backgroundColor: Colors.light.background,
   },
