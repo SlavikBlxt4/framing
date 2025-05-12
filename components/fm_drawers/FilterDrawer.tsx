@@ -1,80 +1,64 @@
-// React y React Native
 import React, { useEffect, useRef, useState } from 'react';
-import {Animated, Dimensions, Pressable, StyleSheet, Text, View, Switch } from 'react-native';
-
-// UI (react-native-paper)
+import { Animated, Dimensions, Pressable, StyleSheet, Text, View, Switch } from 'react-native';
 import { Portal } from 'react-native-paper';
+import {
+  Calendar,
+  SortAscending,
+  SortDescending,
+  Check,
+} from 'phosphor-react-native';
 
-// Íconos
-import { Calendar, SortAscending, SortDescending, Check, } from 'phosphor-react-native';
-
-// Constantes
 import Colors from '@/constants/Colors';
 import Fonts from '@/constants/Fonts';
 
+const SCREEN_HEIGHT = Dimensions.get('window').height;
 
-const SCREEN_HEIGHT = Dimensions.get('window').height; // Obtiene la altura total de la pantalla
-
-// Tipos de opciones de ordenamiento
 type SortOption = 'fecha-asc' | 'fecha-desc' | 'nombre-asc' | 'nombre-desc';
+type BookingStatus = 'all' | 'pending' | 'active' | 'done';
 
-// Props que acepta el componente
 type Props = {
-  visible: boolean;                      // Controla visibilidad del drawer
-  onClose: () => void;                   // Función para cerrar el drawer
-  onSortChange: (option: SortOption) => void; // Callback para cambiar el orden seleccionado
-  selectedSort: SortOption;             // Orden actual seleccionado
-  showPastSessions: boolean;            // Estado del switch "mostrar sesiones pasadas"
-  onTogglePastSessions: (value: boolean) => void; // Callback para cambiar estado del switch
+  visible: boolean;
+  onClose: () => void;
+  onSortChange: (option: SortOption) => void;
+  selectedSort: SortOption;
+  showPastSessions: boolean;
+  onTogglePastSessions: (value: boolean) => void;
+  statusFilter: BookingStatus;
+  onStatusFilterChange: (value: BookingStatus) => void;
 };
 
-export default function FilterDrawer({ visible, onClose, onSortChange, selectedSort, showPastSessions, onTogglePastSessions, }: Props) {
-  // Estado animado para la transición vertical y opacidad del fondo
+export default function FilterDrawer({
+  visible,
+  onClose,
+  onSortChange,
+  selectedSort,
+  showPastSessions,
+  onTogglePastSessions,
+  statusFilter,
+  onStatusFilterChange,
+}: Props) {
   const translateY = useRef(new Animated.Value(SCREEN_HEIGHT)).current;
   const fadeAnim = useRef(new Animated.Value(0)).current;
-
-  // Controla el montaje del componente animado
   const [isMounted, setIsMounted] = useState(false);
 
-  // useEffect para manejar la animación cuando cambia a "visible"
   useEffect(() => {
     if (visible) {
       setIsMounted(true);
       Animated.parallel([
-        Animated.timing(translateY, {
-          toValue: 0,
-          duration: 300,
-          useNativeDriver: false,
-        }),
-        Animated.timing(fadeAnim, {
-          toValue: 0.5,
-          duration: 300,
-          useNativeDriver: false,
-        }),
+        Animated.timing(translateY, { toValue: 0, duration: 300, useNativeDriver: false }),
+        Animated.timing(fadeAnim, { toValue: 0.5, duration: 300, useNativeDriver: false }),
       ]).start();
     } else {
       Animated.parallel([
-        Animated.timing(translateY, {
-          toValue: SCREEN_HEIGHT,
-          duration: 300,
-          useNativeDriver: false,
-        }),
-        Animated.timing(fadeAnim, {
-          toValue: 0,
-          duration: 300,
-          useNativeDriver: false,
-        }),
-      ]).start(() => {
-        setIsMounted(false);
-      });
+        Animated.timing(translateY, { toValue: SCREEN_HEIGHT, duration: 300, useNativeDriver: false }),
+        Animated.timing(fadeAnim, { toValue: 0, duration: 300, useNativeDriver: false }),
+      ]).start(() => setIsMounted(false));
     }
   }, [visible]);
 
-  // Si el drawer no ha sido montado, no se renderiza nada
   if (!isMounted) return null;
 
-  // Opciones de ordenamiento
-  const options = [
+  const sortOptions = [
     {
       value: 'fecha-asc',
       label: 'Fecha (más próximo)',
@@ -97,6 +81,13 @@ export default function FilterDrawer({ visible, onClose, onSortChange, selectedS
     },
   ];
 
+  const statusOptions: { label: string; value: BookingStatus }[] = [
+    { label: 'Todos', value: 'all' },
+    { label: 'Pendientes', value: 'pending' },
+    { label: 'Activos', value: 'active' },
+    { label: 'Finalizados', value: 'done' },
+  ];
+
   return (
     <Portal>
       <Animated.View style={[styles.overlay, { opacity: fadeAnim }]}>
@@ -108,27 +99,18 @@ export default function FilterDrawer({ visible, onClose, onSortChange, selectedS
           <Text style={styles.title}>Ordenar Reservas</Text>
 
           <View style={styles.innerContent}>
-            {options.map((option) => {
+            {sortOptions.map((option) => {
               const isSelected = selectedSort === option.value;
-
               return (
                 <Pressable
                   key={option.value}
-                  style={[
-                    styles.option,
-                    isSelected && styles.optionSelected,
-                  ]}
+                  style={[styles.option, isSelected && styles.optionSelected]}
                   onPress={() => onSortChange(option.value as SortOption)}
                 >
                   <View style={styles.optionContent}>
                     <View style={styles.iconText}>
                       {option.icon}
-                      <Text
-                        style={[
-                          styles.optionText,
-                          isSelected && styles.optionTextSelected,
-                        ]}
-                      >
+                      <Text style={[styles.optionText, isSelected && styles.optionTextSelected]}>
                         {option.label}
                       </Text>
                     </View>
@@ -139,7 +121,7 @@ export default function FilterDrawer({ visible, onClose, onSortChange, selectedS
             })}
           </View>
 
-          <View style={styles.toggleContainer}>
+          {/* <View style={styles.toggleContainer}>
             <Text style={styles.toggleLabel}>Mostrar sesiones pasadas</Text>
             <Switch
               value={showPastSessions}
@@ -147,6 +129,27 @@ export default function FilterDrawer({ visible, onClose, onSortChange, selectedS
               thumbColor={showPastSessions ? Colors.light.tint : '#ccc'}
               trackColor={{ false: '#ccc', true: Colors.light.accent }}
             />
+          </View> */}
+
+          <Text style={[styles.title, { marginTop: 30 }]}>Filtrar por estado</Text>
+          <View style={styles.statusButtonsContainer}>
+            {statusOptions.map(({ label, value }) => {
+              const isActive = statusFilter === value;
+              return (
+                <Pressable
+                  key={value}
+                  onPress={() => onStatusFilterChange(value)}
+                  style={[
+                    styles.statusButton,
+                    isActive && styles.statusButtonActive,
+                  ]}
+                >
+                  <Text style={[styles.statusButtonText, isActive && styles.statusButtonTextActive]}>
+                    {label}
+                  </Text>
+                </Pressable>
+              );
+            })}
           </View>
         </View>
       </Animated.View>
@@ -202,7 +205,7 @@ const styles = StyleSheet.create({
   iconText: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 10, // Si no funciona en tu versión, reemplaza por marginLeft en el texto
+    gap: 10,
   },
   optionText: {
     fontSize: 16,
@@ -223,5 +226,30 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: Fonts.regular,
     color: Colors.light.text,
-  },  
+  },
+  statusButtonsContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 10,
+    marginTop: 10,
+  },
+  statusButton: {
+    borderWidth: 1,
+    borderColor: Colors.light.tint,
+    borderRadius: 20,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+  },
+  statusButtonActive: {
+    backgroundColor: Colors.light.tint,
+  },
+  statusButtonText: {
+    fontSize: 14,
+    fontFamily: Fonts.regular,
+    color: Colors.light.tint,
+  },
+  statusButtonTextActive: {
+    color: '#fff',
+    fontFamily: Fonts.bold,
+  },
 });

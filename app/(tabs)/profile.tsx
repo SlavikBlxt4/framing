@@ -20,7 +20,11 @@ import Colors from '@/constants/Colors';
 
 // Datos simulados
 import mockUsers from '@/mocks/mockUsuarios';
-import { UsuarioProps } from '@/types/Usuario.type';
+// import { UsuarioProps } from '@/types/Usuario.type';
+
+// Datos reales
+import { UsuarioProps } from "@/types/user";
+import { formatUsernameFromEmail } from "@/utils/string";
 
 
 // Pantalla de perfil de un usuario
@@ -31,28 +35,30 @@ export default function ProfileScreen() {
   // Estado para almacenar el usuario actual (si está logueado)
   const [currentUser, setCurrentUser] = useState<UsuarioProps | null>(null);
 
-  // Al montar el componente, busca el usuario guardado en AsyncStorage
   useEffect(() => {
-    const fetchUser = async () => {
-      const id = await AsyncStorage.getItem('userId');
-      if (id) {
-        const user = mockUsers.find((u) => u.id === parseInt(id));
-        if (user) {
-          setCurrentUser(user);
-        }
+    const loadUserFromStorage = async () => {
+      const email = await AsyncStorage.getItem("userEmail");
+      const id = await AsyncStorage.getItem("userId");
+      const role = await AsyncStorage.getItem("userRole");
+  
+      if (email && id) {
+        setCurrentUser({
+          id: parseInt(id),
+          email,
+          role: role || undefined,
+        });
       }
-    };   
-
-    fetchUser();
+    };
+  
+    loadUserFromStorage();
   }, []);
 
   // Función para cerrar sesión: elimina el ID guardado y redirige
   const handleLogout = async () => {
-    await AsyncStorage.removeItem('userId');
+    await AsyncStorage.multiRemove(["token", "userId", "userEmail", "userRole"]);
     setCurrentUser(null);
-    router.push('/profile');
+    router.push('/perfil/Login');
   }
-
 
   return (
     <ScrollWithAnimatedHeader title="">
@@ -63,7 +69,7 @@ export default function ProfileScreen() {
         {/* Si el usuario está logueaado, muestra su email */}
         {currentUser ? (
           <>
-            <Text style={styles.subtitle}>{currentUser.email}</Text>
+            <Text style={styles.subtitle}>Hola, {formatUsernameFromEmail(currentUser.email)}</Text>
           </>
         ) : (
           <>

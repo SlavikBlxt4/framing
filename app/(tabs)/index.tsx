@@ -14,31 +14,48 @@ import ListarHorizontalFotografos from '@/components/fm_grids/ListaHorizontalFot
 import Anuncio from '@/components/fm_sections/Anuncio';
 
 // Datos simulados
-import { UsuarioProps } from '@/types/Usuario.type';
-import { categorias } from '@/mocks/mockCategoria';
+// import { UsuarioProps } from '@/types/Usuario.type';
+// import { categorias } from '@/mocks/mockCategoria';
 import mockUsers from '@/mocks/mockUsuarios';
+
+// Datos reales
+import { UsuarioProps } from '@/types/user';
+import { Categoria } from '@/types/category';
+import { getCategorias } from '@/services/categoryService';
 
 // Componente principal de la pantalla de inicio
 export default function HomeScreen() {
   // Estado para guardar el usuario actualmente logueado (o null si no hay ninguno)
   const [currentUser, setCurrentUser] = useState<UsuarioProps | null>(null);
+  const [categorias, setCategorias] = useState<Categoria[]>([]);
 
   useEffect(() => {
     const fetchUser = async () => {
-      // Se intenta obtener el ID del usuario almacenado en AsyncStorage
+      const email = await AsyncStorage.getItem('userEmail');
       const id = await AsyncStorage.getItem('userId');
-      
-      // Si se encontró un ID, se busca en el mock de usuarios
-      if (id) {
-        const user = mockUsers.find((u) => u.id === parseInt(id));
-
-        // Si se encuentra el usuario, se guarda en el estado
-        if (user) setCurrentUser(user);
+      const role = await AsyncStorage.getItem('userRole');
+  
+      if (email && id) {
+        setCurrentUser({
+          id: parseInt(id),
+          email,
+          role: role || undefined,
+        });
       }
     };
 
-    fetchUser(); // Se ejecuta la función asincrona
-  }, []); // Se ejecuta solo una vez
+    const fetchCategorias = async () => {
+      try {
+        const data = await getCategorias();
+        setCategorias(data);
+      } catch (error) {
+        console.error('Error al obtener las categorías: ', error);
+      }
+    }
+  
+    fetchUser();
+    fetchCategorias();
+  }, []);
 
 
   // useMemo para calcular el contenido a mostrar (categorías y anuncio) solo una vez
@@ -52,7 +69,8 @@ export default function HomeScreen() {
       const section = (
         <ListarHorizontalFotografos
           key={`categoria-${cat.id}`}
-          categoria={cat.nombreCategoria}
+          categoria={cat.name}
+          categorias={categorias}
         />
       );
 
@@ -71,14 +89,13 @@ export default function HomeScreen() {
       // En caso contrario, solo se devuelve la sección
       return [section];
     });
-  }, []); // Solo se recalcula si las dependencias cambian (vacío: solo una vez)
+  }, [categorias]); // Solo se recalcula si las dependencias cambian (vacío: solo una vez)
 
   // Renderizado del componente
   return (
     <ScrollWithAnimatedHeader title="">
       <View style={styles.container}>
-        <HomeWelcome username={currentUser?.nombre || "Usuario"} />
-
+        <HomeWelcome username={currentUser?.email} />
         <SesionesContratadas />
         {contenido}
       </View>

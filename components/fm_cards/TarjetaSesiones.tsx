@@ -1,47 +1,31 @@
-// React Native
+import React, { useEffect, useState } from "react";
 import { StyleSheet, View, Text, ImageBackground } from "react-native";
+import { format } from "date-fns";
+import { es } from "date-fns/locale";
 
-// Constantes
 import Colors from '@/constants/Colors';
 import Fonts from '@/constants/Fonts';
 
-// Utilidades de fecha
-import { format, parse } from "date-fns";
-import { es } from "date-fns/locale";
-
-// Datos simulados (mocks)
-import { reservas } from '@/mocks/mockReservas';
-import { fotografos } from '@/mocks/mockFotografo';
-
+import { getBookingHistory } from '@/services/bookingsService';
+import { BookingHistoryDto } from '@/types/bookings';
 
 export default function TarjetaSesiones() {
-  const hoy = new Date(); // Fecha actual para comparar con reservas
+  const [proxima, setProxima] = useState<null | BookingHistoryDto>(null);
 
-  // Convertir las reservas del mock en objetos Date validos
-  const reservasFuturas = reservas
-    .map((res) => {
-      try {
-        const [d, m, y] = res.fecha.split('/').map(Number); // Separar dia, mes y año
-        const [h, min] = res.hora.split(':').map(Number); // Separar hora y minutos
-        const fechaCompleta = new Date(y, m - 1, d, h, min); // Crear objeto Date
-        return { ...res, fechaCompleta }; // Agregar la fecha completa a la reserva
-      } catch {
-        return null; // En caso de error, descartar
-      }
-    })
-    // Filtrar reservas que no sean nulas y cuya fecha sea futura
-    .filter((res): res is typeof reservas[0] & { fechaCompleta: Date } => !!res && res.fechaCompleta >= hoy);
+  useEffect(() => {
+    const hoy = new Date();
+    getBookingHistory().then((reservas) => {
+      const activasFuturas = reservas
+        .filter(r => r.status === 'active')
+        .filter(r => new Date(r.date) >= hoy)
+        .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
-  // Ordenar por fecha más cercana
-  const proxima = reservasFuturas.sort((a, b) => a.fechaCompleta.getTime() - b.fechaCompleta.getTime())[0];
+      setProxima(activasFuturas[0] || null);
+    });
+  }, []);
 
-  // Buscar el nombre del estudio fotografico asociado a la proxima sesion
-  const nombreEstudio =
-    fotografos.find((f) => f.id === proxima?.fotografoId)?.nombreEstudio || '[Estudio fotográfico]';
-
-  // Formatear la fecha
   const fechaFormateada = proxima
-    ? format(proxima.fechaCompleta, "d 'de' MMMM 'de' yyyy", { locale: es })
+    ? format(new Date(proxima.date), "d 'de' MMMM 'de' yyyy", { locale: es })
     : 'Sin próximas sesiones';
 
   return (
@@ -53,8 +37,8 @@ export default function TarjetaSesiones() {
       <View style={styles.overlay} />
 
       <View style={styles.textoSuperior}>
-      <Text style={styles.regularText}>Estudio:</Text>
-        <Text style={styles.boldText}>{nombreEstudio}</Text>
+        <Text style={styles.regularText}>Estudio:</Text>
+        <Text style={styles.boldText}>{proxima?.serviceName || '[Estudio fotográfico]'}</Text>
       </View>
 
       <View style={styles.textoInferior}>

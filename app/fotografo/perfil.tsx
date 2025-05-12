@@ -1,105 +1,135 @@
-// React y React Native
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { View, Text, Image, StyleSheet, ScrollView, Pressable } from 'react-native';
-
-// Navegación y parámetros
 import { useLocalSearchParams } from 'expo-router';
-
-// Íconos
 import { Star, SealCheck } from 'phosphor-react-native';
-
-// Constantes
 import Colors from '@/constants/Colors';
+import { getPhotographerById } from '@/services/photographerService';
+import { Photographer } from '@/types/photographer';
 
-// Componentes
 import Sesiones from './sesiones';
 import Calificaciones from './calificaciones';
 import Portfolio from './portfolio';
 import Detalles from './detalles';
 
-
 export default function PerfilFotografo() {
-  // Extrae parámetros desde la URL con expo-router
-  const {
-    id,
-    nombreEstudio,
-    fotografiaUrl,
-    puntuacion,
-    direccion,
-    fotoPortada,
-    seguidores,
-    verificado,
-  } = useLocalSearchParams();
-
-  // Estado para controlar la pestaña actualmente seleccionada
+  const { id } = useLocalSearchParams();
+  const [photographer, setPhotographer] = useState<Photographer | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [fotoPortadaError, setFotoPortadaError] = useState(false);
+  const [avatarError, setAvatarError] = useState(false);
   const [selectedTab, setSelectedTab] = useState<'sesiones' | 'calificaciones' | 'portfolio' | 'detalles'>('sesiones');
-  
-  // Acción simulada para botón "seguir"
+
+  useEffect(() => {
+    const fetchPhotographer = async () => {
+      try {
+        if (id) {
+          const data = await getPhotographerById(Number(id));
+          setPhotographer(data);
+        }
+      } catch (error) {
+        console.error('Error fetching photographer:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPhotographer();
+  }, [id]);
+
   const handleSeguir = () => {
     console.log('Seguir presionado');
   };
+
+  if (loading || !photographer) {
+    return (
+      <View style={styles.loadingContainer}>
+        <Text>Cargando...</Text>
+      </View>
+    );
+  }
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
       {/* Imagen de portada del fotógrafo */}
       <View style={styles.portadaWrapper}>
-        <Image source={{ uri: fotoPortada as string }} style={styles.portada} />
+        <Image
+          source={
+            fotoPortadaError || !photographer.url_portfolio
+              ? require('@/assets/images/placeholder_portada.png')
+              : { uri: photographer.url_portfolio }
+          }
+          onError={() => setFotoPortadaError(true)}
+          style={styles.portada}
+        />
       </View>
 
       {/* Imagen de avatar / perfil */}
       <View style={styles.avatarWrapper}>
-        <Image source={{ uri: fotografiaUrl as string }} style={styles.avatar} />
+        <Image
+          source={
+            avatarError || !photographer.url_profile_image
+              ? require('@/assets/images/placeholder_photographer.png')
+              : { uri: photographer.url_profile_image }
+          }
+          onError={() => setAvatarError(true)}
+          style={styles.avatar}
+        />
       </View>
 
-      {/* Botón seguir */}
       <View style={styles.seguirButtonWrapper}>
         <Pressable style={styles.seguirButton} onPress={handleSeguir}>
           <Text style={styles.seguirButtonText}>Seguir</Text>
         </Pressable>
       </View>
 
-      {/* Info del fotografo: nombre, puntuacion, seguidores, direccion */}
       <View style={styles.infoContainer}>
         <Text style={styles.nombre}>
-          {nombreEstudio}{' '}
-          {verificado === 'true' && (
+          {photographer.name}{' '}
+          {photographer.active && (
             <SealCheck size={16} weight="duotone" color={Colors.light.tint} />
           )}
         </Text>
 
-        {/* Fila con estrella, puntuacion y seguidores */}
         <View style={styles.ratingRow}>
           <Star size={16} color="#FFD700" weight="fill" />
-          <Text style={styles.ratingText}>{puntuacion}</Text>
+          <Text style={styles.ratingText}>{photographer.averageRating.toFixed(1)}</Text>
           <Text style={styles.separator}>·</Text>
-          <Text style={styles.seguidores}>{seguidores} seguidores</Text>
+          <Text style={styles.seguidores}>{photographer.services.length} servicios</Text>
         </View>
-        <Text style={styles.direccion}>{direccion}</Text>
+        <Text style={styles.direccion}>
+          {photographer.locations[0]?.coordinates.coordinates.join(', ') || 'Ubicación no disponible'}
+        </Text>
       </View>
 
-      {/* Barra de pestañas (tabs) para mostrar secciones dinámicas */}
       <View style={styles.tabBar}>
         {['sesiones', 'calificaciones', 'portfolio', 'detalles'].map((tab) => (
-          <Pressable key={tab} onPress={() => setSelectedTab(tab)}>
+          <Pressable key={tab} onPress={() => setSelectedTab(tab as any)}>
             <Text style={[styles.tabText, selectedTab === tab && styles.tabTextSelected]}>
-              {/* Capitaliza el nombre de la pestaña */}
               {tab.charAt(0).toUpperCase() + tab.slice(1)}
             </Text>
           </Pressable>
         ))}
       </View>
 
-      {/* Contenido que cambia según la pestaña seleccionada */}
-      {selectedTab === 'sesiones' && <Sesiones />}
+      {selectedTab === 'sesiones' && <Sesiones services={photographer.services} />}
       {selectedTab === 'calificaciones' && <Calificaciones />}
       {selectedTab === 'portfolio' && <Portfolio />}
-      {selectedTab === 'detalles' && (<Detalles nombre={nombreEstudio as string} direccion={direccion as string} />)}
-
+      {selectedTab === 'detalles' && (
+        <Detalles 
+          nombre={photographer.name} 
+          direccion={photographer.locations[0]?.coordinates.coordinates.join(', ') || 'Ubicación no disponible'} 
+        />
+      )}
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   container: {
     paddingBottom: 32,
     backgroundColor: '#fff',
@@ -113,8 +143,6 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
     borderRadius: 16,
-    // borderTopLeftRadius: 16,
-    // borderTopRightRadius: 16,
   },
   avatarWrapper: {
     position: 'absolute',

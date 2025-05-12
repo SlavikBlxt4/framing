@@ -4,66 +4,50 @@ import Fonts from '@/constants/Fonts';
 import TarjetaSesiones from '@/components/fm_cards/TarjetaSesiones';
 import { useRouter } from 'expo-router';
 import { ArrowRight, Bookmark } from 'phosphor-react-native';
-import { reservas } from '@/mocks/mockReservas';
-import { fotografos } from '@/mocks/mockFotografo';
-import { useMemo } from 'react';
+import { useEffect, useState } from 'react';
+import { getBookingHistory } from '@/services/bookingsService';
+import { BookingHistoryDto } from '@/types/bookings';
 
 export default function SesionesContratadas() {
   const router = useRouter();
+  const [proxima, setProxima] = useState<BookingHistoryDto | null>(null);
 
-  const reservaProxima = useMemo(() => {
-    const hoy = new Date();
+  useEffect(() => {
+    getBookingHistory().then((reservas) => {
+      const hoy = new Date();
+      const activasFuturas = reservas
+        .filter(r => r.status === 'active')
+        .filter(r => new Date(r.date) >= hoy)
+        .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
-    const futuras = reservas
-      .map((res) => {
-        try {
-          const [d, m, y] = res.fecha.split('/').map(Number);
-          const [h, min] = res.hora.split(':').map(Number);
-          return {
-            ...res,
-            fechaCompleta: new Date(y, m - 1, d, h, min),
-          };
-        } catch {
-          return null;
-        }
-      })
-      .filter((res): res is typeof reservas[0] & { fechaCompleta: Date } => !!res && res.fechaCompleta >= hoy);
-
-    const proxima = futuras.sort((a, b) => a.fechaCompleta.getTime() - b.fechaCompleta.getTime())[0];
-
-    if (!proxima) return null;
-
-    const fotografo = fotografos.find((f) => f.id === proxima.fotografoId);
-
-    return {
-      nombre: fotografo?.nombreEstudio ?? '[Estudio fotográfico]',
-      fecha: proxima.fecha,
-      hora: proxima.hora,
-      direccion: fotografo?.direccion ?? '',
-      fotografiaUrl: fotografo?.fotografiaUrl ?? '',
-      puntuacion: fotografo?.puntuacion?.toString() ?? '',
-    };
+      setProxima(activasFuturas[0] || null);
+    });
   }, []);
 
   return (
     <View style={styles.container}>
-      {/* Título con flecha */}
       <Pressable style={styles.header} onPress={() => router.push('/inicio/reservas/GestorReservas')}>
         <Text style={styles.title}>Sesiones contratadas</Text>
         <ArrowRight size={20} color={Colors.light.text} weight="bold" />
       </Pressable>
 
-      {/* Tarjeta de sesión */}
       <TarjetaSesiones />
 
-      {/* Botón "Ver Reserva" */}
-      {reservaProxima && (
+      {proxima && (
         <Pressable
           style={styles.button}
           onPress={() =>
             router.push({
               pathname: '/inicio/reservas/DetalleReserva',
-              params: reservaProxima,
+              params: {
+                nombre: proxima.serviceName,
+                fecha: new Date(proxima.date).toLocaleDateString(),
+                hora: new Date(proxima.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                direccion: '',
+                fotografiaUrl: '',
+                puntuacion: '',
+                status: proxima.status,
+              },
             })
           }
         >

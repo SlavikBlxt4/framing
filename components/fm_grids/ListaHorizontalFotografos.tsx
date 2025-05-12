@@ -1,25 +1,48 @@
 import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import TarjetaFotografo from '../fm_cards/TarjetaFotografo';
-import { fotografos } from '@/mocks/mockFotografo';
 import { ArrowRight } from 'phosphor-react-native';
 import Colors from '@/constants/Colors';
 import Fonts from '@/constants/Fonts';
 import { router } from 'expo-router';
-import { categorias } from '@/mocks/mockCategoria';
+import { Categoria } from '@/types/category';
+import { Photographer } from '@/types/photographer';
+import { useEffect, useState } from 'react';
+import { getPhotographers } from '@/services/photographerService';
 
 type Props = {
   categoria: string;
+  categorias: Categoria[];
 };
 
-export default function ListarHorizontalFotografos({ categoria }: Props) {
+export default function ListarHorizontalFotografos({ categoria, categorias }: Props) {
+    const [photographers, setPhotographers] = useState<Photographer[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchPhotographers = async () => {
+            try {
+                const data = await getPhotographers();
+                setPhotographers(data);
+            } catch (error) {
+                console.error('Error fetching photographers:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchPhotographers();
+    }, []);
+
     // 1 -> Busca el ID de la categoría por su nombre
-    const categoriaId = categorias.find(cat => cat.nombreCategoria === categoria)?.id || null;
+    const categoriaId = categorias.find(cat => cat.name === categoria)?.id || null;
 
     // 2 -> Filtra los fotógrafos por ese id
-    const fotografosFiltrados = fotografos.filter(fotografo => fotografo.categoriaId === categoriaId);
+    const fotografosFiltrados = photographers.filter(fotografo => 
+        fotografo.services.some(service => service.category.id === categoriaId)
+    );
 
-    // 3 -> Si no hya fotógrafos para esa categoría, no renderizar la sección
-    if (!categoriaId || fotografosFiltrados.length === 0) return null;
+    // 3 -> Si no hay fotógrafos para esa categoría, no renderizar la sección
+    if (loading || !categoriaId || fotografosFiltrados.length === 0) return null;
 
     return (
         <View style={styles.container}>
@@ -37,19 +60,20 @@ export default function ListarHorizontalFotografos({ categoria }: Props) {
             <FlatList
             data={fotografosFiltrados}
             style={styles.list}
-            keyExtractor={(item) => item.id}
+            keyExtractor={(item) => item.id.toString()}
             horizontal
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={{ gap: 12, paddingHorizontal: 0 }}
             renderItem={({ item }) => (
               <TarjetaFotografo
-                nombreEstudio={item.nombreEstudio}
-                fotografiaUrl={item.fotografiaUrl}
-                puntuacion={item.puntuacion}
-                direccion={item.direccion}
-                fotoPortada={item.fotoPortada}
-                seguidores={item.seguidores}
-                verificado={item.verificado}
+                id={item.id}
+                nombreEstudio={item.name}
+                fotografiaUrl={item.url_profile_image || ''}
+                puntuacion={item.averageRating}
+                direccion={item.locations[0]?.coordinates.coordinates.join(', ') || ''}
+                fotoPortada={item.url_portfolio || ''}
+                seguidores={0} // No disponible en la API actual
+                verificado={item.active}
               />
             )}
             />
