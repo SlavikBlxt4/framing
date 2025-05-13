@@ -1,5 +1,20 @@
-import { Text, TextProps } from './Themed';
+import { Text, TextProps } from 'react-native';
+import { FontFamily } from '@/constants/Fonts';
 
-export function MonoText(props: TextProps) {
-  return <Text {...props} style={[props.style, { fontFamily: 'SpaceMono' }]} />;
+interface StyledTextProps extends TextProps {
+  weight?: 'regular' | 'medium' | 'semiBold' | 'bold';
+}
+
+export function StyledText({ style, weight = 'regular', ...props }: StyledTextProps) {
+  return (
+    <Text
+      style={[
+        {
+          fontFamily: FontFamily[weight],
+        },
+        style,
+      ]}
+      {...props}
+    />
+  );
 }
