@@ -29,7 +29,7 @@ export default function TabLayout() {
     >
       <Tabs.Screen name="index" options={{ title: 'Inicio' }} />
       <Tabs.Screen name="sesiones" options={{ title: 'Sesiones' }} />
-      <Tabs.Screen name="calendario" options={{ title: 'Calendario' }} />
+      <Tabs.Screen name="notificaciones" options={{ title: 'Notificaciones' }} />
       <Tabs.Screen name="profile" options={{ title: 'Perfil' }} />
     </Tabs>
   );

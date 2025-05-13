@@ -1,12 +1,12 @@
 import { StyleSheet } from 'react-native';
 import { Text, View } from '../../components/Themed';
 
-export default function CalendarioScreen() {
+export default function NotificacionesScreen() {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Calendario</Text>
+      <Text style={styles.title}>Notificaciones</Text>
       <View style={styles.separator} />
-      <Text style={styles.text}>Aquí podrás ver y gestionar tu calendario de sesiones.</Text>
+      <Text style={styles.text}>Aquí podrás ver tus notificaciones y mensajes.</Text>
     </View>
   );
 }

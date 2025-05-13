@@ -1,14 +1,14 @@
 import React from 'react';
 import {
-  House,
-  Camera,
   Calendar,
+  Camera,
+  Tray,
   Storefront,
 } from 'phosphor-react-native';
 import { ViewStyle } from 'react-native';
 
 type Props = {
-  name: 'index' | 'sesiones' | 'calendario' | 'profile';
+  name: 'index' | 'sesiones' | 'notificaciones' | 'profile';
   color: string;
   size?: number;
   weight?: 'thin' | 'light' | 'regular' | 'bold' | 'fill' | 'duotone';
@@ -31,11 +31,11 @@ export default function TabBarIcon({
 
   switch (name) {
     case 'index':
-      return <House {...commonProps} />;
+      return <Calendar {...commonProps} />;
     case 'sesiones':
       return <Camera {...commonProps} />;
-    case 'calendario':
-      return <Calendar {...commonProps} />;
+    case 'notificaciones':
+      return <Tray {...commonProps} />;
     case 'profile':
       return <Storefront {...commonProps} />;
     default:
