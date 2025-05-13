@@ -12,11 +12,14 @@
       "supportsTablet": true
     },
     "android": {
-      "permissions": ["READ_MEDIA_IMAGES"],
+      "permissions": [
+        "READ_MEDIA_IMAGES"
+      ],
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.diegosorianom.framingapp"
     },
     "web": {
       "bundler": "metro",
@@ -38,6 +41,14 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "404e3756-acc1-4029-bdd4-e5a63c80389d"
+      }
     }
   }
 }
