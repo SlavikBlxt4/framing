@@ -8,7 +8,7 @@ import Colors from '@/constants/Colors';
 export default function SesionesScreen() {
   return (
     <View style={styles.container}>
-      <StyledText style={styles.title}>Sesiones</StyledText>
+      <StyledText style={styles.title} weight="bold">Sesiones</StyledText>
       <ScrollView style={styles.content}>
         <BookingCard
         bookingDate="2024-11-01T10:00:00.000Z"
@@ -37,8 +37,7 @@ const styles = StyleSheet.create({
     paddingTop: 15,
   },
   title: {
-    fontSize: 20,
-    fontWeight: 'bold',
+    fontSize: 24,
   },
   separator: {
     marginVertical: 10,

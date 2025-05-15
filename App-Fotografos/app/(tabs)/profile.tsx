@@ -1,32 +1,119 @@
-import { StyleSheet } from 'react-native';
+import { ScrollView, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import { Text, View } from '../../components/Themed';
+import { StyledText } from '@/components/StyledText';
+import Colors from '@/constants/Colors';
+import { PencilSimple } from 'phosphor-react-native';
+import { useRouter } from 'expo-router';
 
 export default function ProfileScreen() {
+  const router = useRouter();
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Perfil</Text>
-      <View style={styles.separator} />
-      <Text style={styles.text}>Aquí podrás gestionar tu perfil de fotógrafo.</Text>
-    </View>
+    <ScrollView style={{ flex: 1, backgroundColor: Colors.light.background }}>
+      {/* Cabecera de perfil */}
+      <View style={styles.header}>
+        <Image source={require('../../assets/images/placeholder_profile.png')} style={styles.avatar} />
+        <View style={{ flex: 1 }}>
+          <StyledText style={styles.studioName} weight="bold">Estudio Fotográfico</StyledText>
+          <StyledText style={styles.address}>C. Violeta Parra 9, 50015. Zaragoza</StyledText>
+        </View>
+        <TouchableOpacity onPress={() => router.push('/profile/editar-perfil')} style={styles.editButton}>
+          <PencilSimple size={22} color={Colors.light.tint} />
+        </TouchableOpacity>
+      </View>
+
+      {/* Sección Información pública */}
+      <StyledText style={styles.sectionTitle} weight="bold">Información pública</StyledText>
+      <View style={styles.card}>
+        <Option label="Nombre y dirección" onPress={() => router.push('/profile/nombre-direccion')} />
+        <Option label="Logo y portada" onPress={() => router.push('/profile/logo-portada')} />
+        <Option label="Horario del estudio" onPress={() => router.push('/profile/horario')} />
+        <Option label="Portfolio" onPress={() => router.push('/profile/portfolio')} />
+        <Option label="Sesiones" onPress={() => router.push('/profile/sesiones')} />
+      </View>
+
+      {/* Sección Compartir */}
+      <StyledText style={styles.sectionTitle} weight="bold">Compartir</StyledText>
+      <View style={styles.card}>
+        <Option label="Compartir perfil" onPress={() => router.push('/profile/compartir-perfil')} />
+        <Option label="Agregar redes sociales" onPress={() => router.push('/profile/redes-sociales')} />
+      </View>
+    </ScrollView>
+  );
+}
+
+function Option({ label, onPress }: { label: string; onPress?: () => void }) {
+  return (
+    <TouchableOpacity style={styles.option} onPress={onPress}>
+      <StyledText style={styles.optionText}>{label}</StyledText>
+      <Text style={styles.caret}>{'>'}</Text>
+    </TouchableOpacity>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
+  header: {
+    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
+    padding: 16,
+    paddingBottom: 8,
+    gap: 12,
   },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
+  avatar: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    marginRight: 12,
   },
-  separator: {
-    marginVertical: 30,
-    height: 1,
-    width: '80%',
+  studioName: {
+    fontSize: 17,
+    marginBottom: 2,
   },
-  text: {
-    fontSize: 16,
+  address: {
+    fontSize: 13,
+    color: Colors.light.tabIconDefault,
+  },
+  editButton: {
+    padding: 6,
+    borderRadius: 20,
+    marginLeft: 4,
+  },
+  sectionTitle: {
+    color: Colors.light.tint,
+    fontSize: 15,
+    marginTop: 10,
+    marginBottom: 6,
+    marginLeft: 16,
+  },
+  card: {
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    marginBottom: 12,
+    paddingVertical: 2,
+    gap: 2,
+    marginHorizontal: 12,
+    shadowColor: '#000',
+    shadowOpacity: 0.04,
+    shadowRadius: 2,
+    elevation: 1,
+  },
+  option: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 13,
+    paddingHorizontal: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.light.border,
+    backgroundColor: '#fff',
+    borderRadius: 12,
+  },
+  optionText: {
+    flex: 1,
+    fontSize: 15,
+  },
+  caret: {
+    fontSize: 18,
+    color: Colors.light.tabIconDefault,
+    marginLeft: 8,
   },
 }); 
