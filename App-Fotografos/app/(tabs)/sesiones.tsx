@@ -1,12 +1,31 @@
-import { StyleSheet } from 'react-native';
-import { Text, View } from '../../components/Themed';
+import React from 'react';
+import { View, StyleSheet, ScrollView } from 'react-native';
+import { Text } from '../../components/Themed';
+import BookingCard from '@/components/fm_cards/TarjetaSesion';
+import { StyledText } from '@/components/StyledText';
+import Colors from '@/constants/Colors';
 
 export default function SesionesScreen() {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Sesiones</Text>
-      <View style={styles.separator} />
-      <Text style={styles.text}>Aquí podrás gestionar tus sesiones fotográficas.</Text>
+      <StyledText style={styles.title}>Sesiones</StyledText>
+      <ScrollView style={styles.content}>
+        <BookingCard
+        bookingDate="2024-11-01T10:00:00.000Z"
+        clientName="Juan Pérez"
+        serviceName="Sesión de comunión"
+      />
+      <BookingCard
+        bookingDate="2024-11-01T10:00:00.000Z"
+        clientName="Juan Pérez"
+        serviceName="Sesión de comunión"
+      />
+      <BookingCard
+        bookingDate="2024-11-01T10:00:00.000Z"
+        clientName="Juan Pérez"
+        serviceName="Sesión de comunión"
+      />
+      </ScrollView>
     </View>
   );
 }
@@ -14,19 +33,25 @@ export default function SesionesScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    paddingHorizontal: 20,
+    paddingTop: 15,
   },
   title: {
     fontSize: 20,
     fontWeight: 'bold',
   },
   separator: {
-    marginVertical: 30,
+    marginVertical: 10,
+    borderWidth: 1,
+    borderColor: Colors.light.text,
+    opacity: 0.2,
     height: 1,
-    width: '80%',
+    // width: '80%',
   },
   text: {
     fontSize: 16,
   },
+  content: {
+    paddingVertical: 10,
+  }
 }); 
