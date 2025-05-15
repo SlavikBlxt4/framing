@@ -22,6 +22,8 @@ import mockUsers from '@/mocks/mockUsuarios';
 import { UsuarioProps } from '@/types/user';
 import { Categoria } from '@/types/category';
 import { getCategorias } from '@/services/categoryService';
+import { Photographer } from '@/types/photographer';
+import { getPhotographers } from '@/services/photographerService';
 import Colors from '@/constants/Colors';
 
 // Componente principal de la pantalla de inicio
@@ -29,6 +31,7 @@ export default function HomeScreen() {
   // Estado para guardar el usuario actualmente logueado (o null si no hay ninguno)
   const [currentUser, setCurrentUser] = useState<UsuarioProps | null>(null);
   const [categorias, setCategorias] = useState<Categoria[]>([]);
+  const [ photographers, setPhotographers] = useState<Photographer[]>([]);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -45,6 +48,15 @@ export default function HomeScreen() {
       }
     };
 
+    const fetchPhotographers = async () => {
+      try {
+        const data = await getPhotographers();
+        setPhotographers(data);
+      } catch (error) {
+        console.error('Error al obtener el fotógrafro: ', error);
+      }
+    };
+
     const fetchCategorias = async () => {
       try {
         const data = await getCategorias();
@@ -56,6 +68,7 @@ export default function HomeScreen() {
   
     fetchUser();
     fetchCategorias();
+    fetchPhotographers();
   }, []);
 
 
@@ -72,6 +85,7 @@ export default function HomeScreen() {
           key={`categoria-${cat.id}`}
           categoria={cat.name}
           categorias={categorias}
+          photographers={photographers}
         />
       );
 
@@ -90,7 +104,7 @@ export default function HomeScreen() {
       // En caso contrario, solo se devuelve la sección
       return [section];
     });
-  }, [categorias]); // Solo se recalcula si las dependencias cambian (vacío: solo una vez)
+  }, [categorias, photographers]); // Solo se recalcula si las dependencias cambian (vacío: solo una vez)
 
   // Renderizado del componente
   return (

@@ -1,6 +1,5 @@
-// React - React Native
-import React, { useState, useMemo } from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import React, { useState, useMemo, useEffect } from 'react';
+import { StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 // Componentes
@@ -8,46 +7,63 @@ import SearchBar from '@/components/fm_input/BarraDeBusqueda';
 import GridFotografos from '@/components/fm_grids/GridFotografos';
 import FloatingSortButton from '@/components/fm_input/FloatingSortButton';
 import FilterDrawerExplorar from '@/components/fm_drawers/FilterDrawerExplorar';
-
-// Datos simulados
-import { fotografos } from '@/mocks/mockFotografo';
 import BotonesCategorias from '@/components/fm_input/BotonesCategorias';
-import Fonts from '@/constants/Fonts';
+
+// Servicios
+import { getPhotographers } from '@/services/photographerService';
+import { Photographer } from '@/types/photographer';
+
+// Constantes
 import Colors from '@/constants/Colors';
 
-
-// Componente principla de la pantalla "Explorar"
-// Muestra una barra de búsqueda, una grid de fotógrafos, un botón flotante para ordenar y un drawer para filtros
-
 export default function ExplorarScreen() {
-  // Estado para controlar si el drawer de filtros está visible o no
   const [drawerVisible, setDrawerVisible] = useState(false);
-
-  // Estado para el criterio de ordenamiento (ascendente o descendente por nombre)
   const [sortBy, setSortBy] = useState<'nombre-asc' | 'nombre-desc'>('nombre-asc');
-
-  // Estado para el texto ingresado en la barra de búsqueda
   const [search, setSearch] = useState('');
+  const [photographers, setPhotographers] = useState<Photographer[]>([]);
 
-  // Memoriza la lista de fotógrafos ordenada según el criterio seleccionado
-  const fotografosOrdenados = useMemo(() => {
-    return [...fotografos].sort((a, b) =>
-      sortBy === 'nombre-asc'
-        ? a.nombreEstudio.localeCompare(b.nombreEstudio) // orden ascendente alfabético
-        : b.nombreEstudio.localeCompare(a.nombreEstudio) // orden descendente alfabético
-    );
-  }, [sortBy]); // Solo se recalcula si cambia el criterio de orden
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data = await getPhotographers();
+        setPhotographers(data);
+      } catch (error) {
+        console.error('Error al cargar fotógrafos: ', error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  const fotografosFiltrados = useMemo(() => {
+    return [...photographers]
+      .filter(p =>
+        p.name.toLowerCase().includes(search.toLowerCase())
+      )
+      .sort((a, b) =>
+        sortBy === 'nombre-asc'
+          ? a.name.localeCompare(b.name)
+          : b.name.localeCompare(a.name)
+      );
+  }, [photographers, search, sortBy]);
 
   return (
-    <View style={styles.container}>
-      {/* Contenedor principal */}
-      <View>
-        {/* Barra de búsqueda, actualiza el estado de 'search' */}
-        <SearchBar value={search} onChangeText={setSearch} />
-      </View>
+    <SafeAreaView style={styles.container}>
+      <SearchBar value={search} onChangeText={setSearch} />
 
-      <BotonesCategorias></BotonesCategorias>
-    </View>
+      {/* Mostrar botones o resultados de búsqueda */}
+      {search.trim() === '' ? (
+        <BotonesCategorias />
+      ) : (
+        <GridFotografos data={fotografosFiltrados} />
+      )}
+
+      {/* Botón flotante de ordenamiento (opcional) */}
+      {/* <FloatingSortButton sortBy={sortBy} setSortBy={setSortBy} /> */}
+
+      {/* Drawer de filtros (opcional) */}
+      {/* <FilterDrawerExplorar visible={drawerVisible} onClose={() => setDrawerVisible(false)} /> */}
+    </SafeAreaView>
   );
 }
 
