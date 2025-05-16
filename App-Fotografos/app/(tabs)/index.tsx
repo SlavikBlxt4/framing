@@ -1,62 +1,78 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, ScrollView, Text } from 'react-native';
-import { Picker } from '@react-native-picker/picker';
-import { StyledText } from '@/components/StyledText';
 import { CalendarBlank } from 'phosphor-react-native';
-import AppointmentCard from '@/components/fm_cards/TarjetaAgenda';
 import Colors from '@/constants/Colors';
+import AppointmentCard from '@/components/fm_cards/TarjetaAgenda';
+import { StyledText } from '@/components/StyledText';
+import api from '../../services/api'; // Asegúrate de tener esto configurado
+import dayjs from 'dayjs';
+import 'dayjs/locale/es';
+dayjs.locale('es');
 
-const months = [
-  'enero', 'febrero', 'marzo', 'abril',
-  'mayo', 'junio', 'julio', 'agosto',
-  'septiembre', 'octubre', 'noviembre', 'diciembre',
-];
+type AgendaDay = {
+  date: string;
+  label: string;
+  sessions: {
+    bookingId: number;
+    clientName: string;
+    serviceName: string;
+    date: string;
+  }[];
+};
 
 export default function AgendaScreen() {
-  const [selectedMonth, setSelectedMonth] = useState('febrero');
+  const [agenda, setAgenda] = useState<AgendaDay[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchAgenda = async () => {
+      try {
+        const response = await api.get('/bookings/active-bookings-photographer/next-5-days');
+        setAgenda(response.data);
+      } catch (error) {
+        console.error('Error cargando la agenda:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAgenda();
+  }, []);
 
   return (
     <ScrollView style={styles.container}>
       {/* Título */}
       <StyledText weight="bold" style={styles.title}>Agenda</StyledText>
 
-      {/* Dropdown de mes */}
-      <View style={styles.monthSelector}>
-        <StyledText style={{ marginBottom: 5 }}>Selecciona un mes</StyledText>
-        <View style={styles.pickerContainer}>
-          <Picker
-            selectedValue={selectedMonth}
-            onValueChange={(itemValue) => setSelectedMonth(itemValue)}
-            style={styles.picker}
-            dropdownIconColor={Colors.light.text}
-          >
-            {months.map((month) => (
-              <Picker.Item key={month} label={month} value={month} />
-            ))}
-          </Picker>
-        </View>
-      </View>
+      {loading ? (
+        <StyledText style={styles.noAppointmentsText}>Cargando agenda...</StyledText>
+      ) : (
+        agenda.map((day) => (
+          <View key={day.date} style={styles.daySection}>
+            <StyledText weight="bold" style={styles.date}>
+              {day.label.toLowerCase()}
+            </StyledText>
 
-      {/* HOY */}
-      <View style={styles.todaySection}>
-        <StyledText weight="bold" style={styles.sectionTitle}>HOY</StyledText>
-        <Text style={styles.noAppointmentsIcon}> <CalendarBlank /> </Text>
-        <StyledText style={styles.noAppointmentsText}>No hay próximas citas</StyledText>
-      </View>
-
-      {/* Día: mié, 12 feb */}
-      <View style={styles.daySection}>
-        <StyledText weight="bold" style={styles.date}>mié, 12 feb</StyledText>
-        <AppointmentCard />
-        <View style={styles.spacing} />
-        <AppointmentCard />
-      </View>
-
-      {/* Día: jue, 13 feb */}
-      <View style={styles.daySection}>
-        <StyledText weight="bold" style={styles.date}>jue, 13 feb</StyledText>
-        <AppointmentCard />
-      </View>
+            {day.sessions.length === 0 ? (
+              <View style={styles.noAppointmentsContainer}>
+                <Text style={styles.noAppointmentsIcon}>
+                  <CalendarBlank />
+                </Text>
+                <StyledText style={styles.noAppointmentsText}>No hay sesiones hoy</StyledText>
+              </View>
+            ) : (
+              day.sessions.map((session) => (
+                <AppointmentCard
+                  key={session.bookingId}
+                  clientName={session.clientName}
+                  serviceName={session.serviceName}
+                  sessionDate={session.date}
+                />
+              ))
+            )}
+          </View>
+        ))
+      )}
     </ScrollView>
   );
 }
@@ -70,29 +86,16 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 24,
+  },
+  daySection: {
+    marginBottom: 25,
+  },
+  date: {
     marginBottom: 10,
-    color: Colors.light.text,
+    fontSize: 16,
   },
-  monthSelector: {
-    marginBottom: 20,
-  },
-  pickerContainer: {
-    borderWidth: 1,
-    borderColor: Colors.light.tint,
-    borderRadius: 8,
-    overflow: 'hidden',
-  },
-  picker: {
-    color: Colors.light.text,
-    backgroundColor: Colors.light.accent,
-  },
-  todaySection: {
+  noAppointmentsContainer: {
     alignItems: 'center',
-    marginBottom: 30,
-  },
-  sectionTitle: {
-    fontSize: 14,
-    marginBottom: 8,
   },
   noAppointmentsIcon: {
     fontSize: 24,
@@ -100,14 +103,5 @@ const styles = StyleSheet.create({
   },
   noAppointmentsText: {
     color: Colors.light.tint,
-  },
-  daySection: {
-    marginBottom: 25,
-  },
-  date: {
-    marginBottom: 10,
-  },
-  spacing: {
-    height: 10,
   },
 });

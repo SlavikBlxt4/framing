@@ -27,6 +27,7 @@ export default function ProfileScreen() {
         <Option label="Horario del estudio" onPress={() => router.push('/profile/horario')} />
         <Option label="Portfolio" onPress={() => router.push('/profile/portfolio')} />
         <Option label="Sesiones" onPress={() => router.push('/profile/sesiones')} />
+          <Option label="Servicios" onPress={() => router.push('/profile/servicios')} />
       </View>
 
       {/* Sección Compartir */}
