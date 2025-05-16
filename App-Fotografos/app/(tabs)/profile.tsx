@@ -17,9 +17,6 @@ export default function ProfileScreen() {
           <StyledText style={styles.studioName} weight="bold">Estudio Fotográfico</StyledText>
           <StyledText style={styles.address}>C. Violeta Parra 9, 50015. Zaragoza</StyledText>
         </View>
-        <TouchableOpacity onPress={() => router.push('/profile/editar-perfil')} style={styles.editButton}>
-          <PencilSimple size={22} color={Colors.light.tint} />
-        </TouchableOpacity>
       </View>
 
       {/* Sección Información pública */}

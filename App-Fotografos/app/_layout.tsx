@@ -1,57 +1,86 @@
-import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
+import { DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
-import { useEffect } from 'react';
-import 'react-native-reanimated';
+import { StatusBar } from 'expo-status-bar';
+import { useEffect, useState } from 'react';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { SafeAreaView, StyleSheet } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import { useCustomFonts } from '@/constants/Fonts';
+
 import Colors from '@/constants/Colors';
 
-export {
-  // Catch any errors thrown by the Layout component.
-  ErrorBoundary,
-} from 'expo-router';
-
-export const unstable_settings = {
-  // Ensure that reloading on `/modal` keeps a back button present.
-  initialRouteName: '(tabs)',
-};
-
-// Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
-  const fontsLoaded = useCustomFonts();
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null);
 
   useEffect(() => {
-    if (fontsLoaded) {
-      SplashScreen.hideAsync();
-    }
-  }, [fontsLoaded]);
+    const checkAuth = async () => {
+      try {
+        const token = await AsyncStorage.getItem('token');
+        setIsLoggedIn(!!token);
+      } catch (e) {
+        console.error('Error al leer token:', e);
+        setIsLoggedIn(false);
+      } finally {
+        SplashScreen.hideAsync();
+      }
+    };
+    checkAuth();
+  }, []);
 
-  if (!fontsLoaded) {
-    return null;
+  if (isLoggedIn === null) {
+    return null; // Esperar carga
   }
 
-  return <RootLayoutNav />;
-}
-
-function RootLayoutNav() {
-  const customTheme = {
-    ...DefaultTheme,
-    colors: {
-      ...DefaultTheme.colors,
-      ...Colors.light,
-    },
-  };
-
   return (
-    <ThemeProvider value={customTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
-      </Stack>
-    </ThemeProvider>
+      <SafeAreaProvider>
+        <SafeAreaView style={styles.safeArea}>
+            <ThemeProvider
+              value={{
+                ...DefaultTheme,
+                colors: {
+                  ...DefaultTheme.colors,
+                  ...Colors.light,
+                },
+              }}
+            >
+              <Stack
+                screenOptions={{
+                  animation: 'none',
+                  headerShown: false,
+                }}
+              >
+                {isLoggedIn ? (
+                  <Stack.Screen name="(tabs)" />
+                ) : (
+                  <Stack.Screen name="sign/login" />
+                )}
+
+                {/* Rutas adicionales si las necesitas */}
+                <Stack.Screen name="sign/register" />
+                <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
+                <Stack.Screen name="profile/compartir-perfil" />
+                <Stack.Screen name="profile/horario" />
+                <Stack.Screen name="profile/logo-portada" />
+                <Stack.Screen name="profile/nombre-direccion" />
+                <Stack.Screen name="profile/portfolio" />
+                <Stack.Screen name="profile/redes-sociales" />
+                <Stack.Screen name="profile/sesiones" />
+              </Stack>
+
+              <StatusBar style="dark" backgroundColor="#FFFFFF" translucent />
+            </ThemeProvider>
+          </SafeAreaView>
+      </SafeAreaProvider>
   );
 }
+
+const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#FFFFFF',
+    paddingTop: 20, 
+  },
+});
