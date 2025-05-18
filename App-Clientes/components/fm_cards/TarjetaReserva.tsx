@@ -18,14 +18,26 @@ const TarjetaReserva: React.FC<Props> = ({ sesion }) => {
   // Función que navega a la pantalla de confirmación de reserva
   const handleReservar = () => {
     router.push({
-      pathname: '/fotografo/confirmarReserva', // Ruta de destino
+      pathname: '/fotografo/confirmarReserva',
       params: {
-        nombre: sesion.nombre, // Nombre de la sesión
-        fecha: new Date().toISOString().split('T')[0], // Fecha actual en formato YYYY-MM-DD
-        precio: sesion.precio.toString(), // Precio convertido en string
+        nombre: sesion.nombre,
+        precio: sesion.precio.toString(),
+        fotografoId: sesion.photographerId.toString(),
+        duracion: sesion.duracion.toString(),
+        fotografoNombre: sesion.fotografoNombre,
+        serviceId: sesion.id.toString(),
       },
     });
   };
+
+  const formatDuration = (minutes: number): string => {
+    const hrs = Math.floor(minutes / 60);
+    const mins = minutes % 60;
+    if (hrs > 0 && mins > 0) return `${hrs}h ${mins}min`;
+    if (hrs > 0) return `${hrs}h`;
+    return `${mins}min`;
+  };
+
   
 
   return (
@@ -34,7 +46,7 @@ const TarjetaReserva: React.FC<Props> = ({ sesion }) => {
       <View>
         <Text style={styles.nombre}>{sesion.nombre}</Text>
         <Text style={styles.detalle}>
-          {sesion.duracion} · <Text style={styles.precio}>{sesion.precio}€</Text>
+          {formatDuration(sesion.duracion)} · <Text style={styles.precio}>{sesion.precio}€</Text>
         </Text>
       </View>
 

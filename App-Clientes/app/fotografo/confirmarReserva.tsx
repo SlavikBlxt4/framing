@@ -1,39 +1,107 @@
-// React y React Native
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, Pressable } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Pressable,
+  LayoutAnimation,
+  UIManager,
+  Platform,
+  ActivityIndicator,
+  ScrollView,
+} from 'react-native';
+import { Calendar, DateData } from 'react-native-calendars';
+import { useLocalSearchParams, router } from 'expo-router';
 
-// Navegación y parámetros
-import { useLocalSearchParams } from 'expo-router';
-
-// Componentes de terceros
-import { Calendar } from 'react-native-calendars';
-
-// Constantes del proyecto
+import api from '@/services/api';
 import Colors from '@/constants/Colors';
 import Fonts from '@/constants/Fonts';
 
+// Habilitar animaciones en Android
+if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
+  UIManager.setLayoutAnimationEnabledExperimental(true);
+}
 
-// Componente para confirmar una reserva de sesión fotográfica
+// Tipado para los parámetros recibidos
+type Params = {
+  nombre: string;
+  precio: string;
+  fotografoId: string;
+  duracion: string;
+  fotografoNombre: string;
+  serviceId: string;
+};
+
 export default function ConfirmarReserva() {
-  // Extrae los parámetros de la ruta (nombre y precio de la sesión)
-  const { nombre, precio } = useLocalSearchParams();
+  const { nombre, precio, fotografoId, duracion, fotografoNombre, serviceId } = useLocalSearchParams<Params>();
 
-  // Estado que guarda la fecha seleccionada, con la fecha de hoy por defecto
   const [selectedDate, setSelectedDate] = useState<string>(
     new Date().toISOString().split('T')[0]
   );
+  const [showAvailability, setShowAvailability] = useState(false);
+  const [availableSlots, setAvailableSlots] = useState<string[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
 
-  // Función que se ejecuta al confirmar la reserva
-  const handleConfirmar = () => {
-    alert(`Reserva confirmada para ${selectedDate}`);
+  const fetchAvailability = async () => {
+    try {
+      LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+      setLoading(true);
+      setSelectedSlot(null);
+
+      const res = await api.post('/bookings/check-availability', {
+        photographerId: Number(fotografoId),
+        date: selectedDate,
+        duration: Number(duracion),
+      });
+
+      setAvailableSlots(res.data.availableSlots || []);
+    } catch (err) {
+      console.error('Error al consultar disponibilidad:', err);
+      setAvailableSlots([]);
+    } finally {
+      setLoading(false);
+    }
   };
 
+  const handleVerDisponibilidad = () => {
+    if (!showAvailability) {
+      fetchAvailability();
+      LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+      setShowAvailability(true);
+    } else if (selectedSlot) {
+      router.push({
+        pathname: '/fotografo/resumenReserva',
+        params: {
+          nombre,
+          precio,
+          fotografoId,
+          duracion,
+          fecha: selectedDate,
+          hora: selectedSlot,
+          fotografoNombre,
+          serviceId,
+        },
+      });
+    }
+  };
+
+  const isBotonActivo = !showAvailability || (showAvailability && selectedSlot);
+
+  useEffect(() => {
+    if (showAvailability) {
+      fetchAvailability();
+    }
+  }, [selectedDate]);
+
   return (
-    <View style={styles.container}>
-      {/* Titulo principal */}
+    <ScrollView
+      style={styles.scroll}
+      contentContainerStyle={styles.container}
+      keyboardShouldPersistTaps="handled"
+    >
       <Text style={styles.title}>Confirmación de Reserva</Text>
 
-      {/* Tarjeta con los detalles de la reserva */}
       <View style={styles.card}>
         <Text style={styles.label}>Sesión:</Text>
         <Text style={styles.value}>{nombre}</Text>
@@ -45,9 +113,12 @@ export default function ConfirmarReserva() {
         <Text style={styles.value}>{precio}€</Text>
       </View>
 
-      {/* Calendario para elegir una fecha */}
       <Calendar
-        onDayPress={(day) => setSelectedDate(day.dateString)}
+        onDayPress={(day: DateData) => {
+          setSelectedDate(day.dateString);
+          setAvailableSlots([]);
+          setSelectedSlot(null);
+        }}
         markedDates={{
           [selectedDate]: {
             selected: true,
@@ -58,19 +129,65 @@ export default function ConfirmarReserva() {
         style={styles.calendar}
       />
 
-      {/* Botón para confirmar la reserva */}
-      <Pressable style={styles.button} onPress={handleConfirmar}>
-        <Text style={styles.buttonText}>Confirmar Reserva</Text>
+      {showAvailability && (
+        <View style={styles.availabilityContainer}>
+          {loading ? (
+            <ActivityIndicator color={Colors.light.tint} size="small" />
+          ) : availableSlots.length > 0 ? (
+            <View style={styles.chipsWrapper}>
+              {availableSlots.map((slot) => (
+                <Pressable
+                  key={slot}
+                  onPress={() => setSelectedSlot(slot)}
+                  style={[
+                    styles.chip,
+                    selectedSlot === slot && styles.chipSelected,
+                  ]}
+                >
+                  <Text
+                    style={[
+                      styles.chipText,
+                      selectedSlot === slot && styles.chipTextSelected,
+                    ]}
+                  >
+                    {slot}
+                  </Text>
+                </Pressable>
+              ))}
+            </View>
+          ) : (
+            <Text style={styles.noAvailabilityText}>
+              No hay disponibilidad para este día.
+            </Text>
+          )}
+        </View>
+      )}
+
+      <Pressable
+        style={[
+          styles.button,
+          isBotonActivo ? styles.buttonActive : styles.buttonDisabled,
+        ]}
+        onPress={handleVerDisponibilidad}
+        disabled={!isBotonActivo}
+      >
+        <Text style={styles.buttonText}>
+          {showAvailability ? 'Confirmar Reserva' : 'Ver Disponibilidad'}
+        </Text>
       </Pressable>
-    </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    padding: 24,
+  scroll: {
     flex: 1,
     backgroundColor: '#fff',
+  },
+  container: {
+    padding: 24,
+    paddingBottom: 40,
+    flexGrow: 1,
   },
   title: {
     fontSize: 24,
@@ -99,15 +216,55 @@ const styles = StyleSheet.create({
   },
   calendar: {
     borderRadius: 12,
-    marginBottom: 24,
+    marginBottom: 12,
     borderColor: Colors.light.tint,
     borderWidth: 1,
   },
-  button: {
+  availabilityContainer: {
+    marginBottom: 20,
+    alignItems: 'center',
+  },
+  chipsWrapper: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+    justifyContent: 'center',
+  },
+  chip: {
+    borderWidth: 1,
+    borderColor: Colors.light.tint,
+    borderRadius: 20,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    margin: 4,
+  },
+  chipSelected: {
     backgroundColor: Colors.light.tint,
+  },
+  chipText: {
+    fontFamily: Fonts.regular,
+    color: Colors.light.tint,
+  },
+  chipTextSelected: {
+    color: '#fff',
+    fontFamily: Fonts.bold,
+  },
+  noAvailabilityText: {
+    fontSize: 14,
+    fontFamily: Fonts.regular,
+    color: '#666',
+    marginTop: 8,
+  },
+  button: {
     paddingVertical: 14,
     borderRadius: 8,
     alignItems: 'center',
+  },
+  buttonActive: {
+    backgroundColor: Colors.light.tint,
+  },
+  buttonDisabled: {
+    backgroundColor: '#ccc',
   },
   buttonText: {
     fontFamily: Fonts.bold,

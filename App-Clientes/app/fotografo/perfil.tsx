@@ -111,7 +111,13 @@ export default function PerfilFotografo() {
         ))}
       </View>
 
-      {selectedTab === 'sesiones' && <Sesiones services={photographer.services} />}
+      {selectedTab === 'sesiones' && (
+        <Sesiones
+          services={photographer.services}
+          photographerId={photographer.id}
+          photographerName={photographer.name}
+        />
+      )}
       {selectedTab === 'calificaciones' && <Calificaciones />}
       {selectedTab === 'portfolio' && <Portfolio />}
       {selectedTab === 'detalles' && (

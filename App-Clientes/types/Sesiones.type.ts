@@ -7,4 +7,6 @@ export interface SesionesProps {
     descuento: number;
     imagenUrl: string;
     categoria: string;
+    photographerId: number;
+    fotografoNombre: string; 
 }

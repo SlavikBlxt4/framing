@@ -11,10 +11,12 @@ import { sesionesFotografos } from '@/mocks/mockSesionesFotografo';
 
 interface Props {
   services: Service[];
+  photographerId: number;
+  photographerName: string;
 }
 
 // Componente que muestra una lista de sesiones ofrecidas por un fotógrafo
-export default function Sesiones({ services }: Props) {
+export default function Sesiones({ services, photographerId, photographerName }: Props) {
   return (
     // Contenedor principal
     <ScrollView style={styles.container}>
@@ -30,7 +32,9 @@ export default function Sesiones({ services }: Props) {
             duracion: service.minimum_minutes,
             descuento: parseFloat(service.discount),
             imagenUrl: service.imageUrl,
-            categoria: service.category.name
+            categoria: service.category.name,
+            photographerId: photographerId,
+            fotografoNombre: photographerName,
           }}
         />
       ))}
