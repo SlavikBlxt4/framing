@@ -55,8 +55,8 @@ export default function NotificacionesList() {
   const renderItem = ({ item }: { item: Notification }) => {
     let mensaje = '';
     if (item.type === 'SESSION_UPDATED') mensaje = 'ha actualizado las sesiones';
-    else if (item.type === 'PORTFOLIO_UPDATED') mensaje = 'ha actualizado el portfolio';
-    else if (item.type === 'PHOTOS_UPLOADED') mensaje = 'ha subido las fotos de la sesión';
+    else if (item.type === 'SESSION_CONFIRMED') mensaje = 'ha confirmado la sesión';
+    else if (item.type === 'SESSION_CANCELED') mensaje = 'ha cancelado la sesión';
     else mensaje = item.message;
 
     return (
