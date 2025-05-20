@@ -2,9 +2,12 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useRouter } from 'expo-router';
+import { AxiosError } from 'axios';
 
 // Constantes
 import Fonts from '@/constants/Fonts';
+import Colors from '@/constants/Colors';
 
 // Componentes
 import ScrollWithAnimatedHeader from '@/components/framing/ScrollWithAnimatedHeader';
@@ -24,27 +27,49 @@ import { Categoria } from '@/types/category';
 import { getCategorias } from '@/services/categoryService';
 import { Photographer } from '@/types/photographer';
 import { getPhotographers } from '@/services/photographerService';
-import Colors from '@/constants/Colors';
 
 // Componente principal de la pantalla de inicio
 export default function HomeScreen() {
-  // Estado para guardar el usuario actualmente logueado (o null si no hay ninguno)
+  const router = useRouter();
   const [currentUser, setCurrentUser] = useState<UsuarioProps | null>(null);
   const [categorias, setCategorias] = useState<Categoria[]>([]);
-  const [ photographers, setPhotographers] = useState<Photographer[]>([]);
+  const [photographers, setPhotographers] = useState<Photographer[]>([]);
 
   useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const token = await AsyncStorage.getItem('token');
+        if (!token) {
+          router.replace('/perfil/Login');
+          return;
+        }
+        fetchUser();
+        fetchPhotographers();
+        fetchCategorias();
+      } catch (error) {
+        console.error('Error verificando sesión:', error);
+        router.replace('/perfil/Login');
+      }
+    };
+
     const fetchUser = async () => {
-      const email = await AsyncStorage.getItem('userEmail');
-      const id = await AsyncStorage.getItem('userId');
-      const role = await AsyncStorage.getItem('userRole');
-  
-      if (email && id) {
-        setCurrentUser({
-          id: parseInt(id),
-          email,
-          role: role || undefined,
-        });
+      try {
+        const email = await AsyncStorage.getItem('userEmail');
+        const id = await AsyncStorage.getItem('userId');
+        const role = await AsyncStorage.getItem('userRole');
+    
+        if (email && id) {
+          setCurrentUser({
+            id: parseInt(id),
+            email,
+            role: role || undefined,
+          });
+        } else {
+          router.replace('/perfil/Login');
+        }
+      } catch (error) {
+        console.error('Error cargando usuario:', error);
+        router.replace('/perfil/Login');
       }
     };
 
@@ -53,7 +78,10 @@ export default function HomeScreen() {
         const data = await getPhotographers();
         setPhotographers(data);
       } catch (error) {
-        console.error('Error al obtener el fotógrafro: ', error);
+        console.error('Error al obtener los fotógrafos:', error);
+        if (error instanceof AxiosError && error.response?.status === 401) {
+          router.replace('/perfil/Login');
+        }
       }
     };
 
@@ -62,15 +90,15 @@ export default function HomeScreen() {
         const data = await getCategorias();
         setCategorias(data);
       } catch (error) {
-        console.error('Error al obtener las categorías: ', error);
+        console.error('Error al obtener las categorías:', error);
+        if (error instanceof AxiosError && error.response?.status === 401) {
+          router.replace('/perfil/Login');
+        }
       }
-    }
-  
-    fetchUser();
-    fetchCategorias();
-    fetchPhotographers();
-  }, []);
+    };
 
+    checkAuth();
+  }, []);
 
   // useMemo para calcular el contenido a mostrar (categorías y anuncio) solo una vez
   const contenido = useMemo(() => {
@@ -104,9 +132,8 @@ export default function HomeScreen() {
       // En caso contrario, solo se devuelve la sección
       return [section];
     });
-  }, [categorias, photographers]); // Solo se recalcula si las dependencias cambian (vacío: solo una vez)
+  }, [categorias, photographers]);
 
-  // Renderizado del componente
   return (
     <ScrollView>
       <View style={styles.container}>

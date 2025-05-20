@@ -2,7 +2,7 @@ import { DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { SafeAreaView, StyleSheet } from 'react-native';
 import { PaperProvider } from 'react-native-paper';
@@ -17,13 +17,11 @@ import {
 } from '@expo-google-fonts/poppins';
 import { Montserrat_800ExtraBold} from '@expo-google-fonts/montserrat';
 import { UserProvider } from '@/context/UserContext';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null);
 
   const [loaded] = useFonts({
     Poppins_400Regular,
@@ -33,19 +31,12 @@ export default function RootLayout() {
   });
 
   useEffect(() => {
-    const checkAuth = async () => {
-      const token = await AsyncStorage.getItem('token');
-      setIsLoggedIn(!!token);
-      SplashScreen.hideAsync();
-    };
-    checkAuth();
+    SplashScreen.hideAsync();
   }, []);
 
   if (!loaded) {
     return null;
   }
-
-  if (isLoggedIn === null) return null;
 
   return (
     <UserProvider>
@@ -62,11 +53,14 @@ export default function RootLayout() {
                   headerBackTitleVisible: false,
                   headerStyle: {}
                 }}>
-                  {isLoggedIn ? (
-                    <Stack.Screen name="(tabs)" />
-                  ) : (
-                    <Stack.Screen name="perfil/Login"/>
-                  )}
+                <Stack.Screen name="(tabs)" />
+                <Stack.Screen name="perfil/Login" />
+                <Stack.Screen name="perfil/Register" />
+                <Stack.Screen name="fotografo/[id]" />
+                <Stack.Screen name="fotografo/sesiones" />
+                <Stack.Screen name="fotografo/portfolio" />
+                <Stack.Screen name="fotografo/calificaciones" />
+                <Stack.Screen name="fotografo/detalles" />
               </Stack>
 
               <StatusBar style="dark" backgroundColor="#FFFFFF" translucent />
