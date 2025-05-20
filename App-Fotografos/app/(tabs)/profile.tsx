@@ -4,9 +4,19 @@ import { StyledText } from '@/components/StyledText';
 import Colors from '@/constants/Colors';
 import { PencilSimple } from 'phosphor-react-native';
 import { useRouter } from 'expo-router';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function ProfileScreen() {
   const router = useRouter();
+
+  const handleLogout = async () => {
+    try {
+      await AsyncStorage.multiRemove(['token', 'userEmail', 'userId', 'userRole']);
+      router.replace('/sign/login');
+    } catch (error) {
+      console.error('Error al cerrar sesión:', error);
+    }
+  };
 
   return (
     <ScrollView style={{ flex: 1, backgroundColor: Colors.light.background }}>
@@ -27,7 +37,7 @@ export default function ProfileScreen() {
         <Option label="Horario del estudio" onPress={() => router.push('/profile/horario')} />
         <Option label="Portfolio" onPress={() => router.push('/profile/portfolio')} />
         <Option label="Sesiones" onPress={() => router.push('/profile/sesiones')} />
-          <Option label="Servicios" onPress={() => router.push('/profile/servicios')} />
+        <Option label="Servicios" onPress={() => router.push('/profile/servicios')} />
       </View>
 
       {/* Sección Compartir */}
@@ -35,6 +45,13 @@ export default function ProfileScreen() {
       <View style={styles.card}>
         <Option label="Compartir perfil" onPress={() => router.push('/profile/compartir-perfil')} />
         <Option label="Agregar redes sociales" onPress={() => router.push('/profile/redes-sociales')} />
+      </View>
+
+      {/* Sección Cerrar sesión */}
+      <View style={styles.card}>
+        <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+          <StyledText style={styles.logoutText}>Cerrar sesión</StyledText>
+        </TouchableOpacity>
       </View>
     </ScrollView>
   );
@@ -113,5 +130,17 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: Colors.light.tabIconDefault,
     marginLeft: 8,
+  },
+  logoutButton: {
+    paddingVertical: 13,
+    paddingHorizontal: 16,
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    borderRadius: 12,
+  },
+  logoutText: {
+    color: '#DC2621',
+    fontSize: 15,
+    fontWeight: '600',
   },
 }); 
