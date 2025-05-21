@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, Text } from 'react-native';
+import { View, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import Colors from '@/constants/Colors';
 import { StyledText } from '../StyledText';
 import { CaretRight } from 'phosphor-react-native';
@@ -8,9 +8,10 @@ type Props = {
   bookingDate: string;
   clientName: string;
   serviceName: string;
+  onPress?: () => void;
 };
 
-const BookingCard = ({ bookingDate, clientName, serviceName }: Props) => {
+const BookingCard = ({ bookingDate, clientName, serviceName, onPress }: Props) => {
   // Formatear la fecha: 2024-11-01 -> 01-11-2024
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -21,7 +22,7 @@ const BookingCard = ({ bookingDate, clientName, serviceName }: Props) => {
   };
 
   return (
-    <View style={styles.container}>
+    <TouchableOpacity style={styles.container} onPress={onPress}>
       <View style={styles.content}>
         <StyledText style={styles.dateText} weight="bold">
           {formatDate(bookingDate)}
@@ -31,7 +32,7 @@ const BookingCard = ({ bookingDate, clientName, serviceName }: Props) => {
         </StyledText>
       </View>
       <CaretRight size={18} color={Colors.light.text} />
-    </View>
+    </TouchableOpacity>
   );
 };
 

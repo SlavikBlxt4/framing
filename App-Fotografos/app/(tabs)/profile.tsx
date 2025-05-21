@@ -5,9 +5,12 @@ import Colors from '@/constants/Colors';
 import { PencilSimple } from 'phosphor-react-native';
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useState } from 'react';
+import BookingCard from '@/components/fm_cards/TarjetaSesion';
 
 export default function ProfileScreen() {
   const router = useRouter();
+  const [showExampleCard, setShowExampleCard] = useState(false);
 
   const handleLogout = async () => {
     try {
@@ -27,6 +30,27 @@ export default function ProfileScreen() {
           <StyledText style={styles.studioName} weight="bold">Estudio Fotográfico</StyledText>
           <StyledText style={styles.address}>C. Violeta Parra 9, 50015. Zaragoza</StyledText>
         </View>
+      </View>
+
+      {/* Botón para mostrar tarjeta de ejemplo */}
+      <View style={styles.card}>
+        <TouchableOpacity 
+          style={styles.option} 
+          onPress={() => setShowExampleCard(!showExampleCard)}
+        >
+          <StyledText style={styles.optionText}>Mostrar tarjeta de ejemplo</StyledText>
+          <Text style={styles.caret}>{showExampleCard ? '▼' : '>'}</Text>
+        </TouchableOpacity>
+        {showExampleCard && (
+          <View style={styles.exampleCardContainer}>
+            <BookingCard
+              bookingDate="2024-03-20"
+              clientName="María García"
+              serviceName="Sesión de Retrato"
+              onPress={() => router.push({ pathname: '/session/uploadPhotos', params: { bookingId: 1, clientName: 'María García', bookingDate: '2024-03-20' } })}
+            />
+          </View>
+        )}
       </View>
 
       {/* Sección Información pública */}
@@ -142,5 +166,9 @@ const styles = StyleSheet.create({
     color: '#DC2621',
     fontSize: 15,
     fontWeight: '600',
+  },
+  exampleCardContainer: {
+    padding: 12,
+    backgroundColor: Colors.light.background,
   },
 }); 
