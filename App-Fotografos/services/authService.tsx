@@ -27,3 +27,13 @@ export async function login ({email, password }: LoginRequest): Promise<string> 
 
     return token;
 }
+
+export async function getToken(): Promise<string | null> {
+    try {
+        const token = await AsyncStorage.getItem("token");
+        return token;
+    } catch (error) {
+        console.error("Error retrieving token:", error);
+        return null;
+    }
+}

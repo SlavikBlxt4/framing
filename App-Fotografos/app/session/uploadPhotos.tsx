@@ -1,10 +1,21 @@
 import { useState } from 'react';
-import { StyleSheet, View, Image, TouchableOpacity, ScrollView } from 'react-native';
+import {
+  StyleSheet,
+  View,
+  Image,
+  TouchableOpacity,
+  ScrollView,
+  Alert,
+  ActivityIndicator,
+} from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import * as ImagePicker from 'expo-image-picker';
 import { StyledText } from '@/components/StyledText';
 import Colors from '@/constants/Colors';
 import { X, Plus, Check } from 'phosphor-react-native';
+import { getToken } from '@/services/authService';
+import api from '@/services/api';
+import mime from 'mime';
 
 interface Photo {
   uri: string;
@@ -13,8 +24,13 @@ interface Photo {
 
 export default function UploadPhotosScreen() {
   const router = useRouter();
-  const params = useLocalSearchParams();
+  const params = useLocalSearchParams<{
+    bookingId: string;
+    clientName: string;
+    bookingDate: string;
+  }>();
   const [photos, setPhotos] = useState<Photo[]>([]);
+  const [loading, setLoading] = useState(false);
 
   const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -24,19 +40,62 @@ export default function UploadPhotosScreen() {
     });
 
     if (!result.canceled) {
-      setPhotos([...photos, { uri: result.assets[0].uri, id: Date.now().toString() }]);
+      setPhotos((prev) => [
+        ...prev,
+        { uri: result.assets[0].uri, id: Date.now().toString() },
+      ]);
     }
   };
 
   const removePhoto = (id: string) => {
-    setPhotos(photos.filter(photo => photo.id !== id));
+    setPhotos((prev) => prev.filter((photo) => photo.id !== id));
   };
 
   const handleSave = async () => {
-    // Aquí implementaremos la lógica para guardar las fotos
-    console.log('Guardando fotos:', photos);
+  if (photos.length === 0) {
+    Alert.alert('Error', 'Selecciona al menos una foto antes de guardar.');
+    return;
+  }
+
+  setLoading(true);
+  try {
+    const formData = new FormData();
+
+    photos.forEach((photo, index) => {
+      const mimeType = mime.getType(photo.uri) || 'image/jpeg';
+      const ext = mime.getExtension(mimeType) || 'jpg';
+
+      formData.append('files', {
+        uri: photo.uri,
+        type: mimeType,
+        name: `session_${params.bookingId}_${index}.${ext}`,
+      } as any);
+    });
+
+    const res = await api.post(
+      `/users/photographers/upload-session-images/${params.bookingId}`,
+      formData,
+            {
+        headers: {
+          // OBLIGATORIO para que RN envíe el body en multipart
+          'Content-Type': 'multipart/form-data',
+        },
+        // Para que Axios NO convierta el FormData en un objeto
+        transformRequest: (data) => data,
+        // (el interceptor ya añade Authorization)
+      },
+    );
+
+    console.log('Respuesta backend:', res.data);
+    Alert.alert('¡Éxito!', 'Fotos subidas correctamente.');
     router.back();
-  };
+  } catch (err) {
+    console.error('uploadSessionImages error:', err);
+    Alert.alert('Error', 'No se pudieron subir las fotos.');
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <ScrollView style={styles.container}>
@@ -58,8 +117,14 @@ export default function UploadPhotosScreen() {
 
       {photos.length > 0 && (
         <View style={styles.photosSection}>
-          <StyledText style={styles.sectionTitle} weight="bold">Fotos seleccionadas</StyledText>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.photoRow}>
+          <StyledText style={styles.sectionTitle} weight="bold">
+            Fotos seleccionadas
+          </StyledText>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            style={styles.photoRow}
+          >
             {photos.map((photo, idx) => (
               <View
                 key={photo.id}
@@ -85,9 +150,16 @@ export default function UploadPhotosScreen() {
         <TouchableOpacity
           style={[styles.button, styles.saveButton]}
           onPress={handleSave}
+          disabled={loading}
         >
-          <Check size={24} color="#fff" weight="bold" />
-          <StyledText style={styles.buttonText}>Guardar fotos</StyledText>
+          {loading ? (
+            <ActivityIndicator color="#fff" />
+          ) : (
+            <>
+              <Check size={24} color="#fff" weight="bold" />
+              <StyledText style={styles.buttonText}>Guardar fotos</StyledText>
+            </>
+          )}
         </TouchableOpacity>
       </View>
     </ScrollView>
