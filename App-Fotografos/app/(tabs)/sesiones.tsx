@@ -98,8 +98,6 @@ const styles = StyleSheet.create({
   cardWrapper: {
     marginBottom: 12,
     borderRadius: 12,
-    overflow: 'hidden',         // importante para que Pressable.absoluteFill no se salga
-    borderWidth: 1,
-    borderColor: Colors.light.tint,
+    overflow: 'hidden',
   },
 });
