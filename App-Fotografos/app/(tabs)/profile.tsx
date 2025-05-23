@@ -1,13 +1,37 @@
-import { ScrollView, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { ScrollView, StyleSheet, Image, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { Text, View } from '../../components/Themed';
 import { StyledText } from '@/components/StyledText';
 import Colors from '@/constants/Colors';
 import { PencilSimple } from 'phosphor-react-native';
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import api from '@/services/api';
 
 export default function ProfileScreen() {
   const router = useRouter();
+  const [studioName, setStudioName] = useState('');
+  const [profileImage, setProfileImage] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const token = await AsyncStorage.getItem('token');
+        if (!token) throw new Error('Token no encontrado');
+        const response = await api.get('/users/me/photographer-profile', {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        setStudioName(response.data.name || '');
+        setProfileImage(response.data.url_profile_image || null);
+      } catch (error) {
+        console.error('Error al cargar perfil:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProfile();
+  }, []);
 
   const handleLogout = async () => {
     try {
@@ -22,9 +46,16 @@ export default function ProfileScreen() {
     <ScrollView style={{ flex: 1, backgroundColor: Colors.light.background }}>
       {/* Cabecera de perfil */}
       <View style={styles.header}>
-        <Image source={require('../../assets/images/placeholder_profile.png')} style={styles.avatar} />
+        {loading ? (
+          <ActivityIndicator size="small" color={Colors.light.tint} style={styles.avatar} />
+        ) : (
+          <Image
+            source={profileImage ? { uri: profileImage } : require('../../assets/images/placeholder_profile.png')}
+            style={styles.avatar}
+          />
+        )}
         <View style={{ flex: 1 }}>
-          <StyledText style={styles.studioName} weight="bold">Estudio Fotográfico</StyledText>
+          <StyledText style={styles.studioName} weight="bold">{studioName || 'Estudio Fotográfico'}</StyledText>
           <StyledText style={styles.address}>C. Violeta Parra 9, 50015. Zaragoza</StyledText>
         </View>
       </View>
@@ -80,6 +111,7 @@ const styles = StyleSheet.create({
     height: 56,
     borderRadius: 28,
     marginRight: 12,
+    backgroundColor: '#eee',
   },
   studioName: {
     fontSize: 17,
