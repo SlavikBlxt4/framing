@@ -1,41 +1,128 @@
-import { ScrollView, StyleSheet } from 'react-native';
-import { Text, View } from '../../components/Themed';
+import { View, Text, Image, StyleSheet, FlatList } from 'react-native';
+import { useEffect, useState } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { getMyNotifications } from '../../services/notificationService';
+import { useNotificationSocket } from '@/hooks/useNotificationSocket';
+import { jwtDecode } from 'jwt-decode';
+import { CaretRight } from 'phosphor-react-native';
+import Colors from '@/constants/Colors';
+import { FontFamily } from '@/constants/Fonts';
+import { Notification } from '@/types/notification';
 import { StyledText } from '@/components/StyledText';
-import AppointmentCard from '../../components/fm_cards/TarjetaAgenda';
-import NotificacionCard from '../../components/ui/NotificacionCard';
 
-export default function NotificacionesScreen() {
+interface TokenPayload {
+  sub: number;
+  email: string;
+  role: 'CLIENT' | 'PHOTOGRAPHER';
+}
+
+export default function NotificacionesList() {
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [userId, setUserId] = useState<number | null>(null);
+  const [token, setToken] = useState<string>('');
+
+  useEffect(() => {
+    const init = async () => {
+      try {
+        const storedToken = await AsyncStorage.getItem('token');
+        console.log('📦 Token:', storedToken);
+
+        if (!storedToken) {
+          console.log('⚠️ No se encontró token en AsyncStorage');
+          return;
+        }
+
+        const user = jwtDecode<TokenPayload>(storedToken);
+        console.log('👤 Usuario:', user);
+
+        setToken(storedToken);
+        setUserId(user.sub); // ✅ usar `sub` como `userId`
+
+        const data = await getMyNotifications();
+        console.log('📨 Notificaciones cargadas:', data);
+        setNotifications(data);
+      } catch (e) {
+        console.error('💥 Error en init:', e);
+      }
+    };
+
+    init();
+  }, []);
+
+  useNotificationSocket(userId!, token, (newNoti) => {
+    setNotifications((prev) => [newNoti, ...prev]);
+  });
+
+  const renderItem = ({ item }: { item: Notification }) => {
+    let mensaje = '';
+    if (item.type === 'SESSION_REQUESTED') mensaje = 'ha solicitado una sesión';
+    else mensaje = item.message;
+
+    return (
+      <View key={item.id} style={styles.card}>
+        <Image
+          source={{ uri: `https://via.placeholder.com/60x60.png?text=${item.title[0]}` }}
+          style={styles.image}
+        />
+        <View style={styles.textContainer}>
+          <Text style={styles.nombre}>{item.title}</Text>
+          <Text style={styles.mensaje}>{mensaje}</Text>
+        </View>
+        <CaretRight size={24} color={Colors.light.tint} weight="bold" />
+      </View>
+    );
+  };
+
   return (
     <View style={styles.container}>
-      <StyledText style={styles.title} weight="bold">Notificaciones</StyledText>
+       <StyledText style={styles.title} weight="bold">Notificaciones</StyledText>
       <Text style={styles.text}>Aquí podrás ver tus notificaciones y mensajes.</Text>
-      <ScrollView>
-        <NotificacionCard
-        nombre="Fulanito"
-        mensaje="ha solicitado una sesión"
-        imagen={require('../../assets/images/placeholder_profile.png')} // Cambia la ruta si tu imagen está en otro lugar
+      <FlatList
+        data={notifications}
+        keyExtractor={(item) => item.id.toString()}
+        renderItem={renderItem}
+        contentContainerStyle={{ gap: 16 }}
       />
-      </ScrollView>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,  
-    paddingHorizontal: 20,
-    paddingVertical: 15,
-    gap: 10,
+    flex: 1,
+    padding: 16,
   },
   title: {
-    fontSize: 24,
+  fontSize: 24,
+},
+  card: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderRadius: 12,
+    paddingVertical: 12,
   },
-  separator: {
-    marginVertical: 30,
-    height: 1,
-    width: '80%',
+  image: {
+    width: 60,
+    height: 60,
+    borderRadius: 50,
   },
-  text: {
+  textContainer: {
+    flex: 1,
+    marginLeft: 12,
+  },
+  nombre: {
+    fontSize: 16,
+    fontFamily: FontFamily.bold,
+    includeFontPadding: false,
+    color: Colors.light.tint,
+  },
+  mensaje: {
+    fontSize: 14,
+    fontFamily: FontFamily.regular,
+    includeFontPadding: false,
+    color: '#333',
+  },
+    text: {
     fontSize: 16,
   },
-}); 
+});
