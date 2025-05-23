@@ -1,7 +1,7 @@
 import api from "./api";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { jwtDecode } from "jwt-decode";
-import { LoginRequest, TokenPayload } from "@/types/user";
+import { LoginRequest, TokenPayload, RegisterRequest } from "@/types/user";
 import { PhotographerProfile } from "@/types/user";
 
 export async function login ({email, password }: LoginRequest): Promise<string> {
@@ -36,4 +36,8 @@ export async function getToken(): Promise<string | null> {
         console.error("Error retrieving token:", error);
         return null;
     }
+}
+
+export async function register(data: RegisterRequest): Promise<void> {
+    await api.post("/users/signup", data);
 }
