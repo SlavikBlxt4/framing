@@ -56,7 +56,7 @@ export default function ProfileScreen() {
         )}
         <View style={{ flex: 1 }}>
           <StyledText style={styles.studioName} weight="bold">{studioName || 'Estudio Fotográfico'}</StyledText>
-          <StyledText style={styles.address}>C. Violeta Parra 9, 50015. Zaragoza</StyledText>
+          <StyledText style={styles.address}>Fotografo</StyledText>
         </View>
       </View>
 
