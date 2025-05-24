@@ -2,10 +2,11 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, StyleSheet, Pressable, Alert } from 'react-native';
 import { Star } from 'phosphor-react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { rateService } from '@/services/ratingsService';
-import { RatingRequestDto } from '@/types/ratings';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 import Colors from '@/constants/Colors';
 import Fonts from '@/constants/Fonts';
+import api from '@/services/api';
 
 export default function RateScreen() {
   const router = useRouter();
@@ -17,24 +18,36 @@ export default function RateScreen() {
 
   const handleSend = async () => {
     if (ratingValue < 1) return Alert.alert('Selecciona una puntuación de 1 a 5');
-    const payload: RatingRequestDto = {
-      serviceId: id,
-      ratingValue,
-      comment,
-    };
+
     try {
-      await rateService(payload);
+
+      const payload = {
+        serviceId: id,
+        ratingValue,
+        comment,
+      };
+
+      console.log('📤 Enviando payload de valoración:', payload);
+
+      await api.post('/ratings/rate', payload);
+
       Alert.alert('Gracias por tu valoración');
       router.back();
-    } catch (err) {
-      Alert.alert('Error', 'No se pudo enviar la valoración');
-    }
+    } catch (err: any) {
+      console.error('Error al enviar valoración:', err);
+
+      if (err.response?.status === 409) {
+        Alert.alert('Ya has valorado este servicio', 'Solo puedes calificar una vez.');
+      } else {
+        Alert.alert('Error', 'No se pudo enviar la valoración');
+      }
+    }  
   };
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Valora el servicio</Text>
-      
+
       <View style={styles.starsContainer}>
         {[1, 2, 3, 4, 5].map((n) => (
           <Pressable key={n} onPress={() => setRatingValue(n)}>

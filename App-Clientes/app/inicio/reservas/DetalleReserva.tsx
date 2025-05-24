@@ -12,12 +12,13 @@ import api from '@/services/api';
 
 export default function DetalleReserva() {
   const navigation = useNavigation();
-  const { nombre, fecha, direccion, fotografiaUrl, hora, status, bookingId } = useLocalSearchParams();
+  const { nombre, fecha, direccion, fotografiaUrl, hora, status, bookingId, serviceId } = useLocalSearchParams();
 
   const statusStr = typeof status === 'string' ? status : status?.[0];
   const fechaStr = typeof fecha === 'string' ? fecha : fecha?.[0];
   const horaStr = typeof hora === 'string' ? hora : hora?.[0];
   const bookingIdStr = typeof bookingId === 'string' ? bookingId : bookingId?.[0];
+  const serviceIdStr = typeof serviceId === 'string' ? serviceId : serviceId?.[0];
 
   const [dialogVisible, setDialogVisible] = useState(false);
 
@@ -120,7 +121,7 @@ export default function DetalleReserva() {
             onPress={() =>
               router.push({
                 pathname: '/inicio/reservas/RateScreen',
-                params: { serviceId: '5' }, // Ajusta ID real si es necesario
+                params: { serviceId: serviceIdStr },
               })
             }
             style={[styles.botonCancelar, { backgroundColor: Colors.light.tint }]}

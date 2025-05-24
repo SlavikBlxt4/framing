@@ -157,7 +157,9 @@ if (coords) {
           photographerName={photographer.name}
         />
       )}
-      {selectedTab === 'calificaciones' && <Calificaciones />}
+      {selectedTab === 'calificaciones' && (
+        <Calificaciones photographerId={photographer.id} />
+      )}
       {selectedTab === 'portfolio' && <Portfolio />}
       {selectedTab === 'detalles' && (
         <Detalles

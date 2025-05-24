@@ -20,19 +20,20 @@ interface Calificacion {
   avatarUrl: string;
 }
 
-export default function Calificaciones() {
+interface CalificacionesProps {
+  photographerId: number;
+}
+
+export default function Calificaciones({ photographerId }: CalificacionesProps) {
   const [calificaciones, setCalificaciones] = useState<Calificacion[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { user } = useUser();
 
   useEffect(() => {
     const fetchRatings = async () => {
       try {
-        if (user?.id) {
-          const resp = await api.get<Calificacion[]>(`/ratings/photographer/${user.id}`);
-          setCalificaciones(resp.data);
-        }
+        const resp = await api.get<Calificacion[]>(`/ratings/photographer/${photographerId}`);
+        setCalificaciones(resp.data);
       } catch (err) {
         console.error("Error al obtener calificaciones:", err);
         setError("No se pudieron cargar las calificaciones");
@@ -42,7 +43,7 @@ export default function Calificaciones() {
     };
 
     fetchRatings();
-  }, [user]);
+  }, [photographerId]);
 
   if (loading) {
     return (

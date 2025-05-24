@@ -24,7 +24,7 @@ const ReservasList: React.FC = () => {
 
   const [reservas, setReservas] = useState<BookingHistoryDto[]>([]);
   const [drawerVisible, setDrawerVisible] = useState(false);
-  const [showPastSessions, setShowPastSessions] = useState(false);
+  const [showPastSessions, setShowPastSessions] = useState(true);
   const [sortBy, setSortBy] = useState<'fecha-asc' | 'fecha-desc' | 'nombre-asc' | 'nombre-desc'>('fecha-asc');
   const [statusFilter, setStatusFilter] = useState<'all' | 'pending' | 'active' | 'done'>('all');
 
@@ -40,6 +40,7 @@ const ReservasList: React.FC = () => {
   }, []);
 
   const estadoTraducido: Record<string, string> = {
+    cancelled: 'Reserva cancelada',
     pending: 'Pendiente de aceptar',
     active: 'Confirmada',
     done: 'Finalizada',
@@ -87,6 +88,7 @@ const ReservasList: React.FC = () => {
             direccion: '',
             puntuacion: '',
             status: item.status,
+            serviceId: item.serviceId.toString(),
           },
         })
       }
