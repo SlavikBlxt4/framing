@@ -67,8 +67,9 @@ export default function RegisterScreen() {
       ["userRole", decoded.role],
     ]);
 
-    // Paso 3: Redirigir a pantalla principal
-    router.replace("/(tabs)");
+  // Paso 3: Redirigir a pantalla de configuración de direcciones
+  router.replace("/locations/configure");
+
 
   } catch (error: any) {
     console.error("Error en registro/login:", error);

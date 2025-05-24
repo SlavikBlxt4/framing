@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
@@ -7,9 +7,11 @@ import {
   Pressable,
   Alert,
   ScrollView,
+  FlatList,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import debounce from 'lodash.debounce';
 import Colors from '@/constants/Colors';
 import { FontFamily } from '@/constants/Fonts';
 import api from '@/services/api';
@@ -18,6 +20,8 @@ import { StyledText } from '@/components/StyledText';
 export default function NombreDireccionScreen() {
   const router = useRouter();
   const [studioName, setStudioName] = useState('');
+  const [search, setSearch] = useState('');
+  const [suggestions, setSuggestions] = useState<any[]>([]);
   const [latitude, setLatitude] = useState('');
   const [longitude, setLongitude] = useState('');
 
@@ -42,6 +46,35 @@ export default function NombreDireccionScreen() {
 
     fetchStudioInfo();
   }, []);
+
+  const fetchSuggestions = async (text: string) => {
+    if (text.length < 3) return;
+
+    try {
+      const url = `https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&limit=5&countrycodes=es&q=${encodeURIComponent(text)}`;
+      const res = await fetch(url, {
+        headers: { 'User-Agent': 'framing-tfg' }
+      });
+      const data = await res.json();
+      setSuggestions(data);
+    } catch (err) {
+      console.error('Error buscando dirección:', err);
+    }
+  };
+
+  const debouncedSearch = useCallback(debounce(fetchSuggestions, 400), []);
+
+  const handleAddressInput = (text: string) => {
+    setSearch(text);
+    debouncedSearch(text);
+  };
+
+  const handleSelect = (item: any) => {
+    setSearch(item.display_name);
+    setLatitude(item.lat);
+    setLongitude(item.lon);
+    setSuggestions([]);
+  };
 
   const handleSave = async () => {
     if (!studioName) {
@@ -86,19 +119,20 @@ export default function NombreDireccionScreen() {
       />
 
       <LabeledInput
-        label="Latitud"
-        value={latitude}
-        onChangeText={setLatitude}
-        keyboardType="decimal-pad"
-        placeholder="Ej: 41.6488"
+        label="Dirección del estudio"
+        value={search}
+        onChangeText={handleAddressInput}
+        placeholder="Ej: Calle Mayor 10, Madrid"
       />
 
-      <LabeledInput
-        label="Longitud"
-        value={longitude}
-        onChangeText={setLongitude}
-        keyboardType="decimal-pad"
-        placeholder="Ej: -0.8891"
+      <FlatList
+        data={suggestions}
+        keyExtractor={(item) => item.place_id}
+        renderItem={({ item }) => (
+          <Pressable style={styles.suggestion} onPress={() => handleSelect(item)}>
+            <Text>{item.display_name}</Text>
+          </Pressable>
+        )}
       />
 
       <Pressable style={styles.button} onPress={handleSave}>
@@ -112,13 +146,11 @@ function LabeledInput({
   label,
   value,
   onChangeText,
-  keyboardType,
   placeholder,
 }: {
   label: string;
   value: string;
   onChangeText: (text: string) => void;
-  keyboardType?: 'default' | 'number-pad' | 'decimal-pad';
   placeholder?: string;
 }) {
   return (
@@ -128,7 +160,6 @@ function LabeledInput({
         style={styles.input}
         value={value}
         onChangeText={onChangeText}
-        keyboardType={keyboardType}
         placeholder={placeholder}
       />
     </View>
@@ -178,5 +209,11 @@ const styles = StyleSheet.create({
   buttonText: {
     color: '#fff',
     fontSize: 16,
+  },
+  suggestion: {
+    padding: 10,
+    backgroundColor: '#f2f2f2',
+    borderBottomWidth: 1,
+    borderColor: '#ddd',
   },
 });
