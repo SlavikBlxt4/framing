@@ -5,28 +5,38 @@ import { es } from "date-fns/locale";
 
 import Colors from '@/constants/Colors';
 import Fonts from '@/constants/Fonts';
+import api from '@/services/api';
 
-import { getBookingHistory } from '@/services/bookingsService';
-import { BookingHistoryDto } from '@/types/bookings';
+type ProximaSesion = {
+  photographerName: string;
+  date: string;
+};
 
 export default function TarjetaSesiones() {
-  const [proxima, setProxima] = useState<null | BookingHistoryDto>(null);
+  const [proxima, setProxima] = useState<ProximaSesion | null>(null);
 
   useEffect(() => {
-    const hoy = new Date();
-    getBookingHistory().then((reservas) => {
-      const activasFuturas = reservas
-        .filter(r => r.status === 'active')
-        .filter(r => new Date(r.date) >= hoy)
-        .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+    const fetchProximaSesion = async () => {
+      try {
+        const resp = await api.get<ProximaSesion | { message: string }>('/bookings/next-active');
 
-      setProxima(activasFuturas[0] || null);
-    });
+        if ('photographerName' in resp.data) {
+          setProxima(resp.data);
+        } else {
+          setProxima(null); // No hay sesión próxima
+        }
+      } catch (error) {
+        console.error("Error al cargar próxima sesión:", error);
+        setProxima(null);
+      }
+    };
+
+    fetchProximaSesion();
   }, []);
 
   const fechaFormateada = proxima
     ? format(new Date(proxima.date), "d 'de' MMMM 'de' yyyy", { locale: es })
-    : 'Sin próximas sesiones';
+    : "Sin próximas sesiones";
 
   return (
     <ImageBackground
@@ -37,14 +47,16 @@ export default function TarjetaSesiones() {
       <View style={styles.overlay} />
 
       <View style={styles.textoSuperior}>
-        <Text style={styles.regularText}>Estudio:</Text>
-        <Text style={styles.boldText}>{proxima?.serviceName || '[Estudio fotográfico]'}</Text>
-      </View>
-
-      <View style={styles.textoInferior}>
         <Text style={styles.regularText}>Próxima sesión:</Text>
         <Text style={styles.boldText}>{fechaFormateada}</Text>
       </View>
+
+      {proxima && (
+        <View style={styles.textoInferior}>
+          <Text style={styles.regularText}>Estudio:</Text>
+          <Text style={styles.boldText}>{proxima.photographerName}</Text>
+        </View>
+      )}
     </ImageBackground>
   );
 }
