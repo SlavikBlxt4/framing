@@ -6,6 +6,7 @@ import { useRouter } from 'expo-router';
 import * as ImagePicker from 'expo-image-picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import api from '@/services/api';
+import mime from 'mime';
 
 export default function PortfolioScreen() {
   const router = useRouter();
@@ -42,42 +43,54 @@ export default function PortfolioScreen() {
   };
 
   const handleSave = async () => {
-    if (!photographerId) {
-      Alert.alert('Error', 'No se encontró el ID del fotógrafo');
-      return;
-    }
-    if (images.length === 0) {
-      Alert.alert('Selecciona imágenes', 'Debes seleccionar al menos una imagen.');
-      return;
-    }
-    setLoading(true);
-    try {
-      const token = await AsyncStorage.getItem('token');
-      if (!token) throw new Error('Token no encontrado');
-      const formData = new FormData();
-      images.forEach((img, idx) => {
-        formData.append('files', {
-          uri: img.uri,
-          name: img.fileName || `portfolio_${idx}.jpg`,
-          type: img.mimeType || 'image/jpeg',
-        } as any);
-      });
-      await api.post(`/users/photographers/${photographerId}/portfolio`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      setLoading(false);
-      Alert.alert('Éxito', 'Imágenes subidas correctamente');
-      setImages([]);
-      router.back();
-    } catch (error) {
-      setLoading(false);
-      console.error('Error al subir imágenes:', error);
-      Alert.alert('Error', 'No se pudieron subir las imágenes.');
-    }
-  };
+  if (!photographerId) {
+    Alert.alert('Error', 'No se encontró el ID del fotógrafo');
+    return;
+  }
+
+  if (images.length === 0) {
+    Alert.alert('Selecciona imágenes', 'Debes seleccionar al menos una imagen.');
+    return;
+  }
+
+  setLoading(true);
+
+  try {
+    const token = await AsyncStorage.getItem('token');
+    if (!token) throw new Error('Token no encontrado');
+
+    const formData = new FormData();
+
+    images.forEach((img, idx) => {
+      const mimeType = mime.getType(img.uri) || 'image/jpeg';
+      const ext = mime.getExtension(mimeType) || 'jpg';
+      const fileName = `portfolio_${Date.now()}_${idx}.${ext}`;
+
+      formData.append('files', {
+        uri: img.uri,
+        name: fileName,
+        type: mimeType,
+      } as any);
+    });
+
+    await api.post(`/users/photographers/upload-portfolio-images`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        Authorization: `Bearer ${token}`,
+      },
+      transformRequest: (data) => data,
+    });
+
+    setLoading(false);
+    Alert.alert('Éxito', 'Imágenes subidas correctamente');
+    setImages([]);
+    router.back();
+  } catch (error) {
+    setLoading(false);
+    console.error('Error al subir imágenes:', error);
+    Alert.alert('Error', 'No se pudieron subir las imágenes.');
+  }
+};
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>

@@ -24,6 +24,8 @@ export default function NombreDireccionScreen() {
   const [suggestions, setSuggestions] = useState<any[]>([]);
   const [latitude, setLatitude] = useState('');
   const [longitude, setLongitude] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [newPassword, setNewPassword] = useState('');
 
   useEffect(() => {
     const fetchStudioInfo = async () => {
@@ -35,8 +37,9 @@ export default function NombreDireccionScreen() {
           headers: { Authorization: `Bearer ${token}` }
         });
 
-        const { name, latitude: lat, longitude: lng } = response.data;
+        const { name, phone_number, latitude: lat, longitude: lng } = response.data;
         setStudioName(name || '');
+        setPhoneNumber(phone_number || '');
         setLatitude(lat?.toString() || '');
         setLongitude(lng?.toString() || '');
       } catch (error) {
@@ -89,6 +92,8 @@ export default function NombreDireccionScreen() {
         name: studioName.trim(),
         latitude: latitude ? parseFloat(latitude) : null,
         longitude: longitude ? parseFloat(longitude) : null,
+        phone_number: phoneNumber || null,
+        password: newPassword || undefined, // solo si se modifica
       };
 
       await api.patch('/users/photographers/me', payload, {
@@ -135,6 +140,21 @@ export default function NombreDireccionScreen() {
         )}
       />
 
+      <LabeledInput
+        label="Número de teléfono"
+        value={phoneNumber}
+        onChangeText={setPhoneNumber}
+        placeholder="Ej: +34611222333"
+      />
+
+      <LabeledInput
+        label="Nueva contraseña"
+        value={newPassword}
+        onChangeText={setNewPassword}
+        placeholder="Déjalo en blanco para no cambiarla"
+        secureTextEntry
+      />
+
       <Pressable style={styles.button} onPress={handleSave}>
         <StyledText style={styles.buttonText} weight="bold">Guardar cambios</StyledText>
       </Pressable>
@@ -147,11 +167,13 @@ function LabeledInput({
   value,
   onChangeText,
   placeholder,
+  secureTextEntry,
 }: {
   label: string;
   value: string;
   onChangeText: (text: string) => void;
   placeholder?: string;
+  secureTextEntry?: boolean;
 }) {
   return (
     <View style={styles.field}>
@@ -161,6 +183,7 @@ function LabeledInput({
         value={value}
         onChangeText={onChangeText}
         placeholder={placeholder}
+        secureTextEntry={secureTextEntry}
       />
     </View>
   );
