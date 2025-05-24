@@ -69,7 +69,7 @@ export default function RegisterScreen() {
     ]);
 
     // Paso 3: Redirigir a la pantalla principal
-    router.replace("/(tabs)");
+    router.replace("/perfil/upload-photos");
 
   } catch (error: any) {
     console.error("Error en registro/login:", error);
