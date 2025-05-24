@@ -1,11 +1,17 @@
-import React, { useEffect, useState } from 'react';
-import { ScrollView, StyleSheet, Image, TouchableOpacity, ActivityIndicator } from 'react-native';
+import React, { useState, useCallback } from 'react';
+import {
+  ScrollView,
+  StyleSheet,
+  Image,
+  TouchableOpacity,
+  ActivityIndicator,
+} from 'react-native';
+import { useFocusEffect, useRouter } from 'expo-router';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 import { Text, View } from '../../components/Themed';
 import { StyledText } from '@/components/StyledText';
 import Colors from '@/constants/Colors';
-import { PencilSimple } from 'phosphor-react-native';
-import { useRouter } from 'expo-router';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import api from '@/services/api';
 
 export default function ProfileScreen() {
@@ -14,28 +20,54 @@ export default function ProfileScreen() {
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const token = await AsyncStorage.getItem('token');
-        if (!token) throw new Error('Token no encontrado');
-        const response = await api.get('/users/me/photographer-profile', {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        setStudioName(response.data.name || '');
-        setProfileImage(response.data.url_profile_image || null);
-      } catch (error) {
-        console.error('Error al cargar perfil:', error);
-      } finally {
-        setLoading(false);
+  const fetchProfile = async () => {
+    try {
+      setLoading(true);
+      const userId = await AsyncStorage.getItem('userId');
+      if (!userId) throw new Error('ID de usuario no encontrado');
+
+      const response = await api.get(`/users/${userId}`);
+      const newData = response.data;
+
+      // 🔁 Leer datos anteriores
+      const prevJson = await AsyncStorage.getItem('currentUser');
+      const prevData = prevJson ? JSON.parse(prevJson) : null;
+
+      const hasChanged =
+        !prevData ||
+        prevData.name !== newData.name ||
+        prevData.url_profile_image !== newData.url_profile_image;
+
+      if (hasChanged) {
+        await AsyncStorage.setItem('currentUser', JSON.stringify(newData));
       }
-    };
-    fetchProfile();
-  }, []);
+
+      // 🧠 Usa los datos actuales siempre, porque se usan solo aquí
+      setStudioName(newData.name || '');
+      setProfileImage(newData.url_profile_image || null);
+    } catch (error) {
+      console.error('Error al cargar perfil:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // ✅ Ejecutar cada vez que esta pantalla entra en foco
+  useFocusEffect(
+    useCallback(() => {
+      fetchProfile();
+    }, [])
+  );
 
   const handleLogout = async () => {
     try {
-      await AsyncStorage.multiRemove(['token', 'userEmail', 'userId', 'userRole']);
+      await AsyncStorage.multiRemove([
+        'token',
+        'userEmail',
+        'userId',
+        'userRole',
+        'currentUser',
+      ]);
       router.replace('/sign/login');
     } catch (error) {
       console.error('Error al cerrar sesión:', error);
@@ -50,17 +82,23 @@ export default function ProfileScreen() {
           <ActivityIndicator size="small" color={Colors.light.tint} style={styles.avatar} />
         ) : (
           <Image
-            source={profileImage ? { uri: profileImage } : require('../../assets/images/placeholder_profile.png')}
+            source={
+              profileImage
+                ? { uri: `${profileImage}?t=${Date.now()}` } // 👈 Evita caché de imagen
+                : require('../../assets/images/placeholder_profile.png')
+            }
             style={styles.avatar}
           />
         )}
         <View style={{ flex: 1 }}>
-          <StyledText style={styles.studioName} weight="bold">{studioName || 'Estudio Fotográfico'}</StyledText>
-          <StyledText style={styles.address}>Fotografo</StyledText>
+          <StyledText style={styles.studioName} weight="bold">
+            {studioName || 'Estudio Fotográfico'}
+          </StyledText>
+          <StyledText style={styles.address}>Fotógrafo</StyledText>
         </View>
       </View>
 
-      {/* Sección Información pública */}
+      {/* Información pública */}
       <StyledText style={styles.sectionTitle} weight="bold">Información pública</StyledText>
       <View style={styles.card}>
         <Option label="Nombre y dirección" onPress={() => router.push('/profile/nombre-direccion')} />
@@ -71,15 +109,7 @@ export default function ProfileScreen() {
         <Option label="Servicios" onPress={() => router.push('/profile/servicios')} />
       </View>
 
-      {/* Sección Compartir - Comentada temporalmente
-      <StyledText style={styles.sectionTitle} weight="bold">Compartir</StyledText>
-      <View style={styles.card}>
-        <Option label="Compartir perfil" onPress={() => router.push('/profile/compartir-perfil')} />
-        <Option label="Agregar redes sociales" onPress={() => router.push('/profile/redes-sociales')} />
-      </View>
-      */}
-
-      {/* Sección Cerrar sesión */}
+      {/* Cerrar sesión */}
       <View style={styles.card}>
         <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
           <StyledText style={styles.logoutText}>Cerrar sesión</StyledText>
@@ -120,11 +150,6 @@ const styles = StyleSheet.create({
   address: {
     fontSize: 13,
     color: Colors.light.tabIconDefault,
-  },
-  editButton: {
-    padding: 6,
-    borderRadius: 20,
-    marginLeft: 4,
   },
   sectionTitle: {
     color: Colors.light.tint,
@@ -175,5 +200,5 @@ const styles = StyleSheet.create({
     color: '#DC2621',
     fontSize: 15,
     fontWeight: '600',
-  }
-}); 
+  },
+});
