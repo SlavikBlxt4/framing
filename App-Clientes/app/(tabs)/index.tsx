@@ -1,4 +1,3 @@
-// React - React Native
 import React, { useEffect, useMemo, useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -10,65 +9,39 @@ import Fonts from '@/constants/Fonts';
 import Colors from '@/constants/Colors';
 
 // Componentes
-import ScrollWithAnimatedHeader from '@/components/framing/ScrollWithAnimatedHeader';
 import HomeWelcome from '@/components/fm_sections/HomeWelcome';
 import SesionesContratadas from '@/components/fm_sections/SesionesContratadas';
 import ListarHorizontalFotografos from '@/components/fm_grids/ListaHorizontalFotografos';
 import Anuncio from '@/components/fm_sections/Anuncio';
 
-// Datos simulados
-// import { UsuarioProps } from '@/types/Usuario.type';
-// import { categorias } from '@/mocks/mockCategoria';
-import mockUsers from '@/mocks/mockUsuarios';
-
-// Datos reales
-import { UsuarioProps } from '@/types/user';
+// Servicios
 import { Categoria } from '@/types/category';
-import { getCategorias } from '@/services/categoryService';
 import { Photographer } from '@/types/photographer';
+import { getCategorias } from '@/services/categoryService';
 import { getPhotographers } from '@/services/photographerService';
 
-// Componente principal de la pantalla de inicio
+// Contexto
+import { useUser } from '@/context/UserContext';
+
 export default function HomeScreen() {
   const router = useRouter();
-  const [currentUser, setCurrentUser] = useState<UsuarioProps | null>(null);
+  const { user } = useUser(); // ✅ usar el contexto global
   const [categorias, setCategorias] = useState<Categoria[]>([]);
   const [photographers, setPhotographers] = useState<Photographer[]>([]);
 
   useEffect(() => {
-    const checkAuth = async () => {
+    const checkAuthAndFetch = async () => {
       try {
         const token = await AsyncStorage.getItem('token');
         if (!token) {
           router.replace('/perfil/Login');
           return;
         }
-        fetchUser();
+
         fetchPhotographers();
         fetchCategorias();
       } catch (error) {
         console.error('Error verificando sesión:', error);
-        router.replace('/perfil/Login');
-      }
-    };
-
-    const fetchUser = async () => {
-      try {
-        const email = await AsyncStorage.getItem('userEmail');
-        const id = await AsyncStorage.getItem('userId');
-        const role = await AsyncStorage.getItem('userRole');
-    
-        if (email && id) {
-          setCurrentUser({
-            id: parseInt(id),
-            email,
-            role: role || undefined,
-          });
-        } else {
-          router.replace('/perfil/Login');
-        }
-      } catch (error) {
-        console.error('Error cargando usuario:', error);
         router.replace('/perfil/Login');
       }
     };
@@ -97,16 +70,14 @@ export default function HomeScreen() {
       }
     };
 
-    checkAuth();
+    checkAuthAndFetch();
   }, []);
 
-  // useMemo para calcular el contenido a mostrar (categorías y anuncio) solo una vez
   const contenido = useMemo(() => {
-    // Se elige aleatoriamente una posición para insertar el anuncio
+    if (categorias.length < 2) return [];
+
     const anuncioIndex = Math.floor(Math.random() * (categorias.length - 2)) + 1;
 
-    // Se mapea cada categoría para renderizar una sección de fotógrafos
-    // En una posición aleatoria se inserta un anuncio adicional
     return categorias.flatMap((cat, index) => {
       const section = (
         <ListarHorizontalFotografos
@@ -117,19 +88,13 @@ export default function HomeScreen() {
         />
       );
 
-      // Si el íncide actual es igual al índice del anuncio, se inserta el anuncio
       if (index === anuncioIndex) {
         return [
           section,
-          <Anuncio
-            key="anuncio-home"
-            imagenUrl=""
-            link="https://tuanuncio.com"
-          />,
+          <Anuncio key="anuncio-home" imagenUrl="" link="https://tuanuncio.com" />,
         ];
       }
 
-      // En caso contrario, solo se devuelve la sección
       return [section];
     });
   }, [categorias, photographers]);
@@ -137,7 +102,7 @@ export default function HomeScreen() {
   return (
     <ScrollView>
       <View style={styles.container}>
-        <HomeWelcome username={currentUser?.email} />
+        <HomeWelcome username={user?.name} />
         <SesionesContratadas />
         {contenido}
       </View>

@@ -16,38 +16,31 @@ import Colors from '@/constants/Colors';
 import Fonts from '@/constants/Fonts';
 
 // Servicios
-import { getUserData, updateClientProfile } from '@/services/userService';
+import { updateClientProfile } from '@/services/userService';
+
+// Contexto
+import { useUser } from '@/context/UserContext';
 
 export default function DatosPersonales() {
   const router = useRouter();
+  const { user, setUser } = useUser();
 
-  const [userId, setUserId] = useState<number | null>(null);
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
 
-  // Cargar datos del usuario actual
+  // Cargar datos desde el contexto global una sola vez
   useEffect(() => {
-    const fetchUser = async () => {
-      const id = await AsyncStorage.getItem('userId');
-      if (!id) return;
-
-      setUserId(Number(id));
-
-      try {
-        const user = await getUserData(Number(id));
-        setName(user.name || '');
-        setPhone(user.phone_number || '');
-      } catch (error) {
-        console.error('Error cargando datos del usuario:', error);
-      }
-    };
-
-    fetchUser();
-  }, []);
+    if (user) {
+      setName(user.name || '');
+      setPhone(user.phone_number || '');
+    }
+  }, [user]);
 
   const handleSubmit = async () => {
+    if (!user) return;
+
     try {
       await updateClientProfile({
         name: name.trim() || undefined,
@@ -55,8 +48,19 @@ export default function DatosPersonales() {
         password: password.trim() || undefined,
       });
 
+      // ✅ Crear objeto actualizado correctamente tipado
+      const updatedUser = {
+        ...user,
+        name: name.trim(),
+        phone_number: phone.trim(),
+      };
+
+      // ✅ Guardar en caché y actualizar contexto
+      await AsyncStorage.setItem("currentUser", JSON.stringify(updatedUser));
+      setUser(updatedUser);
+
       Alert.alert('Éxito', 'Perfil actualizado correctamente');
-      router.back(); // Vuelve atrás
+      router.back();
     } catch (error) {
       console.error('Error al actualizar el perfil:', error);
       Alert.alert('Error', 'No se pudo actualizar el perfil');

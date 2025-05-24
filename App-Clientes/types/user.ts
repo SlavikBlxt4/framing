@@ -1,7 +1,11 @@
 export interface UsuarioProps {
-    id: number;
-    email: string;
-    role?: string;
+  id: number;
+  name: string;
+  email: string;
+  phone_number?: string;
+  role: "CLIENT" | "PHOTOGRAPHER";
+  active?: boolean;
+  url_profile_image?: string;
 }
 
 export interface LoginRequest {

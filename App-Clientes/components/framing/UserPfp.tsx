@@ -5,58 +5,48 @@ import { Image, StyleSheet, Pressable } from 'react-native';
 // Navegación
 import { useRouter } from 'expo-router';
 
-// AsyncStorage (almacenamiento local)
+// AsyncStorage
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-// Datos simulados
-import mockUsers from '@/mocks/mockUsuarios';
-
-
 // Componente funcional que muestra la foto de perfil del usuario (o un placeholder)
-// Al presionar la imagen, navega a la pantalla de perfil
-
 export default function UserProfilePicture() {
-  // Estado para guardar la URL de la imagen de perfil del usuario
   const [imageUrl, setImageUrl] = useState<string | undefined>(undefined);
-
-  // Hook de navegación de Expo Router
+  const [loading, setLoading] = useState(true);
   const router = useRouter();
 
-  // Hook que se ejecuta una vez al montar el componente
   useEffect(() => {
     const loadUser = async () => {
-      // Se obtiene el ID del usuario almacenado en AsyncStorage
-      const id = await AsyncStorage.getItem("userId");
+      try {
+        const json = await AsyncStorage.getItem("currentUser");
+        if (json) {
+          const user = JSON.parse(json);
+          const url = user?.url_profile_image;
 
-      // Si existe un ID, se busca el usuario en el mock de usuarios
-      if (id) {
-        const user = mockUsers.find(u => u.id === parseInt(id));
-
-        // Si se encuentra la URL de su fotografía, se guarda en el estado
-        if (user?.fotografia_url) {
-          setImageUrl(user.fotografia_url);
+          if (url && typeof url === "string" && url.startsWith("http")) {
+            setImageUrl(url);
+          }
         }
+      } catch (error) {
+        console.error("Error cargando imagen de perfil:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
-    loadUser(); // Ejecuta la carga del usuario
+    loadUser();
   }, []);
 
-  // Booleano para saber si la imaagen es remota (de internet) o local (placeholder)
-  const isRemote = !!imageUrl;
-
-  // Función que se ejecuta al presionar la imagen
-  // Navega a la ruta "/profile"
   const handlePress = () => {
     router.push("/profile");
   };
 
-  // Renderiza una imagen de perfil dentro de un Pressable (botón táctil)
   return (
     <Pressable style={styles.picture} onPress={handlePress}>
-      <Image 
+      <Image
         source={
-          isRemote 
+          loading
+            ? require("@/assets/images/placeholder_profile.png")
+            : imageUrl
             ? { uri: imageUrl }
             : require("@/assets/images/placeholder_profile.png")
         }
