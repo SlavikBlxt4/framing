@@ -56,8 +56,14 @@ export default function LoginScreen() {
       
           await AsyncStorage.setItem("token", token);
       
-          const decoded = jwtDecode<TokenPayload>(token);
-          console.log("Token decodificado:", decoded);
+        const decoded = jwtDecode<TokenPayload>(token);
+        console.log("Token decodificado:", decoded);
+
+        if (decoded.role !== "CLIENT") {
+        Alert.alert("Acceso denegado", "Solo los clientes pueden iniciar sesión en esta app.");
+        return;
+        }
+
       
           // Guardar datos individuales en AsyncStorage
           await AsyncStorage.multiSet([
