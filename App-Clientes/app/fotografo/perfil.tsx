@@ -163,11 +163,7 @@ if (coords) {
         <Detalles
           email={photographer.email}
           phone={photographer.phone_number}
-          direccion={
-            photographer.locations[0]
-              ? photographer.locations[0].coordinates.coordinates.join(', ')
-              : 'Ubicación no disponible'
-          }
+          direccion={direccionLegible}
           availability={photographer.availability}
         />
       )}
