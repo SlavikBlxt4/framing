@@ -11,12 +11,14 @@ import Calificaciones from './calificaciones';
 import Portfolio from './portfolio';
 import Detalles from './detalles';
 
+
 export default function PerfilFotografo() {
   const { id } = useLocalSearchParams();
   const [photographer, setPhotographer] = useState<Photographer | null>(null);
   const [loading, setLoading] = useState(true);
   const [fotoPortadaError, setFotoPortadaError] = useState(false);
   const [avatarError, setAvatarError] = useState(false);
+  const [direccionLegible, setDireccionLegible] = useState('Ubicación no disponible');
   const [selectedTab, setSelectedTab] = useState<'sesiones' | 'calificaciones' | 'portfolio' | 'detalles'>('sesiones');
 
   useEffect(() => {
@@ -25,6 +27,40 @@ export default function PerfilFotografo() {
         if (id) {
           const data = await getPhotographerById(Number(id));
           setPhotographer(data);
+
+          // Si tiene coordenadas, traducirlas
+          const coords = data?.locations?.[0]?.coordinates?.coordinates;
+if (coords) {
+  const [lon, lat] = coords;
+
+  const response = await fetch(
+    `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`,
+    {
+      headers: {
+        'User-Agent': 'FramingApp/1.0 (tfg@ejemplo.com)',
+        'Accept': 'application/json',
+      },
+    }
+  );
+
+    const geodata = await response.json();
+
+    if (geodata?.address) {
+      const { road, house_number, postcode, city } = geodata.address;
+
+      const partes = [
+        road,
+        house_number,
+        postcode,
+        city,
+      ].filter(Boolean);
+
+      setDireccionLegible(partes.join(', ') || 'Ubicación no disponible');
+    } else if (geodata?.display_name) {
+      setDireccionLegible(geodata.display_name);
+    }
+  }
+
         }
       } catch (error) {
         console.error('Error fetching photographer:', error);
@@ -50,7 +86,7 @@ export default function PerfilFotografo() {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      {/* Imagen de portada del fotógrafo */}
+      {/* Imagen de portada */}
       <View style={styles.portadaWrapper}>
         <Image
           source={
@@ -63,7 +99,7 @@ export default function PerfilFotografo() {
         />
       </View>
 
-      {/* Imagen de avatar / perfil */}
+      {/* Avatar */}
       <View style={styles.avatarWrapper}>
         <Image
           source={
@@ -76,12 +112,14 @@ export default function PerfilFotografo() {
         />
       </View>
 
+      {/* Botón seguir */}
       <View style={styles.seguirButtonWrapper}>
         <Pressable style={styles.seguirButton} onPress={handleSeguir}>
           <Text style={styles.seguirButtonText}>Seguir</Text>
         </Pressable>
       </View>
 
+      {/* Info */}
       <View style={styles.infoContainer}>
         <Text style={styles.nombre}>
           {photographer.name}{' '}
@@ -96,11 +134,11 @@ export default function PerfilFotografo() {
           <Text style={styles.separator}>·</Text>
           <Text style={styles.seguidores}>{photographer.services.length} servicios</Text>
         </View>
-        <Text style={styles.direccion}>
-          {photographer.locations[0]?.coordinates.coordinates.join(', ') || 'Ubicación no disponible'}
-        </Text>
+
+        <Text style={styles.direccion}>{direccionLegible}</Text>
       </View>
 
+      {/* Tabs */}
       <View style={styles.tabBar}>
         {['sesiones', 'calificaciones', 'portfolio', 'detalles'].map((tab) => (
           <Pressable key={tab} onPress={() => setSelectedTab(tab as any)}>
@@ -111,6 +149,7 @@ export default function PerfilFotografo() {
         ))}
       </View>
 
+      {/* Contenido según pestaña */}
       {selectedTab === 'sesiones' && (
         <Sesiones
           services={photographer.services}
@@ -135,6 +174,7 @@ export default function PerfilFotografo() {
     </ScrollView>
   );
 }
+
 
 const styles = StyleSheet.create({
   loadingContainer: {
