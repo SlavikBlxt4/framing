@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useRef } from "react";
 import {
   View,
   Text,
@@ -14,39 +14,24 @@ import api from "@/services/api";
 import { router } from "expo-router";
 
 export default function ConfigurarUbicacionesScreen() {
-  const [direcciones, setDirecciones] = useState<string[]>([""]);
-  const [sugerencias, setSugerencias] = useState<string[][]>([[]]);
+  const [direccion, setDireccion] = useState("");
+  const [sugerencias, setSugerencias] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
+  const debounceRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Debounce timeout refs por cada campo
-  const debounceRefs = useRef<NodeJS.Timeout[]>([]);
+  const handleChangeDireccion = (value: string) => {
+    setDireccion(value);
 
-  const handleAddDireccion = () => {
-    if (direcciones.length >= 4) return;
-    setDirecciones([...direcciones, ""]);
-    setSugerencias([...sugerencias, []]);
-    debounceRefs.current.push(undefined as unknown as NodeJS.Timeout);
-  };
-
-  const handleChangeDireccion = (value: string, index: number) => {
-    const nuevas = [...direcciones];
-    nuevas[index] = value;
-    setDirecciones(nuevas);
-
-    // Reiniciar sugerencias si hay poco texto
     if (value.length < 3) {
-      const nuevasSugerencias = [...sugerencias];
-      nuevasSugerencias[index] = [];
-      setSugerencias(nuevasSugerencias);
+      setSugerencias([]);
       return;
     }
 
-    // Debounce por campo
-    if (debounceRefs.current[index]) {
-      clearTimeout(debounceRefs.current[index]);
+    if (debounceRef.current) {
+      clearTimeout(debounceRef.current);
     }
 
-    debounceRefs.current[index] = setTimeout(async () => {
+    debounceRef.current = setTimeout(async () => {
       try {
         const resp = await fetch(
           `https://nominatim.openstreetmap.org/search?format=json&limit=5&q=${encodeURIComponent(
@@ -59,52 +44,48 @@ export default function ConfigurarUbicacionesScreen() {
             },
           }
         );
-
         const data = await resp.json();
-        const nuevasSugerencias = [...sugerencias];
-        nuevasSugerencias[index] = data.map((item: any) => item.display_name);
-        setSugerencias(nuevasSugerencias);
+        setSugerencias(data.map((item: any) => item.display_name));
       } catch (err) {
         console.error("Error buscando sugerencias:", err);
       }
-    }, 500); // 500ms de espera tras dejar de escribir
+    }, 500);
   };
 
   const traducirYEnviar = async () => {
     try {
       setLoading(true);
-      const coordenadas: { lat: number; lon: number }[] = [];
 
-      for (const direccion of direcciones) {
-        const resp = await fetch(
-          `https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(
-            direccion
-          )}`,
-          {
-            headers: {
-              "User-Agent": "FramingApp/1.0 (tfg@ejemplo.com)",
-              "Accept": "application/json",
-            },
-          }
-        );
-        const data = await resp.json();
-
-        if (data.length === 0) {
-          throw new Error(`No se encontró la dirección: ${direccion}`);
+      const resp = await fetch(
+        `https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(
+          direccion
+        )}`,
+        {
+          headers: {
+            "User-Agent": "FramingApp/1.0 (tfg@ejemplo.com)",
+            "Accept": "application/json",
+          },
         }
+      );
+      const data = await resp.json();
 
-        coordenadas.push({
-          lat: parseFloat(data[0].lat),
-          lon: parseFloat(data[0].lon),
-        });
+      if (data.length === 0) {
+        throw new Error(`No se encontró la dirección: ${direccion}`);
       }
 
+      const coordenadas = [
+        {
+          lat: parseFloat(data[0].lat),
+          lon: parseFloat(data[0].lon),
+        },
+      ];
+
       await api.post("/locations/create", coordenadas);
-      Alert.alert("Éxito", "Ubicaciones guardadas correctamente");
+      Alert.alert("Éxito", "Ubicación guardada correctamente");
       router.replace("/(tabs)");
     } catch (error: any) {
-      console.error("Error al enviar ubicaciones:", error);
-      Alert.alert("Error", error.message ?? "No se pudieron guardar");
+      console.error("Error al enviar ubicación:", error);
+      Alert.alert("Error", error.message ?? "No se pudo guardar");
     } finally {
       setLoading(false);
     }
@@ -114,46 +95,33 @@ export default function ConfigurarUbicacionesScreen() {
     <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
       <Text style={styles.title}>¿Dónde trabajas como fotógrafo?</Text>
 
-      {direcciones.map((dir, index) => (
-        <View key={index}>
-          <TextInput
-            style={styles.input}
-            placeholder={`Dirección ${index + 1}`}
-            value={dir}
-            onChangeText={(value) => handleChangeDireccion(value, index)}
-          />
-          {sugerencias[index]?.length > 0 && (
-            <View style={styles.suggestionsContainer}>
-              {sugerencias[index].map((sug, i) => (
-                <Pressable
-                  key={i}
-                  onPress={() => {
-                    const nuevas = [...direcciones];
-                    nuevas[index] = sug;
-                    setDirecciones(nuevas);
-
-                    const nuevasSugerencias = [...sugerencias];
-                    nuevasSugerencias[index] = [];
-                    setSugerencias(nuevasSugerencias);
-                  }}
-                >
-                  <Text style={styles.suggestionText}>{sug}</Text>
-                </Pressable>
-              ))}
-            </View>
-          )}
-        </View>
-      ))}
-
-      {direcciones.length < 4 && (
-        <Pressable style={styles.addButton} onPress={handleAddDireccion}>
-          <Text style={styles.addButtonText}>+ Añadir otra dirección</Text>
-        </Pressable>
-      )}
+      <View>
+        <TextInput
+          style={styles.input}
+          placeholder="Introduce tu dirección"
+          value={direccion}
+          onChangeText={handleChangeDireccion}
+        />
+        {sugerencias.length > 0 && (
+          <View style={styles.suggestionsContainer}>
+            {sugerencias.map((sug, i) => (
+              <Pressable
+                key={i}
+                onPress={() => {
+                  setDireccion(sug);
+                  setSugerencias([]);
+                }}
+              >
+                <Text style={styles.suggestionText}>{sug}</Text>
+              </Pressable>
+            ))}
+          </View>
+        )}
+      </View>
 
       <Pressable style={styles.saveButton} onPress={traducirYEnviar} disabled={loading}>
         <Text style={styles.saveButtonText}>
-          {loading ? "Guardando..." : "Guardar ubicaciones"}
+          {loading ? "Guardando..." : "Guardar ubicación"}
         </Text>
       </Pressable>
     </ScrollView>
@@ -196,13 +164,6 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
     paddingHorizontal: 10,
     fontFamily: Fonts.regular,
-  },
-  addButton: {
-    alignSelf: "flex-start",
-  },
-  addButtonText: {
-    color: Colors.light.tint,
-    fontFamily: Fonts.semiBold,
   },
   saveButton: {
     marginTop: 20,
