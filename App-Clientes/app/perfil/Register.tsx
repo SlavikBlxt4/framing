@@ -17,6 +17,10 @@ import Fonts from "@/constants/Fonts";
 
 // Servicio
 import { register } from "@/services/authService";
+import { login } from "@/services/authService";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { jwtDecode } from "jwt-decode";
+import { TokenPayload } from "@/types/user";
 
 export default function RegisterScreen() {
   const navigation = useNavigation();
@@ -48,21 +52,36 @@ export default function RegisterScreen() {
             phone_number: phoneNumber.trim(),
             role: "CLIENT", // siempre será CLIENT en esta app
         });  
-        console.log("Usuario registrado:", response);
-  
-        // Redirige directamente a la pantalla de login
-        router.replace("/perfil/Login");
-  
-    } catch (error: any) {
-        console.error("Error al registrar:", error);
-      
-        const backendMessage =
-          error?.response?.data?.message ?? "Error desconocido al registrar.";
-      
-        setErrorMessage(typeof backendMessage === "string" ? backendMessage : backendMessage.join?.(", ") || backendMessage);
-    }
-         
-  };
+        // Paso 2: Iniciar sesión automáticamente
+    const token = await login({ email: email.trim(), password });
+
+    if (!token) throw new Error("No se recibió token en la respuesta.");
+
+    await AsyncStorage.setItem("token", token);
+
+    const decoded = jwtDecode<TokenPayload>(token);
+    console.log("Token decodificado:", decoded);
+
+    await AsyncStorage.multiSet([
+      ["userEmail", decoded.email],
+      ["userId", decoded.sub.toString()],
+      ["userRole", decoded.role],
+    ]);
+
+    // Paso 3: Redirigir a la pantalla principal
+    router.replace("/(tabs)");
+
+  } catch (error: any) {
+    console.error("Error en registro/login:", error);
+    const backendMessage =
+      error?.response?.data?.message ?? "Error desconocido.";
+    setErrorMessage(
+      typeof backendMessage === "string"
+        ? backendMessage
+        : backendMessage.join?.(", ") || backendMessage
+    );
+  }
+};
   
 
   return (
