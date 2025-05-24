@@ -56,4 +56,5 @@ export interface Photographer {
   locations: Location[];
   averageRating: number;
   availability: DayAvailability[];
+  url_cover_image: string | null;
 } 

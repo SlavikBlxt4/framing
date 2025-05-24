@@ -19,13 +19,14 @@ import { Categoria } from '@/types/category';
 import { Photographer } from '@/types/photographer';
 import { getCategorias } from '@/services/categoryService';
 import { getPhotographers } from '@/services/photographerService';
+import { getUserById } from '@/services/userInfoService';
 
 // Contexto
 import { useUser } from '@/context/UserContext';
 
 export default function HomeScreen() {
   const router = useRouter();
-  const { user } = useUser(); // ✅ usar el contexto global
+  const { user, setUser } = useUser();
   const [categorias, setCategorias] = useState<Categoria[]>([]);
   const [photographers, setPhotographers] = useState<Photographer[]>([]);
 
@@ -38,11 +39,26 @@ export default function HomeScreen() {
           return;
         }
 
+        await fetchAndCacheUser(); // ✅ nueva función
+
         fetchPhotographers();
         fetchCategorias();
       } catch (error) {
         console.error('Error verificando sesión:', error);
         router.replace('/perfil/Login');
+      }
+    };
+
+    const fetchAndCacheUser = async () => {
+      try {
+        const id = await AsyncStorage.getItem('userId');
+        if (!id) return;
+
+        const user = await getUserById(parseInt(id));
+        await AsyncStorage.setItem('currentUser', JSON.stringify(user));
+        setUser(user);
+      } catch (error) {
+        console.error('❌ Error al obtener el usuario:', error);
       }
     };
 

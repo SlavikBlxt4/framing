@@ -54,9 +54,9 @@ export default function PerfilFotografo() {
       <View style={styles.portadaWrapper}>
         <Image
           source={
-            fotoPortadaError || !photographer.url_portfolio
+            fotoPortadaError || !photographer.url_cover_image
               ? require('@/assets/images/placeholder_portada.png')
-              : { uri: photographer.url_portfolio }
+              : { uri: photographer.url_cover_image }
           }
           onError={() => setFotoPortadaError(true)}
           style={styles.portada}
