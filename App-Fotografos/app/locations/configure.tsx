@@ -82,7 +82,7 @@ export default function ConfigurarUbicacionesScreen() {
 
       await api.post("/locations/create", coordenadas);
       Alert.alert("Éxito", "Ubicación guardada correctamente");
-      router.replace("/(tabs)");
+      router.replace("../profile/upload-photos");
     } catch (error: any) {
       console.error("Error al enviar ubicación:", error);
       Alert.alert("Error", error.message ?? "No se pudo guardar");
