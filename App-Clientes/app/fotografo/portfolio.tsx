@@ -4,6 +4,7 @@ import { View, StyleSheet, Image, ActivityIndicator, Text, Dimensions, ScrollVie
 import { useLocalSearchParams } from 'expo-router';
 import { getPhotographerPortfolio } from '@/services/photographerService';
 import { Portfolio } from '@/types/portfolio';
+import Fonts from '@/constants/Fonts';
 
 const { width } = Dimensions.get('window');
 const IMAGE_MARGIN = 12;
@@ -105,6 +106,8 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   emptyText: {
+    fontFamily: Fonts.regular,
+    fontSize: 14,
     color: '#666',
     textAlign: 'center',
   },
