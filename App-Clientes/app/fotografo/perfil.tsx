@@ -121,9 +121,15 @@ export default function PerfilFotografo() {
       {selectedTab === 'calificaciones' && <Calificaciones />}
       {selectedTab === 'portfolio' && <Portfolio />}
       {selectedTab === 'detalles' && (
-        <Detalles 
-          nombre={photographer.name} 
-          direccion={photographer.locations[0]?.coordinates.coordinates.join(', ') || 'Ubicación no disponible'} 
+        <Detalles
+          email={photographer.email}
+          phone={photographer.phone_number}
+          direccion={
+            photographer.locations[0]
+              ? photographer.locations[0].coordinates.coordinates.join(', ')
+              : 'Ubicación no disponible'
+          }
+          availability={photographer.availability}
         />
       )}
     </ScrollView>

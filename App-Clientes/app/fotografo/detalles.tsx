@@ -1,67 +1,71 @@
-// React y React Native
-import React, { useState } from "react";
-import { StyleSheet, Text, View, Image, Pressable, Linking, ScrollView } from "react-native";
+import React, { useState, useMemo } from "react";
+import {
+  StyleSheet,
+  Text,
+  View,
+  Pressable,
+  Linking,
+  ScrollView,
+} from "react-native";
+import {
+  PaperPlaneTilt,
+  Phone,
+  EnvelopeSimple,
+} from "phosphor-react-native";
 
-// Íconos (Phosphor)
-import { PaperPlaneTilt, Phone, EnvelopeSimple } from "phosphor-react-native";
-
-// Constantes del proyecto
 import Fonts from "@/constants/Fonts";
 import Colors from "@/constants/Colors";
-
-// Datos simulados
-import { horariosSemana } from "@/mocks/mockHorario";
-
-// Interfaces
 import { DetallesProps } from "@/types/Detalles.type";
 
-// Componente que muestra inforamción detallada: dirección, horario y contacto
-export default function Detalles({ nombre = "Nombre", direccion }: DetallesProps) {
-  // Estado para controlar si se muestra el horario completo o solo el primer día 
+const diasSemana = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"];
+
+export default function Detalles({ email, phone, direccion, availability }: DetallesProps) {
   const [expandido, setExpandido] = useState(false);
-  
-  // Función que abre Google Maps con la dirección proporcionada
+
   const handleAbrirMaps = () => {
     const url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(direccion)}`;
-    Linking.openURL(url); // Abre la URL en el navegador o en la app de Maps
+    Linking.openURL(url);
   };
-  
-  // Dependiendo del estado, muestra todos los días o solo el primero
-  const diasVisibles = expandido ? horariosSemana : [horariosSemana[0]];
-  
+
+  const disponibilidadOrdenada = useMemo(() => {
+    return diasSemana.map((nombreDia, index) => {
+      const disponibilidadDelDia = availability.find((a) => a.day === index + 1);
+      const slots = disponibilidadDelDia?.slots || [];
+      return {
+        day: nombreDia,
+        hours: slots.map((slot) => ({
+          start: slot.start.slice(0, 5),
+          end: slot.end.slice(0, 5),
+        })),
+      };
+    });
+  }, [availability]);
+
+  const diasVisibles = expandido ? disponibilidadOrdenada : [disponibilidadOrdenada[0]];
+
   return (
     <ScrollView style={styles.container}>
-      {/* Sección Dirección */}
+      {/* Dirección */}
       <View>
         <Text style={styles.title}>Dirección</Text>
-
         <View style={styles.card}>
-          {/* Información textual */}
           <View style={styles.info}>
-            <Text style={styles.nombre}>{nombre}</Text>
+            <Text style={styles.nombre}>Ubicación</Text>
             <Text style={styles.direccion}>{direccion}</Text>
           </View>
-
-          {/* Botón con ícono que abre la dirección en maps */}
           <Pressable onPress={handleAbrirMaps}>
             <PaperPlaneTilt size={24} color={Colors.light.tint} weight="duotone" />
           </Pressable>
-
         </View>
-
       </View>
 
       {/* Horario */}
       <View>
         <Text style={styles.title}>Horario</Text>
-
         <View style={styles.horarioContainer}>
           {diasVisibles.map((dia, index) => (
             <View key={index} style={styles.horarioRow}>
-              {/* Dia de la semana */}
               <Text style={styles.diaTexto}>{dia.day}</Text>
-
-              {/* Horas de apertura / cierre */}
               <View style={styles.horariosColumn}>
                 {dia.hours.length === 0 ? (
                   <Text style={styles.horaTexto}>Cerrado</Text>
@@ -73,12 +77,10 @@ export default function Detalles({ nombre = "Nombre", direccion }: DetallesProps
                   ))
                 )}
               </View>
-
             </View>
           ))}
         </View>
 
-        {/* Botón para expandir o colapsar el horario */}
         <Pressable onPress={() => setExpandido(!expandido)}>
           <Text style={styles.expandirTexto}>
             {expandido ? "Colapsar horario" : "Expandir horario"}
@@ -86,21 +88,21 @@ export default function Detalles({ nombre = "Nombre", direccion }: DetallesProps
         </Pressable>
       </View>
 
-      {/* Sección: Contacto */}
+      {/* Contacto */}
       <View>
-          <Text style={styles.title}>Contacto</Text>
-          
-          {/* Teléfono */}
+        <Text style={styles.title}>Contacto</Text>
+        {phone && (
           <View style={styles.contactRow}>
-              <Phone size={20} color={Colors.light.text} />
-              <Text style={styles.contactText}>123 456 789</Text>
+            <Phone size={20} color={Colors.light.text} />
+            <Text style={styles.contactText}>{phone}</Text>
           </View>
-
-          {/* Correo */}
+        )}
+        {email && (
           <View style={styles.contactRow}>
-              <EnvelopeSimple size={20} color={Colors.light.text} />
-              <Text style={styles.contactText}>correo@gmail.com</Text>
+            <EnvelopeSimple size={20} color={Colors.light.text} />
+            <Text style={styles.contactText}>{email}</Text>
           </View>
+        )}
       </View>
     </ScrollView>
   );
@@ -108,7 +110,6 @@ export default function Detalles({ nombre = "Nombre", direccion }: DetallesProps
 
 const styles = StyleSheet.create({
   container: {
-    paddingVertical: 0,
     paddingHorizontal: 20,
     gap: 20,
   },
@@ -141,7 +142,6 @@ const styles = StyleSheet.create({
     color: Colors.light.tint,
   },
   horarioContainer: {
-    // paddingHorizontal: ,
     gap: 12,
   },
   horarioRow: {
@@ -162,18 +162,17 @@ const styles = StyleSheet.create({
     fontFamily: Fonts.regular,
     fontSize: 16,
     color: Colors.light.text,
-  },  
+  },
   expandirTexto: {
     fontFamily: Fonts.regular,
     fontSize: 14,
     color: Colors.light.tint,
     marginTop: 8,
-    // marginLeft: 25,
     textDecorationLine: "underline",
   },
   contactRow: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
+    flexDirection: "row",
+    alignItems: "flex-start",
     marginTop: 8,
   },
   contactText: {
@@ -181,5 +180,5 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: Colors.light.text,
     marginLeft: 8,
-  },  
+  },
 });
