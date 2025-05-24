@@ -91,7 +91,7 @@ export default function NombreDireccionScreen() {
         longitude: longitude ? parseFloat(longitude) : null,
       };
 
-      await api.patch('/photographer/profile', payload, {
+      await api.patch('/users/photographers/me', payload, {
         headers: { Authorization: `Bearer ${token}` }
       });
 
