@@ -20,6 +20,8 @@ import { Photographer } from '@/types/photographer';
 import { getCategorias } from '@/services/categoryService';
 import { getPhotographers } from '@/services/photographerService';
 import { getUserById } from '@/services/userInfoService';
+import { useFocusEffect } from '@react-navigation/native';
+import { useCallback } from 'react';
 
 // Contexto
 import { useUser } from '@/context/UserContext';
@@ -88,6 +90,25 @@ export default function HomeScreen() {
 
     checkAuthAndFetch();
   }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      const refreshUser = async () => {
+        try {
+          const id = await AsyncStorage.getItem('userId');
+          if (!id) return;
+
+          const user = await getUserById(parseInt(id));
+          await AsyncStorage.setItem('currentUser', JSON.stringify(user));
+          setUser(user);
+        } catch (error) {
+          console.error('❌ Error al refrescar el usuario:', error);
+        }
+      };
+
+      refreshUser();
+    }, [])
+  );
 
   const contenido = useMemo(() => {
     if (categorias.length < 2) return [];

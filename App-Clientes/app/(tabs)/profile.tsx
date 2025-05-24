@@ -12,6 +12,7 @@ import {
   User,
   Gear,
   Info,
+  Image as ImageIcon,
 } from 'phosphor-react-native';
 
 // Constantes
@@ -104,6 +105,13 @@ export default function ProfileScreen() {
           >
             <User />
             <Text style={styles.contentText}>Datos personales</Text>
+          </Pressable>
+          <Pressable
+            style={styles.contentButton}
+            onPress={() => router.push('/perfil/MiniPantallas/FotoPerfil')}
+          >
+            <ImageIcon />
+            <Text style={styles.contentText}>Foto de perfil</Text>
           </Pressable>
           <Pressable
             style={styles.contentButton}

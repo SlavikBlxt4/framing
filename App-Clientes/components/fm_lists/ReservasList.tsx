@@ -79,6 +79,7 @@ const ReservasList: React.FC = () => {
         router.push({
           pathname: '/inicio/reservas/DetalleReserva',
           params: {
+            bookingId: item.bookingId.toString(),
             nombre: item.serviceName,
             fecha: new Date(item.date).toLocaleDateString(),
             hora: new Date(item.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
