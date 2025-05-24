@@ -26,7 +26,6 @@ export default function RegisterScreen() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
-  const [role, setRole] = useState<"CLIENT" | "PHOTOGRAPHER">("CLIENT");
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -47,7 +46,7 @@ export default function RegisterScreen() {
             email: email.trim().toLowerCase(),
             password,
             phone_number: phoneNumber.trim(),
-            role,
+            role: "CLIENT", // siempre será CLIENT en esta app
         });  
         console.log("Usuario registrado:", response);
   
@@ -131,11 +130,6 @@ export default function RegisterScreen() {
             </Text>
           </Pressable>
 
-          <Pressable onPress={() => setRole(role === "CLIENT" ? "PHOTOGRAPHER" : "CLIENT")}>
-            <Text style={styles.checkboxText}>
-              Soy {role === "CLIENT" ? "cliente" : "fotógrafo"} (tocar para cambiar)
-            </Text>
-          </Pressable>
         </View>
 
         <View style={styles.registerContainer}>
