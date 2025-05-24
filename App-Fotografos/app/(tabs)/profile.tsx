@@ -101,7 +101,7 @@ export default function ProfileScreen() {
       {/* Información pública */}
       <StyledText style={styles.sectionTitle} weight="bold">Información pública</StyledText>
       <View style={styles.card}>
-        <Option label="Nombre y dirección" onPress={() => router.push('/profile/nombre-direccion')} />
+        <Option label="Editar perfil" onPress={() => router.push('/profile/nombre-direccion')} />
         <Option label="Logo y portada" onPress={() => router.push('/profile/logo-portada')} />
         <Option label="Horario del estudio" onPress={() => router.push('/profile/horario')} />
         <Option label="Portfolio" onPress={() => router.push('/profile/portfolio')} />
