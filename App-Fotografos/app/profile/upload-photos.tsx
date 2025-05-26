@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -7,6 +7,7 @@ import {
   StyleSheet,
   Alert,
   ActivityIndicator,
+  Platform,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import Colors from "@/constants/Colors";
@@ -14,11 +15,15 @@ import { FontFamily as Fonts } from "@/constants/Fonts";
 import api from "@/services/api";
 import { router } from "expo-router";
 import mime from "mime";
+import * as FileSystem from "expo-file-system";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function SubirFotosScreen() {
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [coverImage, setCoverImage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [readyToSubmit, setReadyToSubmit] = useState(false);
+  const [verifyingImages, setVerifyingImages] = useState(false);
 
   const pickImage = async (setter: (uri: string) => void) => {
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -26,31 +31,92 @@ export default function SubirFotosScreen() {
       quality: 0.8,
     });
 
-    if (!result.canceled) {
+    if (!result.canceled && result.assets && result.assets.length > 0) {
       setter(result.assets[0].uri);
     }
   };
 
-const uploadImage = async (uri: string, endpoint: string) => {
-  const formData = new FormData();
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    let previousSizes = { profile: 0, cover: 0 };
+    let stableCounter = 0;
 
-  const mimeType = mime.getType(uri) || "image/jpeg";
-  const ext = mime.getExtension(mimeType) || "jpg";
+    const checkFilesStable = async () => {
+      if (!profileImage || !coverImage) {
+        setReadyToSubmit(false);
+        setVerifyingImages(false);
+        return;
+      }
 
-  formData.append("file", {
-    uri,
-    name: `upload.${ext}`,
-    type: mimeType,
-  } as any);
+      setVerifyingImages(true);
 
-  await api.post(endpoint, formData, {
-    headers: {
-      "Content-Type": "multipart/form-data", // NECESARIO con transformRequest
-    },
-    transformRequest: (data) => data,
-  });
-};
+      interval = setInterval(async () => {
+        try {
+          const [profileInfo, coverInfo] = await Promise.all([
+            FileSystem.getInfoAsync(profileImage),
+            FileSystem.getInfoAsync(coverImage),
+          ]);
 
+          const currentSizes = {
+            profile: profileInfo.exists && !profileInfo.isDirectory ? profileInfo.size ?? 0 : 0,
+            cover: coverInfo.exists && !coverInfo.isDirectory ? coverInfo.size ?? 0 : 0,
+          };
+
+          const profileStable = previousSizes.profile === currentSizes.profile;
+          const coverStable = previousSizes.cover === currentSizes.cover;
+
+          if (profileStable && coverStable && profileInfo.exists && coverInfo.exists) {
+            stableCounter += 1;
+          } else {
+            stableCounter = 0;
+          }
+
+          previousSizes = currentSizes;
+
+          if (stableCounter >= 2) {
+            clearInterval(interval);
+            setReadyToSubmit(true);
+            setVerifyingImages(false);
+          }
+        } catch (e) {
+          console.error("Error verificando imágenes:", e);
+          clearInterval(interval);
+          setReadyToSubmit(false);
+          setVerifyingImages(false);
+        }
+      }, 750);
+    };
+
+    checkFilesStable();
+    return () => clearInterval(interval);
+  }, [profileImage, coverImage]);
+
+  const uploadImage = async (uri: string, endpoint: string, token: string) => {
+    const fileInfo = await FileSystem.getInfoAsync(uri);
+    if (!fileInfo.exists) {
+      throw new Error("Archivo no disponible aún: " + uri);
+    }
+
+    const mimeType = mime.getType(uri) || "image/jpeg";
+    const fileName = uri.split("/").pop() || `upload.${mime.getExtension(mimeType) || "jpg"}`;
+
+    const formData = new FormData();
+    formData.append("file", {
+      uri: Platform.OS === "android" ? uri : uri.replace("file://", ""),
+      name: fileName,
+      type: mimeType,
+    } as any);
+
+    console.log("Subiendo:", fileName, "a", endpoint);
+
+    await api.post(endpoint, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+        "Accept": "application/json",
+        "Authorization": `Bearer ${token}`,
+      },
+    });
+  };
 
   const handleSave = async () => {
     try {
@@ -61,12 +127,12 @@ const uploadImage = async (uri: string, endpoint: string) => {
 
       setLoading(true);
 
-      
+      const token = await AsyncStorage.getItem("token");
+      if (!token) throw new Error("Token no encontrado");
 
-      await uploadImage(profileImage, "/users/photographers/upload-profile-image");
-      await uploadImage(coverImage, "/users/photographers/upload-cover-image");
+      await uploadImage(profileImage, "/users/photographers/upload-profile-image", token);
+      await uploadImage(coverImage, "/users/photographers/upload-cover-image", token);
 
-      console.log("url", profileImage, coverImage);
       Alert.alert("Perfecto", "Imágenes subidas correctamente");
       router.replace("/(tabs)");
     } catch (err: any) {
@@ -76,15 +142,6 @@ const uploadImage = async (uri: string, endpoint: string) => {
       setLoading(false);
     }
   };
-
-  const handleTest = async () => {
-  try {
-    const res = await api.get("/");
-    console.log("GET ok:", res.data);
-  } catch (err) {
-    console.error("GET error:", err);
-  }
-};
 
   return (
     <View style={styles.container}>
@@ -100,8 +157,12 @@ const uploadImage = async (uri: string, endpoint: string) => {
         {coverImage && <Image source={{ uri: coverImage }} style={styles.preview} />}
       </Pressable>
 
-      <Pressable style={styles.saveButton} onPress={handleSave} disabled={loading}>
-        {loading ? (
+      <Pressable
+        style={[styles.saveButton, (!readyToSubmit || verifyingImages || loading) && { opacity: 0.5 }]}
+        onPress={handleSave}
+        disabled={!readyToSubmit || verifyingImages || loading}
+      >
+        {loading || verifyingImages ? (
           <ActivityIndicator color="#fff" />
         ) : (
           <Text style={styles.saveButtonText}>Guardar y continuar</Text>
