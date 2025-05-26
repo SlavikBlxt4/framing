@@ -53,7 +53,7 @@ export default function RootLayout() {
                   headerBackTitleVisible: false,
                   headerStyle: {}
                 }}>
-                <Stack.Screen name="(tabs)" />
+                <Stack.Screen name="(tabs)" options={{ headerShown: false}}/>
                 <Stack.Screen name="perfil/Login" />
                 <Stack.Screen name="perfil/Register" />
                 <Stack.Screen name="fotografo/[id]" />

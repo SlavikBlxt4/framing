@@ -44,6 +44,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
         backgroundColor: Colors.light.background,
         flex: 1,
+        paddingVertical: 40,
     },
     label: {
         fontFamily: Fonts.bold,

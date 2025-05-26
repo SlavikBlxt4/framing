@@ -72,5 +72,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     flex: 1,
     backgroundColor: Colors.light.background,
+    paddingVertical: 40,
   },
 });
