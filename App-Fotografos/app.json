@@ -9,24 +9,24 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "splash": {
-      "image": "./assets/images/splash-icon.png",
+      "image": "./assets/images/Logo.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#f2ffff"
     },
     "ios": {
       "supportsTablet": true
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "foregroundImage": "./assets/images/Logo.png",
+        "backgroundColor": "#f2ffff"
       },
-      "package": "com.diegosorianom.AppFotografos"
+      "package": "com.framing.AppFotografos"
     },
     "web": {
       "bundler": "metro",
       "output": "static",
-      "favicon": "./assets/images/favicon.png"
+      "favicon": "./assets/images/Logo.png"
     },
     "plugins": [
       "expo-router"
@@ -42,6 +42,6 @@
         "projectId": "74909b63-c099-44c0-9790-f33b6e7f3251"
       }
     },
-    "owner": "diegosorianom"
+    "owner": "framing"
   }
 }
