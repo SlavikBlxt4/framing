@@ -126,6 +126,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderWidth: 2,
     borderColor: Colors.light.tint,
+    marginBottom: 25,
   },
   info: {
     flex: 1,
@@ -169,6 +170,7 @@ const styles = StyleSheet.create({
     color: Colors.light.tint,
     marginTop: 8,
     textDecorationLine: "underline",
+    marginBottom: 25,
   },
   contactRow: {
     flexDirection: "row",
