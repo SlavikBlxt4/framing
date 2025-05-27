@@ -36,12 +36,13 @@ export default function SubirFotosScreen() {
     }
   };
 
-  useEffect(() => {
+    useEffect(() => {
     let interval: NodeJS.Timeout;
-    let previousSizes = { profile: 0, cover: 0 };
     let stableCounter = 0;
+    let previousProfileSize = 0;
+    let previousCoverSize = 0;
 
-    const checkFilesStable = async () => {
+    const verifyImages = async () => {
       if (!profileImage || !coverImage) {
         setReadyToSubmit(false);
         setVerifyingImages(false);
@@ -52,26 +53,32 @@ export default function SubirFotosScreen() {
 
       interval = setInterval(async () => {
         try {
-          const [profileInfo, coverInfo] = await Promise.all([
-            FileSystem.getInfoAsync(profileImage),
-            FileSystem.getInfoAsync(coverImage),
-          ]);
+          const profileInfo = await FileSystem.getInfoAsync(profileImage);
+          const coverInfo = await FileSystem.getInfoAsync(coverImage);
 
-          const currentSizes = {
-            profile: profileInfo.exists && !profileInfo.isDirectory ? profileInfo.size ?? 0 : 0,
-            cover: coverInfo.exists && !coverInfo.isDirectory ? coverInfo.size ?? 0 : 0,
-          };
+          const profileSize =
+            profileInfo.exists && !profileInfo.isDirectory ? profileInfo.size ?? 0 : 0;
+          const coverSize =
+            coverInfo.exists && !coverInfo.isDirectory ? coverInfo.size ?? 0 : 0;
 
-          const profileStable = previousSizes.profile === currentSizes.profile;
-          const coverStable = previousSizes.cover === currentSizes.cover;
+          const profileStable = profileSize === previousProfileSize;
+          const coverStable = coverSize === previousCoverSize;
 
-          if (profileStable && coverStable && profileInfo.exists && coverInfo.exists) {
+          if (
+            profileInfo.exists &&
+            coverInfo.exists &&
+            profileStable &&
+            coverStable &&
+            profileSize > 0 &&
+            coverSize > 0
+          ) {
             stableCounter += 1;
           } else {
             stableCounter = 0;
           }
 
-          previousSizes = currentSizes;
+          previousProfileSize = profileSize;
+          previousCoverSize = coverSize;
 
           if (stableCounter >= 2) {
             clearInterval(interval);
@@ -79,17 +86,18 @@ export default function SubirFotosScreen() {
             setVerifyingImages(false);
           }
         } catch (e) {
-          console.error("Error verificando imágenes:", e);
+          console.error("Error al verificar imágenes:", e);
           clearInterval(interval);
           setReadyToSubmit(false);
           setVerifyingImages(false);
         }
-      }, 750);
+      }, 700); // mejor usar varios ciclos cortos que uno largo
     };
 
-    checkFilesStable();
+    verifyImages();
     return () => clearInterval(interval);
   }, [profileImage, coverImage]);
+
 
   const uploadImage = async (uri: string, endpoint: string, token: string) => {
     const fileInfo = await FileSystem.getInfoAsync(uri);
