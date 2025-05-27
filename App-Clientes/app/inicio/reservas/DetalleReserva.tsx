@@ -101,17 +101,24 @@ export default function DetalleReserva() {
           )}
 
           <Text style={styles.nombre}>{nombre}</Text>
-          <Text style={styles.sesion}>Próxima sesión en:</Text>
-          <Text style={styles.tiempo}>{tiempoFaltante}</Text>
-          <Text style={styles.fecha}>{fecha} {hora}</Text>
 
-          {direccion && (
+          {statusStr === 'cancelled' ? (
+            <Text style={styles.cancelado}>Reserva Cancelada</Text> // NUEVO: mensaje si está cancelada
+          ) : (
             <>
-              <Text style={styles.direccion}>{direccion}</Text>
-              <Pressable onPress={abrirEnGoogleMaps} style={styles.boton}>
-                <Text style={styles.botonTexto}>Ver en Google Maps</Text>
-                <PaperPlaneTilt color='white' weight='fill' />
-              </Pressable>
+              <Text style={styles.sesion}>Próxima sesión en:</Text>
+              <Text style={styles.tiempo}>{tiempoFaltante}</Text>
+              <Text style={styles.fecha}>{fecha} {hora}</Text>
+
+              {direccion && (
+                <>
+                  <Text style={styles.direccion}>{direccion}</Text>
+                  <Pressable onPress={abrirEnGoogleMaps} style={styles.boton}>
+                    <Text style={styles.botonTexto}>Ver en Google Maps</Text>
+                    <PaperPlaneTilt color='white' weight='fill' />
+                  </Pressable>
+                </>
+              )}
             </>
           )}
         </View>
@@ -129,12 +136,13 @@ export default function DetalleReserva() {
             <Text style={styles.botonCancelarTexto}>Calificar servicio</Text>
             <PaperPlaneTilt weight='fill' color='#fff' />
           </Pressable>
-        ) : (
+        ) : statusStr !== 'cancelled' ? (
           <Pressable onPress={mostrarDialogo} style={styles.botonCancelar}>
             <Text style={styles.botonCancelarTexto}>Quiero cancelar mi reserva</Text>
             <CalendarX weight='fill' color='#fff' />
           </Pressable>
-        )}
+        ) : null}
+
 
         <Portal>
           <Dialog
@@ -249,4 +257,11 @@ const styles = StyleSheet.create({
   dialogButtonText: {
     color: Colors.light.tint,
   },
+  cancelado: {
+  fontSize: 18,
+  fontFamily: Fonts.semiBold,
+  color: '#e63946',
+  marginTop: 20,
+},
+
 });
