@@ -30,6 +30,7 @@ const formatFecha = (isoStr: string) => {
 
 // DTO de respuesta desde el backend
 interface BookingResumenDto {
+  bookingId: number;
   photographerName: string;
   date: string;
   imageCount: number;
@@ -70,6 +71,7 @@ const FotografiasScreen = () => {
         router.push({
           pathname: '/recibidos/DetalleFotografias',
           params: {
+            bookingId: item.bookingId.toString(),  
             nombreEstudio: item.photographerName,
             fecha: item.date,
             archivos: item.imageCount,

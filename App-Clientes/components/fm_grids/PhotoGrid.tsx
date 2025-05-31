@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
 import {
   View,
   FlatList,
@@ -13,23 +13,21 @@ import RNModal from 'react-native-modal';
 import * as FileSystem from 'expo-file-system';
 import * as MediaLibrary from 'expo-media-library';
 
-interface Props {
-  count: number;
-}
-
 const { width, height } = Dimensions.get('window');
 
-const PhotoGrid: React.FC<Props> = ({ count }) => {
+interface ImageItem {
+  id: number;
+  uri: string;
+}
+
+interface Props {
+  images: ImageItem[];
+}
+
+const PhotoGrid: React.FC<Props> = ({ images }) => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [selected, setSelected] = useState<number[]>([]);
   const [selectionMode, setSelectionMode] = useState(false);
-
-  const images = useMemo(() => {
-    return Array.from({ length: count }, (_, i) => ({
-      id: i,
-      uri: `https://picsum.photos/id/${i + 10}/300/300`,
-    }));
-  }, [count]);
 
   const openModal = (uri: string) => !selectionMode && setSelectedImage(uri);
   const closeModal = () => setSelectedImage(null);
@@ -77,7 +75,7 @@ const PhotoGrid: React.FC<Props> = ({ count }) => {
     }
   };
 
-  const renderItem = ({ item }: any) => (
+  const renderItem = ({ item }: { item: ImageItem }) => (
     <TouchableOpacity
       onLongPress={() => onLongPress(item.id)}
       onPress={() => onPress(item.id, item.uri)}
