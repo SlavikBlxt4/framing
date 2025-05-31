@@ -38,7 +38,15 @@
         }
       ],
       "expo-font",
-      "expo-secure-store"
+      "expo-secure-store",
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "usesCleartextTraffic": true
+          }
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true
@@ -48,8 +56,9 @@
         "origin": false
       },
       "eas": {
-        "projectId": "404e3756-acc1-4029-bdd4-e5a63c80389d"
+        "projectId": "54327c3c-b788-40b4-b219-ed792e36e0fc"
       }
-    }
+    },
+    "owner": "slavik_blxt"
   }
 }
