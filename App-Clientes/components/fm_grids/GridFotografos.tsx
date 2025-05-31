@@ -6,19 +6,28 @@ import Fonts from '@/constants/Fonts';
 import TarjetaFotografo from '../fm_cards/TarjetaFotografo';
 import api from '@/services/api';
 
-type Props = {
-  categoriaId: number;
-};
+type Props =
+  | { data: Photographer[]; categoriaId?: undefined } // para búsqueda
+  | { categoriaId: number; data?: undefined }; // para filtros por categoría
 
-export default function GridFotografos({ categoriaId }: Props) {
-  const [data, setData] = useState<Photographer[]>([]);
+export default function GridFotografos(props: Props) {
+  const [internalData, setInternalData] = useState<Photographer[]>([]);
   const [loading, setLoading] = useState(true);
+
+  const shouldFetchByCategory = props.categoriaId !== undefined;
 
   useEffect(() => {
     const fetchPhotographers = async () => {
+      if (!shouldFetchByCategory) {
+        setLoading(false);
+        return;
+      }
+
       try {
-        const res = await api.get<Photographer[]>(`/users/by-category/${categoriaId}`);
-        setData(res.data);
+        const res = await api.get<Photographer[]>(
+          `/users/by-category/${props.categoriaId}`
+        );
+        setInternalData(res.data);
       } catch (error) {
         console.error('Error al obtener fotógrafos por categoría:', error);
       } finally {
@@ -27,7 +36,9 @@ export default function GridFotografos({ categoriaId }: Props) {
     };
 
     fetchPhotographers();
-  }, [categoriaId]);
+  }, [props.categoriaId]);
+
+  const data = shouldFetchByCategory ? internalData : props.data ?? [];
 
   if (loading) {
     return (
@@ -53,8 +64,11 @@ export default function GridFotografos({ categoriaId }: Props) {
               nombreEstudio={item.name}
               fotografiaUrl={item.url_profile_image ?? ''}
               puntuacion={item.averageRating}
-              direccion={item.locations[0]?.coordinates?.coordinates?.join(', ') ?? 'Sin dirección'}
-              fotoPortada={item.url_cover_image ?? ''} // Cambiar de url_portfolio si corresponde
+              direccion={
+                item.locations[0]?.coordinates?.coordinates?.join(', ') ??
+                'Sin dirección'
+              }
+              fotoPortada={item.url_cover_image ?? ''}
               seguidores={0}
               verificado={item.active}
             />
@@ -67,6 +81,7 @@ export default function GridFotografos({ categoriaId }: Props) {
     </View>
   );
 }
+
 
 const styles = StyleSheet.create({
   container: {
