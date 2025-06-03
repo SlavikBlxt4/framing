@@ -30,7 +30,7 @@ export default function GestionReservaScreen() {
       Alert.alert('❌ Error', 'No se pudo confirmar la sesión.');
     }
   };
-
+//prueba apk
   const cancelarReserva = async () => {
     try {
       await api.post(`/bookings/${bookingId}/cancel-by-photographer`);
