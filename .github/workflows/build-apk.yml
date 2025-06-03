@@ -1,0 +1,53 @@
+name: Build APKs
+
+on:
+  push:
+    paths:
+      - "App-Clientes/**"
+      - "App-Fotografos/**"
+      - ".github/workflows/build-apk.yml"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Determine Changed Apps
+        id: changed
+        run: |
+          git diff --name-only ${{ github.event.before }} ${{ github.sha }} > changed.txt
+          if grep -q '^App-Clientes/' changed.txt; then echo "clientes=true" >> $GITHUB_OUTPUT; else echo "clientes=false" >> $GITHUB_OUTPUT; fi
+          if grep -q '^App-Fotografos/' changed.txt; then echo "fotografos=true" >> $GITHUB_OUTPUT; else echo "fotografos=false" >> $GITHUB_OUTPUT; fi
+          cat changed.txt
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install EAS CLI
+        run: npm install -g eas-cli
+
+      - name: Build App-Clientes APK
+        if: steps.changed.outputs.clientes == 'true'
+        working-directory: App-Clientes
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+        run: |
+          npm ci
+          eas build --platform android --profile preview --local --non-interactive
+
+      - name: Build App-Fotografos APK
+        if: steps.changed.outputs.fotografos == 'true'
+        working-directory: App-Fotografos
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+        run: |
+          npm ci
+          eas build --platform android --profile preview --local --non-interactive
+
