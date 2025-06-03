@@ -43,7 +43,14 @@ jobs:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
         run: |
           npm ci
-          eas build --platform android --profile preview --local --non-interactive
+          eas build --platform android --profile preview --local --non-interactive --output ../App-Clientes.apk
+
+      - name: Upload App-Clientes APK
+        if: steps.changed.outputs.clientes == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: App-Clientes
+          path: App-Clientes.apk
 
       - name: Build App-Fotografos APK
         if: steps.changed.outputs.fotografos == 'true'
@@ -52,5 +59,12 @@ jobs:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
         run: |
           npm ci
-          eas build --platform android --profile preview --local --non-interactive
+          eas build --platform android --profile preview --local --non-interactive --output ../App-Fotografos.apk
+
+      - name: Upload App-Fotografos APK
+        if: steps.changed.outputs.fotografos == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: App-Fotografos
+          path: App-Fotografos.apk
 
