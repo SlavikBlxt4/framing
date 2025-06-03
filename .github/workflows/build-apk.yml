@@ -29,6 +29,9 @@ jobs:
         with:
           node-version: '18'
           cache: 'npm'
+          cache-dependency-path: |
+            App-Clientes/package-lock.json
+            App-Fotografos/package-lock.json
 
       - name: Install EAS CLI
         run: npm install -g eas-cli
