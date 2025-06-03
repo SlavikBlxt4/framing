@@ -8,5 +8,13 @@ export type Notification = {
   message: string;
   type?: string | null;
   read: boolean;
-  createdAt: string; 
+  createdAt: string;
+  // SESSION_REQUESTED and booking-related properties
+  bookingId?: number;
+  clientName?: string;
+  clientEmail?: string;
+  serviceName?: string;
+  bookingDate?: string;
+  bookingDuration?: number;
+  bookingPrice?: number;
 };
