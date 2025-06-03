@@ -1,5 +1,6 @@
 {
   "expo": {
+    "entryPoint": "node_modules/expo/AppEntry.js",
     "name": "App-Fotografos",
     "slug": "App-Fotografos",
     "version": "1.0.0",
@@ -14,7 +15,8 @@
       "backgroundColor": "#f2ffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.framing.AppFotografos"
     },
     "android": {
       "adaptiveIcon": {
@@ -29,7 +31,16 @@
       "favicon": "./assets/images/Logo.png"
     },
     "plugins": [
-      "expo-router"
+      "expo-router",
+      "expo-secure-store",
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "usesCleartextTraffic": true
+          }
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true
@@ -39,9 +50,9 @@
         "origin": false
       },
       "eas": {
-        "projectId": "74909b63-c099-44c0-9790-f33b6e7f3251"
+        "projectId": "493681e1-31a4-4117-8328-1f71f463a6d5"
       }
     },
-    "owner": "framing"
+    "owner": "slavik_blxt"
   }
 }

@@ -11,6 +11,7 @@ import Colors from '@/constants/Colors';
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
+  console.log("👉 Entrando a RootLayout");
   useEffect(() => {
     SplashScreen.hideAsync();
   }, []);
