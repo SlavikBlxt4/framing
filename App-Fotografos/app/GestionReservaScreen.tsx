@@ -23,7 +23,7 @@ export default function GestionReservaScreen() {
   const confirmarReserva = async () => {
     try {
       await api.post(`/bookings/${bookingId}/confirm`);
-      Alert.alert('✅ Confirmado', 'La sesión ha sido confirmada!.');
+      Alert.alert('✅ Confirmado', 'La sesión ha sido confirmada.');
       router.back();
     } catch (error) {
       console.error(error);
@@ -34,7 +34,7 @@ export default function GestionReservaScreen() {
   const cancelarReserva = async () => {
     try {
       await api.post(`/bookings/${bookingId}/cancel-by-photographer`);
-      Alert.alert('🛑 Cancelado', 'La sesión ha sido cancelada!.');
+      Alert.alert('🛑 Cancelado', 'La sesión ha sido cancelada.');
       router.back();
     } catch (error) {
       console.error(error);
